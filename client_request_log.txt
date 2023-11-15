@@ -12,6 +12,12 @@
                 - 2000 or newer
             - Location:
                 - South of downtown St.Paul. Within a 25 Mile radius
+    - (11.14.23 - Questions) After investigating how the Facebook Marketplace functions, there were a few notes of 
+      interest, complications, and/or limitations
+        - FB Marketplace CAN isolate the location and outputs results within a 40 mile radius. However, when manually 
+          filtering for a smaller radius, the URL does not change. This means that the default radius for search results
+          will have to stay at 40 miles unless I can figure out how to apply that in the future.
+        - 
             
 
 ***PROJECT FOCUS***

@@ -7,7 +7,7 @@ FB_MP_MAIN = "https://www.facebook.com/marketplace/"
 FB_MP_VEHICLES = "https://www.facebook.com/marketplace/category/vehicles/"
 FB_MP_VEHICLES_STPAUL = "https://www.facebook.com/marketplace/107996279221955/vehicles"
 
-
+### TESTING ###
 webpage_html = requests.get(TEST_URL)
 soup = BeautifulSoup(webpage_html.text, "html.parser")
 quotes = soup.findAll("span", attrs={"class":"text"})
