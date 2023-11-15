@@ -1,0 +1,31 @@
+***SETUP***
+    - Created a main folder called "MPScrubber"
+    - Added a base python file called "app.py"
+    - Added this text file to notate active steps taken during development
+    - Initialized a virtual environment where all project libraries, necessary
+      for it to function, will be installed.
+        - ACTIVATION: .venv/Scripts/Activate.ps1
+
+***FIRST STEPS***
+    - To create a more realistic initial testing environment, this project will 
+      focus on Facebook Marketplace as its URL schema seems to be much cleaner than
+      Craigslist
+    - Before this, I need to learn how to conduct basic web scrapping
+    - ***NECESSARY IMPORTS***
+        - "requests"
+            - This module allows python to make a request on the web given a valid URL
+            - "pip install requests"
+        - "beautifulSoup"
+            - This module allows python to cleanly read-in raw HTML that can then be
+              sifted through.
+            - "pip install beautifulsoup4"
+    - ***KEEPING TRACK OF IMPORTS***
+        - pip freeze
+            - This command collects all currently installed libraries. This collection can
+              then be output to some file. In this case, the file is called "requirements.txt"
+            - "pip freeze > requirements.txt"
+
+
+
+
+    

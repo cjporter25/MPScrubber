@@ -1,0 +1,26 @@
+***COMMUNICATION LOG***
+    - (11.9.23 - Phone Call) Client spoke with me over the phone on Nov. 9th inquiring about an application that could
+      automatically notify them about used vehicles within a specific radius around their home.
+        - This conversation provided basic project parameters, i.e., which online marketplaces
+          they'd like to be following, as well as what vehicle parameters they're looking for.
+        - These parameters are specified below =>
+            - Auto Manufacturer Preference:
+                - Lexus, Toyota, Honda
+            - Price Range:
+                - $0 - $20,000
+            - Year Range:
+                - 2000 or newer
+            - Location:
+                - South of downtown St.Paul. Within a 25 Mile radius
+            
+
+***PROJECT FOCUS***
+    - Initial Full Scope and Summary:
+        - This project will function as a web scrubber for the following marketplaces:
+            - Facebook marketplace
+            - Craigslist
+        - This project will need to make requests using pre-determiend parameters to 
+          these online marketplaces, pull in the results, and store the relevant information
+        - The client would then like some form of notification that highlights items that
+          best fit their current preferences so they can act upon showings much sooner than
+          others would normally.

@@ -1,0 +1,2 @@
+***Create a connection to a marketplace***
+    - FIRST: Learn the in's and out's of Python's various scrapping libraries and methods
