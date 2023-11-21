@@ -5,6 +5,9 @@ import os
 TEST_URL = "https://quotes.toscrape.com/"
 FB_MP_MAIN = "https://www.facebook.com/marketplace/"
 FB_MP_VEHICLES = "https://www.facebook.com/marketplace/category/vehicles/"
+# 107996279221955 represents the location ID of St. Paul. Every location facebook
+#       has stored has a unique location ID. They are maybe geographical coordinates
+#       but unsure at this time.
 FB_MP_VEHICLES_STPAUL = "https://www.facebook.com/marketplace/107996279221955/vehicles"
 
 ### TESTING ###

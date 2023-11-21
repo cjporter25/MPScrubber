@@ -1,3 +1,15 @@
 ***Create a connection to a marketplace***
     - FIRST: Learn the in's and out's of Python's various scrapping libraries and methods
+
+
+
+
+
+
+***Decipher the trailing "exact=true or exact=false"***
+    - At first, it isn't clear what exactly it's for.
+    - Testing (11.20.23): Used the parameters of $0 to $20000 for Toyota vehicles and
+      manually changed the parameter in the URL to both true and false.
+        - The resulting output didn't vary at all between the two. For now, it will
+          largely be ignored unless necessary in the future.
     
