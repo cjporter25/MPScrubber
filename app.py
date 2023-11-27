@@ -2,21 +2,34 @@ from bs4 import BeautifulSoup
 import requests 
 import os
 
-TEST_URL = "https://quotes.toscrape.com/"
-FB_MP_MAIN = "https://www.facebook.com/marketplace/"
-FB_MP_VEHICLES = "https://www.facebook.com/marketplace/category/vehicles/"
-# 107996279221955 represents the location ID of St. Paul. Every location facebook
-#       has stored has a unique location ID. They are maybe geographical coordinates
-#       but unsure at this time.
-FB_MP_VEHICLES_STPAUL = "https://www.facebook.com/marketplace/107996279221955/vehicles"
+from clmp import *
+from fbmp import *
 
-### TESTING ###
-webpage_html = requests.get(TEST_URL)
-soup = BeautifulSoup(webpage_html.text, "html.parser")
-quotes = soup.findAll("span", attrs={"class":"text"})
-authors = soup.findAll("small", attrs={"class":"author"})
+# URL Schema Order
+prefMinPrice = 0
+prefMaxPrice = 20000
+prefMinMiles = 50000
+prefMaxMiles = 150000
+prefMinYear = 2000
+prefMaxYear = 2015
+prefSorting = "Newest First" # Covered by the statement: SORTING_FILTERS["Date Listed: Newest First"]
+prefMfc = "Toyota" # Facebook only allows one manufacturer selected at a time
+prefBodyStyles = ["Sedan", "SUV", "Truck"] # "&carType=sedan%2Csuv%2Ctruck"
+prefVehicleType = "Cars & Trucks"
 
-for quote in quotes:
-    print(quote.text)
-for author in authors:
-    print(author.text)
+fburl = FB_MP_VEHICLES_STPAUL + PRICE_FILTERS["Min Price"] + str(prefMinPrice) \
+                              + PRICE_FILTERS["Max Price"] + str(prefMaxPrice) \
+                              + MILEAGE_FILTERS["Min Mileage"] + str(prefMinMiles) \
+                              + MILEAGE_FILTERS["Max Mileage"] + str(prefMaxMiles) \
+                              + YEAR_FILTERS["Min Year"] + str(prefMinYear) \
+                              + YEAR_FILTERS["Max Year"] + str(prefMaxYear) \
+                              + SORTING_FILTERS["Date Listed: Newest First"] \
+                              + MAKE_FILTERS["Toyota"] + "&carType=sedan%2Csuv%2Ctruck" \
+                              + VEHICLE_TYPE_FILTERS["Cars & Trucks"]
+                              
+print("URL in use: " + fburl)
+page_html = requests.get(fburl) 
+print(page_html)
+
+scrubber = BeautifulSoup(page_html.text, "html.parser")
+print(scrubber.get_text())

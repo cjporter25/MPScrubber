@@ -1,9 +1,8 @@
 ***Create a connection to a marketplace***
-    - FIRST: Learn the in's and out's of Python's various scrapping libraries and methods
-
-
-
-
+    - FIRST: Learn the in's and out's of Python's various scrapping libraries and methods.
+        - (11.26.23): BeautifulSoup4 is a python library for pulling data out of HTML and 
+          XML files. Useful elements of this Python Library can be found in the "BeautifulSoup"
+          section of the development log.
 
 
 ***Decipher the trailing "exact=true or exact=false"***
@@ -12,4 +11,10 @@
       manually changed the parameter in the URL to both true and false.
         - The resulting output didn't vary at all between the two. For now, it will
           largely be ignored unless necessary in the future.
+
+***Filter Constants aren't all showing up correctly***
+    - (11.26.23): The SORTING_FILTERS isn't able to recognize the input "key" when
+      running the first test run. Unsure at this time why it can't,
+      (UPDATE): Just kidding, the "F" shouldn't be capitalized in "First". Changing
+      the sorting filter so it is capitalized
     
