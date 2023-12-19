@@ -19,11 +19,22 @@
             - This module allows python to cleanly read-in raw HTML that can then be
               sifted through.
             - "pip install beautifulsoup4"
+        - "selenium"
+            - This module allows for an anonymous usage of a browser's tools
+            - "pip install selenium"
+        - "options"
+            - Python package that allows for the creation of an "options" area when initializing
+              a browser
+            - "pip install options"
+        - "webdriver-manager"
+            - Aids Selenium by automatically importing specific browser drivers to be used when needed
+            - "pip install webdriver-manager"
     - ***KEEPING TRACK OF IMPORTS***
         - pip freeze
             - This command collects all currently installed libraries. This collection can
               then be output to some file. In this case, the file is called "requirements.txt"
             - "pip freeze > requirements.txt"
+    - 
 
 ***LEARNING REQUESTS***
     - The requests library in python allows the user to make requests to a webpage and

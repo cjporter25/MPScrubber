@@ -17,4 +17,6 @@
       running the first test run. Unsure at this time why it can't,
       (UPDATE): Just kidding, the "F" shouldn't be capitalized in "First". Changing
       the sorting filter so it is capitalized
+
+***Facebook Marketplace URL Schema changes depending on whether you're logged in***
     

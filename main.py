@@ -1,16 +1,11 @@
-from bs4 import BeautifulSoup
-import requests 
-import os
+from webdriver import *
 
-import logging
-import random
-import re
-import sqlite3
-import time
-import asyncio
+# REDACTED FOR NOW. ONCE A GUI CAN BE CREATED, THIS WILL BE REVISTED.
 
-from clmp import *
-from fbmp import *
+
+#if __name__ == "__main__":
+#    app = MainWindow()
+#    app.mainloop()
 
 # URL Schema Order
 prefMinPrice = 0
@@ -34,13 +29,19 @@ fburl = FB_MP_VEHICLES_STPAUL + PRICE_FILTERS["Min Price"] + str(prefMinPrice) \
                               + MAKE_FILTERS["Toyota"] + "&carType=sedan%2Csuv%2Ctruck" \
                               + VEHICLE_TYPE_FILTERS["Cars & Trucks"]
                               
+random_number = random.randint(1, 999999999)
+session = requests.Session()
+session.headers.update(DEF_USER_AGENT)
+response = session.get(fburl)
+print(response.content)
 
-response = requests.get(fburl) 
+#response = requests.get(fburl, headers={'User-Agent': f'{random_number}'}) 
 print(response.url)
 print(response.status_code)
+#print(response.content)
 #print(response.headers)
-#print(response.text)
-soup = BeautifulSoup(response.text, "html.parser")
+print(response.text)
+soup = BeautifulSoup(response.content, "html.parser")
 #print(soup.prettify())
 #posts = scrubber.find_all('div', class_='x9f619 x78zum5 x1r8uery xdt5ytf x1iyjqo2 xs83m0k x1e558r4 x150jy0e xnpuxes x291uyu x1uepa24 x1iorvi4 xjkvuk6')
 print(soup.find("title"))

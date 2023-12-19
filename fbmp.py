@@ -7,6 +7,11 @@
 #                                                              &topLevelVehicleType=car_truck
 #                                                              &exact=false
 
+# https://www.facebook.com/marketplace/107996279221955/vehicles?minPrice=0&maxPrice=20000&maxMileage=150000&maxYear=2015&minMileage=50000&minYear=2000&sortBy=creation_time_descend&carType=sedan%2Csuv%2Ctruck&topLevelVehicleType=car_truck&exact=false
+
+USER = "Christopher Porter"
+
+DEF_USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'}
 
 FB_HTML_TAGS = {"Whole Post": "x9f619 x78zum5 x1r8uery xdt5ytf x1iyjqo2 xs83m0k x1e558r4 x150jy0e x1iorvi4 xjkvuk6 xnpuxes x291uyu x1uepa24", #Div Class
                 "Link": "x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1lku1pv",
