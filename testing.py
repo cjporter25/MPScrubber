@@ -49,26 +49,23 @@ fburl = FB_MP_VEHICLES_STPAUL + PRICE_FILTERS["Min Price"] + str(prefMinPrice) \
                               + VEHICLE_TYPE_FILTERS["Cars & Trucks"]
 
 
-
-
-
-
 os.system("taskkill /f /im chrome.exe")
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+wait = WebDriverWait(driver, 5)
 #chrome_options = Options()
 #chrome_options.add_argument("--headless")
 #chrome_options.add_argument(f"--user-data-dir=C:\\users\\{USER}\\AppData\\Local\\Google\\Chrome\\User Data")
 #chrome_options.add_argument("profile-directory=Default")
 #chrome_options.add_argument("--disable-dev-shm-usage")
 #chrome_options.add_argument("--no-sandbox")
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-wait = WebDriverWait(driver, 5)
+
 
 
 try:
     driver.get(fburl) #Get the URL's data
     get_url = driver.current_url #Retrieve what the driver used as the URL
     wait.until(EC.url_to_be(fburl)) #Wait to let the page load
-    if get_url == fburl:    #If the used URL matches the original, obtain the page source
+    if get_url == fburl:    #If the used URL matches the original, grab the page source
         page_source = driver.page_source
 except:
     print("Timed Out, or an error occurred while loading")
@@ -87,7 +84,13 @@ count=1
 
 for post in postings:
     desc = post.find('span', class_ = FB_HTML_TAGS["Description"])
+    price = post.find('span', class_ = FB_HTML_TAGS["Price"])
+    location = post.find('span', class_ = FB_HTML_TAGS["Location"])
+    mileage = post.find('span', class_ = FB_HTML_TAGS["Mileage"])
     file.write(str(count) + "." + desc.text + "\n")
+    file.write("  " + price.text + "\n")
+    file.write("  " + location.text + "\n")
+    file.write("  " + mileage.text + "\n")
     count+=1
 
 file.write("There were " + str(num_postings) + "postings")
