@@ -19,4 +19,13 @@
       the sorting filter so it is capitalized
 
 ***Facebook Marketplace URL Schema changes depending on whether you're logged in***
+    - If logged in, the user is limited to only a few filtering options on the left side 
+      bar. As a replacement, there is a new top bar that allows for new filtering to occur.
+      For this app to work optimally, I recommended logging out of the browser in use to maintain
+      anominity.
+
+***FIRST SUCCESSFUL PULL***
+    - (12.19.23): With the help of some guidance to use a browser driver called Selenium,
+      I was able to successfully load the page, scrape the descriptions of each post, and store
+      them in a separate text file.
     

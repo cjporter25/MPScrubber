@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from options import Options, attrs
 
 #Selenium imports
-from selenium import webdriver
+from testing import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC

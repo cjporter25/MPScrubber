@@ -18,7 +18,6 @@
           filtering for a smaller radius, the URL does not change. This means that the default radius for search results
           will have to stay at 40 miles unless I can figure out how to apply that in the future.
         - 
-            
 
 ***PROJECT FOCUS***
     - Initial Full Scope and Summary:
