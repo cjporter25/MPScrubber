@@ -7,7 +7,8 @@
 #                                                              &topLevelVehicleType=car_truck
 #                                                              &exact=false
 
-# https://www.facebook.com/marketplace/107996279221955/vehicles?minPrice=0&maxPrice=20000&maxMileage=150000&maxYear=2015&minMileage=50000&minYear=2000&sortBy=creation_time_descend&carType=sedan%2Csuv%2Ctruck&topLevelVehicleType=car_truck&exact=false
+# BELOW IS AN EXAMPLE FULLY INPUT URL. Limiting Factor - Make = Toyota
+# https://www.facebook.com/marketplace/107996279221955/vehicles?minPrice=0&maxPrice=20000&maxMileage=150000&maxYear=2015&minMileage=50000&minYear=2000&sortBy=creation_time_descend&make=2318041991806363&carType=sedan%2Csuv%2Ctruck&topLevelVehicleType=car_truck&exact=false
 
 USER = "Christopher Porter"
 
