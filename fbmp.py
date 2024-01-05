@@ -41,7 +41,7 @@ MILEAGE_FILTERS = {"Min Mileage": "&minMileage=",
 YEAR_FILTERS = {"Min Year": "&minYear=",
                 "Max Year": "&maxYear="}
 
-# Before anything other filtering option, the user can sort the results to show specific things
+# Before any other filtering option, the user can sort the results to show specific things
 #   first. In the URL schema, this parameter goes after numeric filters such as price, year, etc.
 #   but goes before the vehicle "type" filter.
 # DEFAULT: The website's default filter seems to be the "suggested" option if no specific option

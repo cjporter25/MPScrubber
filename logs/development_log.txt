@@ -76,6 +76,11 @@
         - "soup.get_text()"
 
 
+***FIRST SUCCESSFUL PULL***
+    - (12.19.23): With the help of some guidance to use a browser driver called Selenium,
+      I was able to successfully load the page, scrape the descriptions of each post, and store
+      them in a separate text file.
+
 
 
     

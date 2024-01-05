@@ -24,8 +24,15 @@
       For this app to work optimally, I recommended logging out of the browser in use to maintain
       anominity.
 
-***FIRST SUCCESSFUL PULL***
-    - (12.19.23): With the help of some guidance to use a browser driver called Selenium,
-      I was able to successfully load the page, scrape the descriptions of each post, and store
-      them in a separate text file.
+***EDGE CASES POST (1st) Successful pull***
+    - (1.4.24) When the program runs it will properly close chrome if it is open, but doesn't properly 
+      handle the case where chrome isn't yet opened. So, the logic should "check" first, and if so,
+      then close, otherwise it shouldn't try anything. The second edge case occurs when the data is
+      being pulled and the loop runs out of items to check, i.e., it returns nothing. The code should
+      account for this instance and close the loop if it happens. 
+    - The output seems to be dependent on how many postings load by default when a page opens (~24)
+    - SUDDEN THIRD: The mileage/location are incorrectly assuming the same HTML tag. Need to look at 
+      developer tools again to see what it has to change to.
+
+
     
