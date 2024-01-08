@@ -81,6 +81,16 @@
       I was able to successfully load the page, scrape the descriptions of each post, and store
       them in a separate text file.
 
+***RESOLVED ERRORING OUT***
+    - (1.7.23): By forcing a maximum amount of data that can be pulled, i.e. 20 postings per run 
+      through, the program no longer comes across and HTML without any data.
+
+***RESOLVED OUTPUT ISSUE***
+    - (1.7.23): When outputting to the test text file, to ensure I could actually retrieve the right
+      data, I noticed the HTML for location and mileage were the same. Once I used the "find_all" 
+      method, it pulled in both data points into a list. Since they're always in order, the program 
+      simply pulls the text from the [0]'th and [1]'st position (location and mileage) 
+
 
 
     

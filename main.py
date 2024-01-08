@@ -1,13 +1,37 @@
-from webdriver import *
-
-# REDACTED FOR NOW. ONCE A GUI CAN BE CREATED, THIS WILL BE REVISTED.
-
+# TEMPORARY LAUNCHER. ONCE A GUI CAN BE CREATED, THIS WILL BE REMADE
 
 #if __name__ == "__main__":
 #    app = MainWindow()
 #    app.mainloop()
 
-# URL Schema Order
+from options import Options, attrs
+
+#Selenium imports
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+import codecs
+import re
+from bs4 import BeautifulSoup
+from webdriver_manager.chrome import ChromeDriverManager
+
+
+# Standard Library Imports
+import requests 
+import os
+import logging
+import random
+import sqlite3
+import time
+import asyncio
+import random
+import time
+
+from clmp import *
+from fbmp import *
+
 prefMinPrice = 0
 prefMaxPrice = 20000
 prefMinMiles = 50000
@@ -28,44 +52,54 @@ fburl = FB_MP_VEHICLES_STPAUL + PRICE_FILTERS["Min Price"] + str(prefMinPrice) \
                               + SORTING_FILTERS["Date Listed: Newest First"] \
                               + MAKE_FILTERS["Toyota"] + "&carType=sedan%2Csuv%2Ctruck" \
                               + VEHICLE_TYPE_FILTERS["Cars & Trucks"]
-                              
-random_number = random.randint(1, 999999999)
-session = requests.Session()
-session.headers.update(DEF_USER_AGENT)
-response = session.get(fburl)
-print(response.content)
-
-#response = requests.get(fburl, headers={'User-Agent': f'{random_number}'}) 
-print(response.url)
-print(response.status_code)
-#print(response.content)
-#print(response.headers)
-print(response.text)
-soup = BeautifulSoup(response.content, "html.parser")
-#print(soup.prettify())
-#posts = scrubber.find_all('div', class_='x9f619 x78zum5 x1r8uery xdt5ytf x1iyjqo2 xs83m0k x1e558r4 x150jy0e xnpuxes x291uyu x1uepa24 x1iorvi4 xjkvuk6')
-print(soup.find("title"))
-
-description_list = soup.find_all("span", class_ =  FB_HTML_TAGS["Description"])
-print(FB_HTML_TAGS["Description"])
-for item in description_list:
-    print(item.text)
-
-#for uPost in posts:
-#    try:
-#        image = uPost.find('img', class_='xt7dq6l xl1xv1r x6ikm8r x10wlt62 xh8yej3')['src']
-#        title = uPost.find('span', 'x1lliihq x6ikm8r x10wlt62 x1n2onr6').text
-#        price = uPost.find('span', 'x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x676frb x1lkfr7t x1lbecb7 x1s688f xzsf02u').text
-#        url = uPost.find('a', class_='x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1lku1pv')['href']
-#        print(f"Image: {image}")
-#        print(f"Price: {price}")
-#        print(f"Title: {title}")
-#    except:
-#        pass
 
 
+os.system("taskkill /f /im chrome.exe")
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+wait = WebDriverWait(driver, 5)
+#chrome_options = Options()
+#chrome_options.add_argument("--headless")
+#chrome_options.add_argument(f"--user-data-dir=C:\\users\\{USER}\\AppData\\Local\\Google\\Chrome\\User Data")
+#chrome_options.add_argument("profile-directory=Default")
+#chrome_options.add_argument("--disable-dev-shm-usage")
+#chrome_options.add_argument("--no-sandbox")
 
-#posts = scrubber.findAll("span", attrs={"class":"text"})
-#print(posts)
-#for info in posts:
-   # print(info.text)
+try:
+    driver.get(fburl) #Get the URL's data
+    get_url = driver.current_url #Retrieve what the driver used as the URL
+    wait.until(EC.url_to_be(fburl)) #Wait to let the page load
+    if get_url == fburl:    #If the used URL matches the original, grab the page source
+        page_source = driver.page_source
+except:
+    print("Timed Out, or an error occurred while loading")
+
+soup = BeautifulSoup(page_source, features= "html.parser")
+postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])
+num_postings = len(postings)
+title = soup.title.text
+
+
+file = codecs.open("fb_scraping.txt", 'w')
+file.write(title + "\n")
+file.write("These are the postings found on the webpage")
+
+count=1
+
+for post in postings:
+    if count >= 20:
+        break
+    desc = post.find('span', class_ = FB_HTML_TAGS["Description"])
+    price = post.find('span', class_ = FB_HTML_TAGS["Price"])
+    locAndMile = post.find_all('span', class_ = FB_HTML_TAGS["Location&Mileage"])
+    # print(locAndMile)
+    #mileage = post.find('span', class_ = FB_HTML_TAGS["Mileage"])
+    file.write(str(count) + "." + desc.text + "\n")
+    file.write("  " + price.text + "\n")
+    file.write("  " + locAndMile[0].text + "\n")
+    file.write("  " + locAndMile[1].text + "\n")
+    count+=1
+
+file.write("There were " + str(num_postings) + "postings")
+
+file.close()
+driver.quit()
