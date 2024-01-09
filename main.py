@@ -35,7 +35,7 @@ from fbmp import *
 prefMinPrice = 0
 prefMaxPrice = 20000
 prefMinMiles = 50000
-prefMaxMiles = 150000
+prefMaxMiles = 100000
 prefMinYear = 2000
 prefMaxYear = 2015
 prefSorting = "Newest First" # Covered by the statement: SORTING_FILTERS["Date Listed: Newest First"]
@@ -79,9 +79,9 @@ num_postings = len(postings)
 title = soup.title.text
 
 
-file = codecs.open("fb_scraping.txt", 'w')
+file = codecs.open("fb_scraping.txt", 'w') # "w" option means the file will be overwritten
 file.write(title + "\n")
-file.write("These are the postings found on the webpage")
+file.write("These are the postings found on the webpage -->" + "\n")
 
 count=1
 
