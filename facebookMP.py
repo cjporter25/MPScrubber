@@ -1,0 +1,186 @@
+import os
+import sqlite3
+from bs4 import BeautifulSoup
+# ***EXAMPLE FULL URL WITH ALL PARAMETERS SHOWING SOMETHING ***
+# https://www.facebook.com/marketplace/107996279221955/vehicles?minPrice=0&maxPrice=20000
+#                                                              &maxMileage=150000&maxYear=2015
+#                                                              &minMileage=50000&minYear=2000
+#                                                              &sortBy=creation_time_descend
+#                                                              &carType=sedan%2Csuv%2Ctruck
+#                                                              &topLevelVehicleType=car_truck
+#                                                              &exact=false
+
+# BELOW IS AN EXAMPLE FULLY INPUT URL. Limiting Factor - Make = Toyota
+# https://www.facebook.com/marketplace/107996279221955/vehicles?minPrice=0&maxPrice=20000&maxMileage=150000&maxYear=2015&minMileage=50000&minYear=2000&sortBy=creation_time_descend&make=2318041991806363&carType=sedan%2Csuv%2Ctruck&topLevelVehicleType=car_truck&exact=false
+
+USER = "Christopher Porter"
+
+DEF_USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'}
+
+FB_HTML_TAGS = {"Whole Post": "x9f619 x78zum5 x1r8uery xdt5ytf x1iyjqo2 xs83m0k x1e558r4 x150jy0e x1iorvi4 xjkvuk6 xnpuxes x291uyu x1uepa24", #Div Class
+                "Link": "x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1lku1pv", #a
+                "Image": "x9f619 x78zum5 x1iyjqo2 x5yr21d x4p5aij x19um543 x1j85h84 x1m6msm x1n2onr6 xh8yej3", #Div
+                "Price": "x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x676frb x1lkfr7t x1lbecb7 x1s688f xzsf02u", #Span
+                "Description": "x1lliihq x6ikm8r x10wlt62 x1n2onr6", #Span
+                "Location": "x1lliihq x6ikm8r x10wlt62 x1n2onr6 xlyipyv xuxw1ft x1j85h84", #Span
+                "Mileage": "x1lliihq x6ikm8r x10wlt62 x1n2onr6 xlyipyv xuxw1ft x1j85h84",
+                "Location&Mileage" : "x1lliihq x6ikm8r x10wlt62 x1n2onr6 xlyipyv xuxw1ft x1j85h84"} # Span
+
+FB_MAIN = "https://www.facebook.com"
+FB_MP_MAIN = "https://www.facebook.com/marketplace/"
+FB_MP_VEHICLES = "https://www.facebook.com/marketplace/category/vehicles/"
+# 107996279221955 represents the location ID of St. Paul. Every location facebook
+#       has stored has a unique location ID. They are maybe geographical coordinates
+#       but unsure at this time.
+FB_MP_VEHICLES_STPAUL = "107996279221955/vehicles?"
+
+
+# The url can specify what the min and max price should be for search results. The URL
+#   schema seems to autofill these parameters as the first thing in the URL sequence.
+PRICE_FILTERS = {"Min Price": "minPrice=",
+                 "Max Price": "&maxPrice="}
+
+MILEAGE_FILTERS = {"Min Mileage": "&minMileage=",
+                   "Max Mileage": "&maxMileage="}
+
+YEAR_FILTERS = {"Min Year": "&minYear=",
+                "Max Year": "&maxYear="}
+
+# Before any other filtering option, the user can sort the results to show specific things
+#   first. In the URL schema, this parameter goes after numeric filters such as price, year, etc.
+#   but goes before the vehicle "type" filter.
+# DEFAULT: The website's default filter seems to be the "suggested" option if no specific option
+#          is picked. Also, this option is the default sorting state if no sorting parameter is
+#          given
+SORTING_FILTERS = {"Suggested": "&sortBy=best_match",
+                   "Price: Lowest First": "&sortBy=price_ascend",
+                   "Price: Highest First": "&sortBy=price_descend",
+                   "Date Listed: Newest First": "&sortBy=creation_time_descend",
+                   "Date Listed: Oldest First": "&sortBy=creation_time_ascend",
+                   "Distance: Nearest First": "&sortBy=distance_ascend",
+                   "Distance: Furthest First": "&sortBy=distance_descend",
+                   "Mileage: Lowest First": "&sortBy=vehicle_mileage_ascend",
+                   "Mileage: Highest First": "&sortBy=vehicle_mileage_descend",
+                   "Year: Newest First": "&sortBy=vehicle_year_descend",
+                   "Year: Oldest First": "&sortBy=vehicle_year_ascend"}
+
+# Each vehicle manufacturer seems to have a unique ID. 
+MAKE_FILTERS = {"Chevy": "&make=1914016008726893",
+                "Dodge": "&make=402915273826151",
+                "Honda": "&make=308436969822020",
+                "Ford": "&make=297354680962030",
+                "Lexus": "&make=2101813456521413",
+                "Toyota": "&make=2318041991806363",
+                }
+
+# Multiple body styles can be selected, resulting in a URL scheme looking like this -->
+#   "&carType=minivan%2Csedan%2Csuv" instead of just "&carType=sedan"
+BODYSTYLE_FILTERS = {"Base Body Style": "&carType=",
+                     "Sedan-SUV-Truck": "&carType=sedan%2Csuv%2Ctruck"}
+
+VEHICLE_TYPE_FILTERS = {"Cars & Trucks": "&topLevelVehicleType=car_truck"}
+
+class facebookMP:
+    def __init__(self, minPrice, maxPrice, minMiles, 
+                 maxMiles, minYear, maxYear, sorting, 
+                 brands, bodyStyles, vehicleTypes):
+        self.minPrice = minPrice
+        self.maxPrice = maxPrice
+        self.minMiles = minMiles
+        self.maxMiles = maxMiles
+        self.minYear = minYear
+        self.maxYear = maxYear
+        self.sorting = sorting
+        self.brands = brands
+        self.bodyStyles = bodyStyles
+        self.vehicleTypes = vehicleTypes
+        self.connection = sqlite3.connect('facebookDB.db')
+    def __init__(self):
+        self.minPrice = "0"
+        self.maxPrice = "50000"
+        self.minMiles = "0"
+        self.maxMiles = "300000"
+        self.minYear = "1990"
+        self.maxYear = "2024"
+        self.sorting = SORTING_FILTERS["Date Listed: Newest First"]
+        self.brands = ["Toyota", "Honda", "Chevy"]
+        self.bodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
+        self.vehicleTypes = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
+        self.connection = sqlite3.connect('facebookDB.db')
+    def build_URLs(self):
+        fbURLs = []
+        for brand in self.brands: 
+            url = FB_MP_MAIN + FB_MP_VEHICLES_STPAUL \
+                    + PRICE_FILTERS["Min Price"] + self.minPrice \
+                    + PRICE_FILTERS["Max Price"] + self.maxPrice \
+                    + MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
+                    + MILEAGE_FILTERS["Max Mileage"] + self.maxMiles \
+                    + YEAR_FILTERS["Min Year"] + self.minYear \
+                    + YEAR_FILTERS["Max Year"] + self.maxYear \
+                    + self.sorting + MAKE_FILTERS[brand] \
+                    + self.bodyStyles + self.vehicleTypes
+            fbURLs.append(url)
+        return fbURLs
+    def retrieve_postings(self, page_source):
+        dbEntries = []
+        soup = BeautifulSoup(page_source, features= "html.parser") 
+        postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])
+        count = 0
+        for post in postings:
+            if count == 20: #Limit 20 posts at a time
+                break
+            link = post.find('a', class_ = FB_HTML_TAGS["Link"])
+            desc = post.find('span', class_ = FB_HTML_TAGS["Description"])
+            price = post.find('span', class_ = FB_HTML_TAGS["Price"])
+            locAndMile = post.find_all('span', class_ = FB_HTML_TAGS["Location&Mileage"])
+            #           Desc  Price    Mileage        Location                Link
+            newEntry = (desc.text, price.text, \
+                        locAndMile[1].text, locAndMile[0].text, \
+                        (FB_MAIN + link.get('href')))
+            dbEntries.append(newEntry)
+            count+=1
+        return dbEntries
+    def save_postings(self, newEntries, brand):
+        cursor = self.connection.cursor()
+        cursor.execute('''DELETE FROM Toyota''')
+        match brand:
+            case "Toyota":
+                cursor.execute('''CREATE TABLE IF NOT EXISTS Toyota
+                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
+                cursor.executemany('INSERT INTO Toyota VALUES(?,?,?,?,?)', newEntries)
+            case "Honda":
+                cursor.execute('''CREATE TABLE IF NOT EXISTS Honda
+                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
+                cursor.executemany('INSERT INTO Honda VALUES(?,?,?,?,?)', newEntries)
+            case "Chevy":
+                cursor.execute('''CREATE TABLE IF NOT EXISTS Chevy
+                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
+                cursor.executemany('INSERT INTO Chevy VALUES(?,?,?,?,?)', newEntries)
+            case "Ford":
+                cursor.execute('''CREATE TABLE IF NOT EXISTS Ford
+                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
+                cursor.executemany('INSERT INTO Ford VALUES(?,?,?,?,?)', newEntries)
+            case "Lexus":
+                cursor.execute('''CREATE TABLE IF NOT EXISTS Lexus
+                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
+                cursor.executemany('INSERT INTO Lexus VALUES(?,?,?,?,?)', newEntries)
+            case "Dodge":
+                cursor.execute('''CREATE TABLE IF NOT EXISTS Dodge
+                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
+                cursor.executemany('INSERT INTO Dodge VALUES(?,?,?,?,?)', newEntries)
+            case _:
+                print("Brand provided was not valid, please try again!")
+        self.connection.commit()
+        cursor.execute('''SELECT * FROM Toyota''')
+        print(cursor.fetchall())
+        self.connection.close()
+    def validate_db(self):
+        cursor = self.connection.cursor()
+
+
+                
+
+
+
+
+

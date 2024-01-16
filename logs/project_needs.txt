@@ -34,5 +34,11 @@
     - SUDDEN THIRD: The mileage/location are incorrectly assuming the same HTML tag. Need to look at 
       developer tools again to see what it has to change to.
 
+***PRE-CHECKING DATABASE FOR ENTRIES ALREADY PRESENT****
+    - (1.15.23) The program currently functions as a means to retrieve and store data from the
+      facebook marketplace, however, there is no means by which the program won't add something
+      if it's already present. The next major hurdle is to implement a function that checks whether
+      a posting has already been added to the database.
+
 
     

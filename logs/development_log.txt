@@ -91,6 +91,13 @@
       method, it pulled in both data points into a list. Since they're always in order, the program 
       simply pulls the text from the [0]'th and [1]'st position (location and mileage) 
 
+***FLESHED OUT FACEBOOK PYTHON MODULE***
+    - (1.15.23): The facebook module is now setup to handle all page_source data management, as 
+      well as became the main facilitator and connection to the new facebookDB. Due to how the sorting
+      functions work on the website itself/how cars are often organized, the tables in the database
+      are unique to each brand of car, i.e., a page retrieving Toyota branded vehicles will be stored
+      in the Toyota table.
+
 
 
     
