@@ -60,9 +60,7 @@ except:
     print("Timed Out, or an error occurred while loading")
 
 newEntries = fb.retrieve_postings(page_source)
-fb.save_postings(newEntries, "Toyota")
-
-
+fb.save_postings_test(newEntries, "Toyota")
 
 driver.quit()
 

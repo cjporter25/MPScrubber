@@ -121,6 +121,8 @@ class facebookMP:
                     + self.bodyStyles + self.vehicleTypes
             fbURLs.append(url)
         return fbURLs
+    def validate_db(self):
+        cursor = self.connection.cursor()
     def retrieve_postings(self, page_source):
         dbEntries = []
         soup = BeautifulSoup(page_source, features= "html.parser") 
@@ -140,6 +142,20 @@ class facebookMP:
             dbEntries.append(newEntry)
             count+=1
         return dbEntries
+    def save_postings_test(self, newEntries, brand):
+        cursor = self.connection.cursor()
+        deleteCommand = '''DELETE FROM ''' + brand
+        cursor.execute(deleteCommand)
+        newTableCommand = '''CREATE TABLE IF NOT EXISTS ''' + brand + ''' (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)'''
+        cursor.execute(newTableCommand)
+        addManyCommand = '''INSERT INTO ''' + brand + ''' VALUES(?,?,?,?,?)'''
+        cursor.executemany(addManyCommand, newEntries)
+        self.connection.commit()
+        selectMany = '''SELECT * FROM ''' + brand
+        cursor.execute(selectMany)
+        print(cursor.fetchall())
+        self.connection.close()
+
     def save_postings(self, newEntries, brand):
         cursor = self.connection.cursor()
         cursor.execute('''DELETE FROM Toyota''')
@@ -171,11 +187,11 @@ class facebookMP:
             case _:
                 print("Brand provided was not valid, please try again!")
         self.connection.commit()
-        cursor.execute('''SELECT * FROM Toyota''')
+        test_loc = "Elk River, MN"
+        cursor.execute("SELECT * FROM Toyota WHERE Location=?", test_loc)
         print(cursor.fetchall())
         self.connection.close()
-    def validate_db(self):
-        cursor = self.connection.cursor()
+
 
 
                 
