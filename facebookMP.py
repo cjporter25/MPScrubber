@@ -129,26 +129,67 @@ class facebookMP:
         postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])
         count = 0
         for post in postings:
-            if count == 20: #Limit 20 posts at a time
+            if count == 10: #Limit 10 posts at a time
                 break
-            link = post.find('a', class_ = FB_HTML_TAGS["Link"])
-            desc = post.find('span', class_ = FB_HTML_TAGS["Description"])
-            price = post.find('span', class_ = FB_HTML_TAGS["Price"])
+            link = FB_MAIN + post.find('a', class_ = FB_HTML_TAGS["Link"]).get('href')
+            desc = post.find('span', class_ = FB_HTML_TAGS["Description"]).text
+            year = int(desc[0] + desc[1] + desc[2] + desc[3])
+            price = self.convert_to_int(post.find('span', class_ = FB_HTML_TAGS["Price"]).text)
             locAndMile = post.find_all('span', class_ = FB_HTML_TAGS["Location&Mileage"])
-            #           Desc  Price    Mileage        Location                Link
-            newEntry = (desc.text, price.text, \
-                        locAndMile[1].text, locAndMile[0].text, \
-                        (FB_MAIN + link.get('href')))
+            mileage = (self.convert_to_int(locAndMile[1].text)) * 1000
+            location = locAndMile[0].text
+            
+            newEntry = (year, desc, price, mileage, location, link)
             dbEntries.append(newEntry)
             count+=1
         return dbEntries
-    def save_postings_test(self, newEntries, brand):
+    
+    def create_table(self, brand):
+        cursor = self.connection.cursor()
+        #deleteCommand = '''DELETE FROM {}'''.format(brand)
+        #cursor.execute(deleteCommand)
+        newTableCommand = '''
+            CREATE TABLE IF NOT EXISTS {} (
+                Year INT,
+                Description TEXT,
+                Price INT,
+                Mileage INT,
+                Location TEXT,
+                Link TEXT
+            )'''.format(brand)
+        cursor.execute(newTableCommand)
+        self.connection.commit()
+    
+    def insert_entries(self, brand, newEntries):
+        cursor = self.connection.cursor()
+        insertManyCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?)'''.format(brand)
+        cursor.executemany(insertManyCommand, newEntries)
+        self.connection.commit()
+
+    def get_row_count(self, brand):
+        cursor = self.connection.cursor()
+        query = f"SELECT COUNT(*) FROM {brand}"
+        cursor.execute(query)
+        rowCount = cursor.fetchone()[0]
+        cursor.close()
+        return rowCount
+    
+    def show_table(self, brand):
+        cursor = self.connection.cursor()
+        selectManyCommand = '''SELECT * FROM {}'''.format(brand)
+        cursor.execute(selectManyCommand)
+        table = cursor.fetchall()
+        for row in table:
+            print(row)
+
+
+    def save_postings(self, newEntries, brand):
         cursor = self.connection.cursor()
         deleteCommand = '''DELETE FROM ''' + brand
         cursor.execute(deleteCommand)
-        newTableCommand = '''CREATE TABLE IF NOT EXISTS ''' + brand + ''' (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)'''
+        newTableCommand = '''CREATE TABLE IF NOT EXISTS ''' + brand + ''' (Year INT, Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)'''
         cursor.execute(newTableCommand)
-        addManyCommand = '''INSERT INTO ''' + brand + ''' VALUES(?,?,?,?,?)'''
+        addManyCommand = '''INSERT INTO ''' + brand + ''' VALUES(?,?,?,?,?,?)'''
         cursor.executemany(addManyCommand, newEntries)
         self.connection.commit()
         selectMany = '''SELECT * FROM ''' + brand
@@ -156,7 +197,13 @@ class facebookMP:
         print(cursor.fetchall())
         self.connection.close()
 
-    def save_postings(self, newEntries, brand):
+    def convert_to_int(self, newString):
+        numericString = ''.join(c for c in newString if c.isdigit() or c == '.')
+        price = int(numericString)
+        return price
+
+
+    def save_postings_test(self, newEntries, brand):
         cursor = self.connection.cursor()
         cursor.execute('''DELETE FROM Toyota''')
         match brand:

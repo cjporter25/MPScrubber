@@ -59,8 +59,14 @@ try:
 except:
     print("Timed Out, or an error occurred while loading")
 
+testBrand = "Toyota"
+
 newEntries = fb.retrieve_postings(page_source)
-fb.save_postings_test(newEntries, "Toyota")
+fb.create_table(testBrand)
+fb.insert_entries(testBrand, newEntries)
+fb.show_table(testBrand)
+print(fb.get_row_count(testBrand))
+#fb.save_postings(newEntries, testBrand)
 
 driver.quit()
 
