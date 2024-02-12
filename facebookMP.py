@@ -18,7 +18,7 @@ USER = "Christopher Porter"
 DEF_USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'}
 
 FB_HTML_TAGS = {"Whole Post": "x9f619 x78zum5 x1r8uery xdt5ytf x1iyjqo2 xs83m0k x1e558r4 x150jy0e x1iorvi4 xjkvuk6 xnpuxes x291uyu x1uepa24", #Div Class
-                "Link": "x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1lku1pv", #a
+                "Link": "x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1lku1pv", #a
                 "Image": "x9f619 x78zum5 x1iyjqo2 x5yr21d x4p5aij x19um543 x1j85h84 x1m6msm x1n2onr6 xh8yej3", #Div
                 "Price": "x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x676frb x1lkfr7t x1lbecb7 x1s688f xzsf02u", #Span
                 "Description": "x1lliihq x6ikm8r x10wlt62 x1n2onr6", #Span
@@ -126,12 +126,17 @@ class facebookMP:
     def retrieve_postings(self, page_source):
         dbEntries = []
         soup = BeautifulSoup(page_source, features= "html.parser") 
+        # Find all postings that are containerized with the following HTML class tag
         postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])
         count = 0
         for post in postings:
             if count == 10: #Limit 10 posts at a time
                 break
-            link = FB_MAIN + post.find('a', class_ = FB_HTML_TAGS["Link"]).get('href')
+            try:
+                link = FB_MAIN + post.find('a', class_ = FB_HTML_TAGS["Link"]).get('href')
+            except AttributeError:
+                print("Link element not found")
+                link = "n/a"
             desc = post.find('span', class_ = FB_HTML_TAGS["Description"]).text
             year = int(desc[0] + desc[1] + desc[2] + desc[3])
             price = self.convert_to_int(post.find('span', class_ = FB_HTML_TAGS["Price"]).text)
@@ -146,8 +151,8 @@ class facebookMP:
     
     def create_table(self, brand):
         cursor = self.connection.cursor()
-        #deleteCommand = '''DELETE FROM {}'''.format(brand)
-        #cursor.execute(deleteCommand)
+        deleteCommand = '''DELETE FROM {}'''.format(brand)
+        cursor.execute(deleteCommand)
         newTableCommand = '''
             CREATE TABLE IF NOT EXISTS {} (
                 Year INT,
@@ -176,13 +181,28 @@ class facebookMP:
     
     def show_table(self, brand):
         cursor = self.connection.cursor()
-        selectManyCommand = '''SELECT * FROM {}'''.format(brand)
-        cursor.execute(selectManyCommand)
-        table = cursor.fetchall()
-        for row in table:
-            print(row)
+        select_many_command = '''SELECT * FROM {}'''.format(brand)
+
+        try:
+            cursor.execute(select_many_command)
+            table = cursor.fetchall()
+
+            # Print table rows excluding the last element (URL column)
+            for row in table:
+                row_without_url = row[:-1]  # Exclude the last element
+                print(row_without_url)
+        except sqlite3.Error as e:
+            print("Error fetching data:", e)
+        finally:
+            cursor.close()
 
 
+    def convert_to_int(self, newString):
+        numericString = ''.join(c for c in newString if c.isdigit())
+        price = int(numericString)
+        return price
+
+# REDACTED
     def save_postings(self, newEntries, brand):
         cursor = self.connection.cursor()
         deleteCommand = '''DELETE FROM ''' + brand
@@ -197,12 +217,7 @@ class facebookMP:
         print(cursor.fetchall())
         self.connection.close()
 
-    def convert_to_int(self, newString):
-        numericString = ''.join(c for c in newString if c.isdigit() or c == '.')
-        price = int(numericString)
-        return price
-
-
+# REDACTED
     def save_postings_test(self, newEntries, brand):
         cursor = self.connection.cursor()
         cursor.execute('''DELETE FROM Toyota''')
