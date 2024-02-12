@@ -12,10 +12,11 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 import codecs
 import re
 
-from webdriver_manager.chrome import ChromeDriverManager
+
 
 # Standard Library Imports
 import requests 
@@ -45,7 +46,21 @@ prefVehicleType = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
 fb = facebookMP()
 urls = fb.build_URLs()
 
-os.system("taskkill /f /im chrome.exe")
+#------ REDACTED - NOT NECESSARY TO CLOSE CHROME PRIOR TO RUNNING -----#
+#try:
+    # Try to kill Chrome process
+#    os.system("taskkill /f /im chrome.exe")
+#except Exception as e:
+    # If an error occurs while killing Chrome process, print the error
+#    print("Error occurred while killing Chrome:", e)
+
+# NOT COMPLETELY NECESSARY BUT LEAVING FOR PROGRAM VISUAL CLARITY IF NEEDED #
+#chrome_options = webdriver.ChromeOptions()
+#chrome_options.add_argument('--headless')  # Run Chrome in headless mode
+#chrome_options.add_argument('--disable-gpu')  # Disable GPU acceleration (needed in headless mode)
+#chrome_options.add_argument("--disable-features=AmbientLightSensor") # Disabling to prevent error
+#driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 wait = WebDriverWait(driver, 5)
 
@@ -64,7 +79,8 @@ testBrand = "Toyota"
 newEntries = fb.retrieve_postings(page_source)
 fb.create_table(testBrand)
 fb.insert_entries(testBrand, newEntries)
-fb.show_table(testBrand)
+#fb.show_table(testBrand)
+fb.show_table_ordered(testBrand, "PrimaryKey")
 print(fb.get_row_count(testBrand))
 #fb.save_postings(newEntries, testBrand)
 

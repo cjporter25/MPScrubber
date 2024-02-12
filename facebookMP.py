@@ -137,28 +137,40 @@ class facebookMP:
             except AttributeError:
                 print("Link element not found")
                 link = "n/a"
+            # Find description HTML tag and convert to useable text
             desc = post.find('span', class_ = FB_HTML_TAGS["Description"]).text
+            # The vehicle year is currently always the first 4 chars of the description
             year = int(desc[0] + desc[1] + desc[2] + desc[3])
+            # Find the price HTML tag and convert to an integer
             price = self.convert_to_int(post.find('span', class_ = FB_HTML_TAGS["Price"]).text)
+            # Location and mileage use the same HTML tag for some stupid reason
             locAndMile = post.find_all('span', class_ = FB_HTML_TAGS["Location&Mileage"])
+            # The first one is mileage in the format of "55k" or "100k". Remove the letters,
+            #   convert to int, and multiply by a 1000 to get the actual number.
             mileage = (self.convert_to_int(locAndMile[1].text)) * 1000
+            # The second one is location, simply convert to text
             location = locAndMile[0].text
             
-            newEntry = (year, desc, price, mileage, location, link)
+            # Create a primary key for the entry
+            primaryKey = self.create_primary_key(year, price, mileage)
+
+            # Create a new entry tuple
+            newEntry = (primaryKey, year, price, mileage, desc, location, link)
             dbEntries.append(newEntry)
             count+=1
         return dbEntries
     
     def create_table(self, brand):
         cursor = self.connection.cursor()
-        deleteCommand = '''DELETE FROM {}'''.format(brand)
-        cursor.execute(deleteCommand)
+        #deleteCommand = '''DELETE FROM {}'''.format(brand)
+        #cursor.execute(deleteCommand)
         newTableCommand = '''
             CREATE TABLE IF NOT EXISTS {} (
+                PrimaryKey TEXT,
                 Year INT,
-                Description TEXT,
                 Price INT,
                 Mileage INT,
+                Description TEXT,
                 Location TEXT,
                 Link TEXT
             )'''.format(brand)
@@ -167,8 +179,19 @@ class facebookMP:
     
     def insert_entries(self, brand, newEntries):
         cursor = self.connection.cursor()
-        insertManyCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?)'''.format(brand)
-        cursor.executemany(insertManyCommand, newEntries)
+        for entry in newEntries:
+            primaryKey = entry[0]
+            # Trailing comma indicates the "primaryKey" as a single item tuple
+            cursor.execute("SELECT 1 FROM {} WHERE PrimaryKey = ?".format(brand), (primaryKey,))
+            existingEntry = cursor.fetchone()
+
+            if existingEntry:
+                print("Entry with primary key '{}' already exists. Skipping insertion.".format(primaryKey))
+            else:
+                insertCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?)'''.format(brand)
+                cursor.execute(insertCommand, entry)
+        #insertManyCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?)'''.format(brand)
+        #cursor.executemany(insertManyCommand, newEntries)
         self.connection.commit()
 
     def get_row_count(self, brand):
@@ -195,12 +218,33 @@ class facebookMP:
             print("Error fetching data:", e)
         finally:
             cursor.close()
+    def show_table_ordered(self, brand, order_by_column):
+        cursor = self.connection.cursor()
+        select_ordered_command = '''SELECT * FROM {} ORDER BY {}'''.format(brand, order_by_column)
+
+        try:
+            cursor.execute(select_ordered_command)
+            table = cursor.fetchall()
+
+            # Print table rows
+            for row in table:
+                row_without_url = row[:-1]  # Exclude the last element
+                print(row_without_url)
+        except sqlite3.Error as e:
+            print("Error fetching data:", e)
+        finally:
+            cursor.close()
 
 
     def convert_to_int(self, newString):
         numericString = ''.join(c for c in newString if c.isdigit())
         price = int(numericString)
         return price
+
+    def create_primary_key(self, year, price, mileage):
+        unique_id = "{}-{}-{}".format(year, price, mileage)
+        return unique_id
+
 
 # REDACTED
     def save_postings(self, newEntries, brand):

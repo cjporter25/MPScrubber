@@ -103,7 +103,16 @@
       from will likely periodically change the attribute tags for specific elements I might be scrubbing 
       for. For example, the last two weeks, I've been unable to retrieve the link attached to each post.
       I discovered that the "href" element tag had changed. I manually updated that and it worked!
-      
+
+***PREVENTED CHROME CLOSING***
+    - (2.11.23):I was able to modify the launching process to no close the currently open chrome window and 
+      instead open a new window. I also tried hiding this window but there were a variety of errors
+      that occurred. May have to revisit in the future but it isn't critical.
+
+***ACCOUNTING FOR ENTRIES ALREADY IN DATABASE***
+    - Modified the insert entries function to accurately look for and prevent adding entries that 
+      have already been added.
+
 
 
 
