@@ -34,7 +34,8 @@
             - This command collects all currently installed libraries. This collection can
               then be output to some file. In this case, the file is called "requirements.txt"
             - "pip freeze > requirements.txt"
-    - 
+                        OR 
+            - "pip freeze > logs/requirements.txt" (If in another folder)
 
 ***LEARNING REQUESTS***
     - The requests library in python allows the user to make requests to a webpage and

@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from bs4 import BeautifulSoup
+from datetime import date
 # ***EXAMPLE FULL URL WITH ALL PARAMETERS SHOWING SOMETHING ***
 # https://www.facebook.com/marketplace/107996279221955/vehicles?minPrice=0&maxPrice=20000
 #                                                              &maxMileage=150000&maxYear=2015
@@ -185,10 +186,11 @@ class facebookMP:
             cursor.execute("SELECT 1 FROM {} WHERE PrimaryKey = ?".format(brand), (primaryKey,))
             existingEntry = cursor.fetchone()
 
+            # If entry already exists, Skip insertion
             if existingEntry:
                 print("Entry with primary key '{}' already exists. Skipping insertion.".format(primaryKey))
             else:
-                insertCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?)'''.format(brand)
+                insertCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?)'''.format(brand)
                 cursor.execute(insertCommand, entry)
         #insertManyCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?)'''.format(brand)
         #cursor.executemany(insertManyCommand, newEntries)
@@ -235,7 +237,6 @@ class facebookMP:
         finally:
             cursor.close()
 
-
     def convert_to_int(self, newString):
         numericString = ''.join(c for c in newString if c.isdigit())
         price = int(numericString)
@@ -245,6 +246,9 @@ class facebookMP:
         unique_id = "{}-{}-{}".format(year, price, mileage)
         return unique_id
 
+    def get_current_date():
+        today = date.today()
+        currDate = today.strftime("%m-%d-%Y")
 
 # REDACTED
     def save_postings(self, newEntries, brand):
