@@ -30,6 +30,9 @@ import time
 from craigslistMP import *
 from facebookMP import *
 
+
+input = input("Running MAIN(1) or TEST(2)? --> ")
+
 #**********************MOCK USER INPUT**********************#
 prefMinPrice = 0
 prefMaxPrice = 20000
@@ -45,7 +48,8 @@ prefVehicleType = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
 
 fb = facebookMP()
 urls = fb.build_URLs()
-
+newDate = fb.get_current_date()
+print(newDate)
 #------ REDACTED - NOT NECESSARY TO CLOSE CHROME PRIOR TO RUNNING -----#
 #try:
     # Try to kill Chrome process
@@ -63,8 +67,7 @@ urls = fb.build_URLs()
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 wait = WebDriverWait(driver, 5)
-
-
+#for url in urls:
 try:
     driver.get(urls[0]) #Get the URL's data
     get_url = driver.current_url #Retrieve what the driver used as the URL
@@ -85,7 +88,6 @@ print(fb.get_row_count(testBrand))
 #fb.save_postings(newEntries, testBrand)
 
 driver.quit()
-
 
 # soup = BeautifulSoup(page_source, features= "html.parser")
 # postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])

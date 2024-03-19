@@ -246,9 +246,10 @@ class facebookMP:
         unique_id = "{}-{}-{}".format(year, price, mileage)
         return unique_id
 
-    def get_current_date():
+    def get_current_date(self):
         today = date.today()
         currDate = today.strftime("%m-%d-%Y")
+        return currDate
 
 # REDACTED
     def save_postings(self, newEntries, brand):
