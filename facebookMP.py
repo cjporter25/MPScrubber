@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import datetime
 from bs4 import BeautifulSoup
 from datetime import date
 # ***EXAMPLE FULL URL WITH ALL PARAMETERS SHOWING SOMETHING ***
@@ -108,9 +109,10 @@ class facebookMP:
         self.bodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
         self.vehicleTypes = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
         self.connection = sqlite3.connect('facebookDB.db')
-    def build_URLs(self):
+
+    def build_URLs(self, brands):
         fbURLs = []
-        for brand in self.brands: 
+        for brand in brands: 
             url = FB_MP_MAIN + FB_MP_VEHICLES_STPAUL \
                     + PRICE_FILTERS["Min Price"] + self.minPrice \
                     + PRICE_FILTERS["Max Price"] + self.maxPrice \
@@ -120,7 +122,8 @@ class facebookMP:
                     + YEAR_FILTERS["Max Year"] + self.maxYear \
                     + self.sorting + MAKE_FILTERS[brand] \
                     + self.bodyStyles + self.vehicleTypes
-            fbURLs.append(url)
+            urlPlusBrand = [brand, url]
+            fbURLs.append(urlPlusBrand)
         return fbURLs
     def validate_db(self):
         cursor = self.connection.cursor()
@@ -155,8 +158,13 @@ class facebookMP:
             # Create a primary key for the entry
             primaryKey = self.create_primary_key(year, price, mileage)
 
-            # Create a new entry tuple
-            newEntry = (primaryKey, year, price, mileage, desc, location, link)
+            currDateTime = self.get_current_date_and_time()
+
+            # NOTE: Will eventually look work a way to pull the approx time a vehicle was posted
+            datePosted = "n/a"
+
+            # Create a new entry tuple. Primary key will always be first item
+            newEntry = (primaryKey, currDateTime, datePosted, year, price, mileage, desc, location, link)
             dbEntries.append(newEntry)
             count+=1
         return dbEntries
@@ -168,6 +176,8 @@ class facebookMP:
         newTableCommand = '''
             CREATE TABLE IF NOT EXISTS {} (
                 PrimaryKey TEXT,
+                DatePulled TEXT,
+                DatePosted TEXT,
                 Year INT,
                 Price INT,
                 Mileage INT,
@@ -190,9 +200,9 @@ class facebookMP:
             if existingEntry:
                 print("Entry with primary key '{}' already exists. Skipping insertion.".format(primaryKey))
             else:
-                insertCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?)'''.format(brand)
+                insertCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?,?,?)'''.format(brand)
                 cursor.execute(insertCommand, entry)
-        #insertManyCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?)'''.format(brand)
+        #insertManyCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?,?)'''.format(brand)
         #cursor.executemany(insertManyCommand, newEntries)
         self.connection.commit()
 
@@ -212,7 +222,8 @@ class facebookMP:
             cursor.execute(select_many_command)
             table = cursor.fetchall()
 
-            # Print table rows excluding the last element (URL column)
+            # Print table rows excluding the last element. The last element will always be
+            #   the URL of the post
             for row in table:
                 row_without_url = row[:-1]  # Exclude the last element
                 print(row_without_url)
@@ -221,6 +232,7 @@ class facebookMP:
         finally:
             cursor.close()
     def show_table_ordered(self, brand, order_by_column):
+        print("SHOWING TABLE FOR " + brand + " .......")
         cursor = self.connection.cursor()
         select_ordered_command = '''SELECT * FROM {} ORDER BY {}'''.format(brand, order_by_column)
 
@@ -246,10 +258,13 @@ class facebookMP:
         unique_id = "{}-{}-{}".format(year, price, mileage)
         return unique_id
 
-    def get_current_date(self):
+    def get_current_date_and_time(self):
         today = date.today()
         currDate = today.strftime("%m-%d-%Y")
-        return currDate
+        time = datetime.datetime.now().time()
+        currTime = time.strftime("%H:%M:%S")
+        currDateTime = currDate + "." + currTime
+        return currDateTime
 
 # REDACTED
     def save_postings(self, newEntries, brand):
