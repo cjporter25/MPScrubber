@@ -1,4 +1,4 @@
-# TEMPORARY LAUNCHER. ONCE A GUI CAN BE CREATED, THIS WILL BE REMADE
+# New System move - 4.15.24 - Christopher J. Porter
 
 #if __name__ == "__main__":
 #    app = MainWindow()
@@ -24,6 +24,7 @@ import time
 import asyncio
 import random
 import time
+import sys
 
 from craigslistMP import *
 from facebookMP import *
@@ -32,6 +33,12 @@ from reporting import *
 
 input = input("Running MAIN(1) or TEST(2)? --> ")
 
+
+rm = ReportsManager()
+rm.set_primary_directory()
+rm.build_new_report()
+    
+sys.exit()
 #**********************MOCK USER INPUT**********************#
 prefMinPrice = 0
 prefMaxPrice = 20000
@@ -90,9 +97,7 @@ for url in urls:
 
 driver.quit()
 
-rm = ReportsManager()
-rm.set_primary_directory()
-rm.build_new_report()
+
 
 # soup = BeautifulSoup(page_source, features= "html.parser")
 # postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])

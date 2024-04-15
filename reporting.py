@@ -14,12 +14,15 @@ class ReportsManager:
     
     def set_primary_directory(self):
         user_profile = os.environ.get('USERPROFILE')
-        if user_profile:
-            print("User profile:", user_profile)
-        else:
-            print("User profile not found.")
+        # The following becomes C:\Users\cj_po
+        print(user_profile)
+        #if user_profile:
+        #    print("User profile:", user_profile)
+        #else:
+        #    print("User profile not found.")
 
-        self.primaryDir = "C:\\Users\\"+ user_profile + "\\Desktop\\MPScrubberReports"
+        self.primaryDir = user_profile + "\\Desktop\\MPScrubberReports"
+        print(self.primaryDir)
 
 
         # Check if the folder exists
