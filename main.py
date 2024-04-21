@@ -1,9 +1,5 @@
 # New System move - 4.15.24 - Christopher J. Porter
 
-#if __name__ == "__main__":
-#    app = MainWindow()
-#    app.mainloop()
-
 from options import Options, attrs
 
 #Selenium imports
@@ -96,60 +92,3 @@ for url in urls:
     time.sleep(3)
 
 driver.quit()
-
-
-
-# soup = BeautifulSoup(page_source, features= "html.parser")
-# postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])
-# num_postings = len(postings)
-# title = soup.title.text
-
-# file = codecs.open("fb_scraping.txt", 'w') # "w" option means the file will be overwritten
-# file.write(title + "\n")
-# file.write("These are the postings found on the webpage -->" + "\n")
-
-# count=1
-
-# for post in postings:
-#     if count >= 20: #Limit 20 posts at a time
-#         break
-#     link = post.find('a', class_ = FB_HTML_TAGS["Link"])
-#     desc = post.find('span', class_ = FB_HTML_TAGS["Description"])
-#     price = post.find('span', class_ = FB_HTML_TAGS["Price"])
-#     locAndMile = post.find_all('span', class_ = FB_HTML_TAGS["Location&Mileage"])
-#     # print(locAndMile)
-#     #mileage = post.find('span', class_ = FB_HTML_TAGS["Mileage"])
-#     file.write(str(count) + "." + desc.text + "\n")                 # Desc
-#     file.write("  " + price.text + "\n")                            # Price
-#     file.write("  " + locAndMile[1].text + "\n")                    # Mileage
-#     file.write("  " + locAndMile[0].text + "\n")                    # Location
-#     file.write("  " + (FB_MAIN + link.get('href')) + "\n")          # Link
-#     count+=1
-
-# file.write("There were " + str(num_postings) + "postings")
-
-# file.close()
-
-#------ REDACTED - NOT NECESSARY TO CLOSE CHROME PRIOR TO RUNNING -----#
-#try:
-    # Try to kill Chrome process
-#    os.system("taskkill /f /im chrome.exe")
-#except Exception as e:
-    # If an error occurs while killing Chrome process, print the error
-#    print("Error occurred while killing Chrome:", e)
-
-#------ NOT COMPLETELY NECESSARY BUT LEAVING FOR PROGRAM VISUAL CLARITY IF NEEDED -----#
-#chrome_options = webdriver.ChromeOptions()
-#chrome_options.add_argument('--headless')  # Run Chrome in headless mode
-#chrome_options.add_argument('--disable-gpu')  # Disable GPU acceleration (needed in headless mode)
-#chrome_options.add_argument("--disable-features=AmbientLightSensor") # Disabling to prevent error
-#driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
-
-#chrome_options = Options()
-#chrome_options.add_argument("--headless")
-#chrome_options.add_argument(f"--user-data-dir=C:\\users\\{USER}\\AppData\\Local\\Google\\Chrome\\User Data")
-#chrome_options.add_argument("profile-directory=Default")
-#chrome_options.add_argument("--disable-dev-shm-usage")
-#chrome_options.add_argument("--no-sandbox")
-
