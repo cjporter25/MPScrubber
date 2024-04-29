@@ -18,7 +18,6 @@ class ReportsManager:
         self.primaryDir = user_profile + "\\Desktop\\MPScrubberReports"
         print(self.primaryDir)
 
-
         # Check if the folder exists
         if not os.path.exists(self.primaryDir):
         # Create the folder if it doesn't exist
@@ -30,9 +29,7 @@ class ReportsManager:
         currDateTime = self.get_current_date_and_time()
         # Excel file type = .xlsx
         reportFileName = "MPReport(" + currDateTime + ").xlsx"
-        print(reportFileName)
         reportFilePath = self.primaryDir + "\\" + reportFileName
-        print(reportFilePath)
 
         if not os.path.exists(reportFilePath):
             workbook = Workbook()

@@ -28,13 +28,8 @@ from reporting import *
 
 
 input = input("Running MAIN(1) or TEST(2)? --> ")
-
-
-rm = ReportsManager()
-rm.set_primary_directory()
-rm.build_new_report()
     
-sys.exit()
+#sys.exit()
 #**********************MOCK USER INPUT**********************#
 prefMinPrice = 0
 prefMaxPrice = 20000
@@ -92,3 +87,7 @@ for url in urls:
     time.sleep(3)
 
 driver.quit()
+
+rm = ReportsManager()
+rm.set_primary_directory()
+rm.build_new_report()
