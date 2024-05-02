@@ -82,7 +82,6 @@ for url in urls:
     time.sleep(1)
     fb.show_table_ordered(currBrand, "PrimaryKey")
     print(fb.get_row_count(currBrand))
-    #fb.save_postings(newEntries, currBrand)
     print("Mandatory pull delay...")
     time.sleep(3)
 

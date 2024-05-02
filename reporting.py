@@ -38,6 +38,8 @@ class ReportsManager:
             print("Excel file created successfully:", reportFilePath)
         else:
             pass
+        
+
     def get_current_date_and_time(self):
         today = date.today()
         currDate = today.strftime("%m-%d-%Y")
