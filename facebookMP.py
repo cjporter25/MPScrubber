@@ -139,7 +139,6 @@ class facebookMP:
             try:
                 link = FB_MAIN + post.find('a', class_ = FB_HTML_TAGS["Link"]).get('href')
             except AttributeError:
-                print("Link element not found")
                 link = "n/a"
             # Find description HTML tag and convert to useable text
             desc = post.find('span', class_ = FB_HTML_TAGS["Description"]).text
@@ -249,10 +248,40 @@ class facebookMP:
         finally:
             cursor.close()
 
+    def list_tables(self):
+        cursor = self.connection.cursor()
+
+        # Query sqlite_master table to get a list of all tables
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+
+        # Close the cursor and connection
+        cursor.close()
+
+        # Extract table names from the fetched data
+        tableList = [table[0] for table in tables]
+        
+        print("Tables in the database:")
+        for tableName in tableList:
+            print(tableName)
+
+
     def convert_to_int(self, newString):
-        numericString = ''.join(c for c in newString if c.isdigit())
-        price = int(numericString)
-        return price
+        try:
+            #print("Trying to convert:" + newString)
+            numericString = ''.join(c for c in newString if c.isdigit())
+            price = int(numericString)
+            #print("Converted to:" + numericString)
+            return price
+        except ValueError as e:
+            error_part = newString[e.args[0]:e.args[1]] if isinstance(e.args, tuple) and len(e.args) == 2 else None
+            result = {'error': 'ValueError', 'message': str(e), 'entire_string': newString, 'error_part': error_part}
+            print("Error occurred during extraction:")
+            print("Type:", result['error'])
+            print("Message:", result['message'])
+            print("Entire string:", result['entire_string'])
+            print("Error part:", result['error_part'])
+            return 0
 
     def create_primary_key(self, year, price, mileage):
         unique_id = "{}-{}-{}".format(year, price, mileage)

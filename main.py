@@ -38,7 +38,8 @@ prefMaxMiles = 100000
 prefMinYear = 2000
 prefMaxYear = 2015
 prefSorting = SORTING_FILTERS["Date Listed: Newest First"] # Covered by the statement: SORTING_FILTERS["Date Listed: Newest First"]
-prefBrands = ["Chevy", "Honda", "Toyota"] # Facebook only allows one manufacturer selected at a time
+#prefBrands = ["Chevy", "Honda", "Toyota", "Ford", "Lexus", "Dodge"] # Facebook only allows one manufacturer selected at a time
+prefBrands = ["Chevy", "Honda", "Lexus"]
 prefBodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"] # "&carType=sedan%2Csuv%2Ctruck"
 prefVehicleType = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
 #**********************MOCK USER INPUT**********************#
@@ -83,6 +84,7 @@ for url in urls:
     fb.show_table_ordered(currBrand, "PrimaryKey")
     print(fb.get_row_count(currBrand))
     print("Mandatory pull delay...")
+    fb.list_tables()
     time.sleep(3)
 
 driver.quit()
