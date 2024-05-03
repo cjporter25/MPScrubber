@@ -1,6 +1,6 @@
 # New System move - 4.15.24 - Christopher J. Porter
 
-from options import Options, attrs
+# from options import Options, attrs ////
 
 #Selenium imports
 from selenium import webdriver
@@ -9,18 +9,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-import codecs
-import re
+#import codecs ////
+#import re ////
 
 # Standard Library Imports
-import requests 
-import logging
-import random
+# import requests //// 
+# import logging ////
+# import random ////
 import time
-import asyncio
-import random
+# import asyncio ////
+# import random ////
 import time
-import sys
+# import sys ////
 
 from craigslistMP import *
 from facebookMP import *

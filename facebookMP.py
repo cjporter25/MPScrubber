@@ -1,4 +1,4 @@
-import os
+# import os
 import sqlite3
 import datetime
 from bs4 import BeautifulSoup
