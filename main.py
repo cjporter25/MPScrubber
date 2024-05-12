@@ -20,16 +20,21 @@ import time
 # import asyncio ////
 # import random ////
 import time
-# import sys ////
 
 from craigslistMP import *
 from facebookMP import *
 from reporting import *
+from scrubberGUI import *
 
 
 input = input("Running MAIN(1) or TEST(2)? --> ")
-    
-#sys.exit()
+
+if input == "2":
+    app = QApplication(sys.argv)
+    window = ScrubberGUI()
+    window.show()
+    sys.exit(app.exec_())
+
 #**********************MOCK USER INPUT**********************#
 prefMinPrice = 0
 prefMaxPrice = 20000
