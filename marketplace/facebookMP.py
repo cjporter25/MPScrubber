@@ -4,7 +4,7 @@ import datetime
 from bs4 import BeautifulSoup
 from datetime import date
 
-from constants import *
+from marketplace.constantsFB import *
 
 class facebookMP:
     def __init__(self, minPrice, maxPrice, minMiles, 
@@ -20,7 +20,7 @@ class facebookMP:
         self.brands = brands
         self.bodyStyles = bodyStyles
         self.vehicleTypes = vehicleTypes
-        self.connection = sqlite3.connect('facebookDB.db')
+        self.connection = sqlite3.connect('./marketplace/facebookDB.db')
     def __init__(self):
         self.minPrice = "0"
         self.maxPrice = "50000"
@@ -32,7 +32,7 @@ class facebookMP:
         self.brands = ["Toyota", "Honda", "Chevy"]
         self.bodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
         self.vehicleTypes = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
-        self.connection = sqlite3.connect('facebookDB.db')
+        self.connection = sqlite3.connect('./marketplace/facebookDB.db')
 
     def build_URLs(self, brands):
         fbURLs = []

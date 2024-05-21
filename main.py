@@ -16,14 +16,13 @@ from webdriver_manager.chrome import ChromeDriverManager
 # import requests //// 
 # import logging ////
 # import random ////
-import time
 # import asyncio ////
 # import random ////
 import time
 
-from craigslistMP import *
-from facebookMP import *
-from reporting import *
+from marketplace.craigslistMP import *
+from marketplace.facebookMP import *
+from marketplace.reporting import *
 from scrubberGUI import *
 
 
@@ -86,7 +85,7 @@ for url in urls:
     print("Inserting new entries...")
     fb.insert_entries(currBrand, newEntries)
     time.sleep(1)
-    fb.show_table_ordered(currBrand, "PrimaryKey")
+    fb.show_table_ordered(currBrand, "DatePulled")
     print(fb.get_row_count(currBrand))
     print("Mandatory pull delay...")
     fb.list_tables()
