@@ -20,9 +20,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 # import random ////
 import time
 
-from marketplace.craigslistMP import *
-from marketplace.facebookMP import *
-from marketplace.reporting import *
+from Marketplace.craigslistMP import *
+from Marketplace.facebookMP import *
+from Marketplace.reporting import *
 from scrubberGUI import *
 
 

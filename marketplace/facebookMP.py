@@ -4,7 +4,7 @@ import datetime
 from bs4 import BeautifulSoup
 from datetime import date
 
-from marketplace.constantsFB import *
+from Marketplace.constantsFB import *
 
 class facebookMP:
     def __init__(self, minPrice, maxPrice, minMiles, 
