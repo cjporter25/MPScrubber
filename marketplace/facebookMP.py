@@ -195,7 +195,6 @@ class facebookMP:
         for tableName in tableList:
             print(tableName)
 
-
     def convert_to_int(self, newString):
         try:
             #print("Trying to convert:" + newString)

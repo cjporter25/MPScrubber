@@ -17,7 +17,11 @@
         - FB Marketplace CAN isolate the location and outputs results within a 40 mile radius. However, when manually 
           filtering for a smaller radius, the URL does not change. This means that the default radius for search results
           will have to stay at 40 miles unless I can figure out how to apply that in the future.
-        - 
+    - (05.22.24 - Project Updates & Direction)
+        - All data points can be tracked, stored and output to an excel file (including the link). Spoke with client regarding 
+        current project status and potential future function. In preparation for a virtual screen share this coming Friday,
+        05.24.24, the short term goal was to devise a means to push test builds to the client such that they're able to 
+        test features on their own.
 
 ***PROJECT FOCUS***
     - Initial Full Scope and Summary:

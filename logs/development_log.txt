@@ -106,7 +106,7 @@
       I discovered that the "href" element tag had changed. I manually updated that and it worked!
 
 ***PREVENTED CHROME CLOSING***
-    - (2.11.23):I was able to modify the launching process to no close the currently open chrome window and 
+    - (2.11.23):I was able to modify the launching process to not close the currently open chrome window and 
       instead open a new window. I also tried hiding this window but there were a variety of errors
       that occurred. May have to revisit in the future but it isn't critical.
 
