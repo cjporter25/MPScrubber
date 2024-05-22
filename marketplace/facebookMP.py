@@ -61,13 +61,19 @@ class facebookMP:
             if count == 10: #Limit 10 posts at a time
                 break
             try:
-                link = FB_MAIN + post.find('a', class_ = FB_HTML_TAGS["Link"]).get('href')
+                # www.facebook.com/[link]
+                linkTag = post.find('a', class_ = FB_HTML_TAGS["Link"])
+                link = linkTag['href']
+                fullLink = FB_MAIN + link
             except AttributeError:
                 link = "n/a"
             # Find description HTML tag and convert to useable text
             desc = post.find('span', class_ = FB_HTML_TAGS["Description"]).text
-            # The vehicle year is currently always the first 4 chars of the description
-            year = int(desc[0] + desc[1] + desc[2] + desc[3])
+            try:
+                # The vehicle year is currently always the first 4 chars of the description
+                year = int(desc[0] + desc[1] + desc[2] + desc[3])
+            except ValueError:
+                year = 1900
             # Find the price HTML tag and convert to an integer
             price = self.convert_to_int(post.find('span', class_ = FB_HTML_TAGS["Price"]).text)
             # Location and mileage use the same HTML tag for some stupid reason
@@ -81,13 +87,13 @@ class facebookMP:
             # Create a primary key for the entry
             primaryKey = self.create_primary_key(year, price, mileage)
 
-            currDateTime = self.get_current_date_and_time()
+            datePulled = self.get_current_date_and_time()
 
             # NOTE: Will eventually look work a way to pull the approx time a vehicle was posted
             datePosted = "n/a"
 
             # Create a new entry tuple. Primary key will always be first item
-            newEntry = (primaryKey, currDateTime, datePosted, year, price, mileage, desc, location, link)
+            newEntry = (primaryKey, datePulled, datePosted, year, price, mileage, desc, location, fullLink)
             dbEntries.append(newEntry)
             count+=1
         return dbEntries
