@@ -26,42 +26,44 @@ from Marketplace.reporting import *
 from scrubberGUI import *
 
 
-input = input("Running MAIN(1) or TEST(2)? --> ")
+# input = input("Running MAIN(1) or TEST(2)? --> ")
 
-if input == "2":
-    app = QApplication(sys.argv)
-    window = ScrubberGUI()
-    window.show()
-    sys.exit(app.exec_())
+#if input == "2":
+#    app = QApplication(sys.argv)
+#    window = ScrubberGUI()
+#    window.show()
+#    sys.exit(app.exec_())
+
 
 #**********************MOCK USER INPUT**********************#
-prefMinPrice = 0
-prefMaxPrice = 20000
-prefMinMiles = 50000
-prefMaxMiles = 100000
-prefMinYear = 2000
-prefMaxYear = 2015
-prefSorting = SORTING_FILTERS["Date Listed: Newest First"] # Covered by the statement: SORTING_FILTERS["Date Listed: Newest First"]
-#prefBrands = ["Chevy", "Honda", "Toyota", "Ford", "Lexus", "Dodge"] # Facebook only allows one manufacturer selected at a time
+# prefMinPrice = 0
+# prefMaxPrice = 20000
+# prefMinMiles = 50000
+# prefMaxMiles = 100000
+# prefMinYear = 2000
+# prefMaxYear = 2015
+# prefSorting = SORTING_FILTERS["Date Listed: Newest First"] # Covered by the statement: SORTING_FILTERS["Date Listed: Newest First"]
+
+# prefBodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"] # "&carType=sedan%2Csuv%2Ctruck"
+# prefVehicleType = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
+#**********************MOCK USER INPUT**********************#
+
+
+
+# Build a list of URLS to access for each brand
 prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
-prefBodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"] # "&carType=sedan%2Csuv%2Ctruck"
-prefVehicleType = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
-#**********************MOCK USER INPUT**********************#
-
 fb = facebookMP()
 urls = fb.build_URLs(prefBrands)
 newDate = fb.get_current_date_and_time()
 print(newDate)
-
+# Launch Chrome driver
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 wait = WebDriverWait(driver, 5)
 
-#EXAMPLE
-# for item in myList:
-#    brand = item[0]
-#    url = item[1]
-#    print(f"Brand: {brand}, URL: {url}")
 
+#****************************Main Scrubber Driver*********************************#
+
+# Open each URL 
 for url in urls:
     try:
         # url[1] contains the actual built URL
@@ -72,8 +74,9 @@ for url in urls:
             page_source = driver.page_source
     except:
         print("Timed Out, or an error occurred while loading")
+        continue
 
-    # url[0] contains a string of the current brand
+    # url[0] contains a string of the current brand being looked at
     currBrand = url[0]
 
     print("Retrieving posting data...")
@@ -82,14 +85,18 @@ for url in urls:
     fb.create_table(currBrand)
     print("Inserting new entries...")
     fb.insert_entries(currBrand, newEntries)
-    fb.show_table_ordered(currBrand, "DatePulled")
+    # fb.show_table_ordered(currBrand, "DatePulled")
     print(fb.get_row_count(currBrand))
     print("Mandatory pull delay...")
-    fb.list_tables()
-    time.sleep(5) # Mandatory delay to prevent automated systems flagging this scrubber
+    # Necessary pull delay to prevent automated systems flagging the scrubber
+    time.sleep(5) 
+#****************************Main Scrubber Driver*********************************#
 
+# Close chrome driver
 driver.quit()
 
+#****************************Generate Excel Report*********************************#
 rm = ReportsManager()
 rm.set_primary_directory()
 rm.build_new_report()
+#****************************Generate Excel Report*********************************#
