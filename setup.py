@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='mpscrubber',
     version='0.1',
-    packages=find_packages(include=['Marketplace', 'Marketplace.*']),
+    packages=find_packages(include=['marketplace', 'marketplace.*']),
     install_requires=[
         'attrs==23.1.0',
         'beautifulsoup4==4.12.2',
