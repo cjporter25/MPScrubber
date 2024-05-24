@@ -1,0 +1,38 @@
+********STEP ONE********
+****INSTALLS & REQUIREMENTS****
+- Ensure "setuptools" & "wheel" has been installed
+    - "pip install setuptools"
+    - "pip install wheel"
+- Create requirements.txt file
+    - "venv\Scripts\pip freeze > requirements.txt"
+    - "pip freeze > requirements.txt"
+
+****SETUP.PY****
+- Create a setup.py file in the main directory
+- Fill it will these items:
+    setup(
+        name='mpscrubber',
+        version='0.1',
+        packages=find_packages(include=['Marketplace', 'Marketplace.*']),
+        install_requires=[
+            'typing_extensions==4.9.0',
+            'urllib3==2.1.0',
+            'webdriver-manager==4.0.1',
+            # add other required packages here (in requirements.txt)
+    ],
+    entry_points={
+        'console_scripts': [
+            'mpscrubber=main:main',
+        ],
+    },
+)
+- NOTE: 
+    - The version can dynamically changed with each new version
+    - The packages list will include any folders deemed necessary in the future.
+    - The install requires list is simple a list of everything in the requirements.txt
+      file after it's been updated.
+    - The entry points list is simply wherever the main python script lives
+
+********STEP TWO********
+****BUILD THE PACKAGE****
+- wheel==0.43.0

@@ -1,10 +1,11 @@
 # import os
 import sqlite3
 import datetime
+import time
 from bs4 import BeautifulSoup
 from datetime import date
 
-from Marketplace.constantsFB import *
+from marketplace.constantsFB import *
 
 class facebookMP:
     def __init__(self, minPrice, maxPrice, minMiles, 
@@ -100,8 +101,6 @@ class facebookMP:
     
     def create_table(self, brand):
         cursor = self.connection.cursor()
-        #deleteCommand = '''DELETE FROM {}'''.format(brand)
-        #cursor.execute(deleteCommand)
         newTableCommand = '''
             CREATE TABLE IF NOT EXISTS {} (
                 PrimaryKey TEXT,
@@ -141,7 +140,7 @@ class facebookMP:
         cursor.execute(query)
         rowCount = cursor.fetchone()[0]
         cursor.close()
-        return rowCount
+        return str(rowCount)
     
     def show_table(self, brand):
         cursor = self.connection.cursor()
@@ -224,6 +223,18 @@ class facebookMP:
         currDateTime = currDate + "." + currTime
         return currDateTime
 
+    def wait(self):
+        print("Mandatory pull delay...")
+        print("5")
+        time.sleep(1) 
+        print("4")
+        time.sleep(1)
+        print("3")
+        time.sleep(1)
+        print("2")
+        time.sleep(1)
+        print("1")
+        time.sleep(1)
 # REDACTED
     def save_postings(self, newEntries, brand):
         cursor = self.connection.cursor()

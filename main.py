@@ -18,11 +18,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 # import random ////
 # import asyncio ////
 # import random ////
-import time
 
-from Marketplace.craigslistMP import *
-from Marketplace.facebookMP import *
-from Marketplace.reporting import *
+
+from marketplace.craigslistMP import *
+from marketplace.facebookMP import *
+from marketplace.reporting import *
 from scrubberGUI import *
 
 
@@ -81,15 +81,13 @@ for url in urls:
 
     print("Retrieving posting data...")
     newEntries = fb.retrieve_postings(page_source)
-    print("Creating or initializing table for " + currBrand + "...")
+    print("Creating or initializing table for " + currBrand.upper() + "...")
     fb.create_table(currBrand)
     print("Inserting new entries...")
     fb.insert_entries(currBrand, newEntries)
     # fb.show_table_ordered(currBrand, "DatePulled")
-    print(fb.get_row_count(currBrand))
-    print("Mandatory pull delay...")
-    # Necessary pull delay to prevent automated systems flagging the scrubber
-    time.sleep(5) 
+    print("Current total: " + fb.get_row_count(currBrand))
+    fb.wait()
 #****************************Main Scrubber Driver*********************************#
 
 # Close chrome driver
