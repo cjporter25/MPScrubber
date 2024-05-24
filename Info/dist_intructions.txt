@@ -1,8 +1,11 @@
 ********STEP ONE********
 ****INSTALLS & REQUIREMENTS****
-- Ensure "setuptools" & "wheel" has been installed
+- Ensure "setuptools" & "wheel" have been installed
     - "pip install setuptools"
     - "pip install wheel"
+- Ensure "build" & "installer" have been installed
+    - "pip install build"
+    - "pip install installer"
 - Create requirements.txt file
     - "venv\Scripts\pip freeze > requirements.txt"
     - "pip freeze > requirements.txt"
@@ -35,4 +38,59 @@
 
 ********STEP TWO********
 ****BUILD THE PACKAGE****
-- wheel==0.43.0
+- "python -m build"
+- NOTE: This creates a dist folder containing the the .tar and .whl dsitribution
+  packages.
+- NOTE: This also creates a [project_name].egg-info folder containing metadata
+  about packages like dependencies and other package details. This is created
+  by the "setuptools" module installed earlier.
+
+****COPY OVER EVERYTHING****
+mkdir dist_package
+cp -r dist dist_package/
+cp requirements.txt dist_package/
+cp main.py dist_package/
+cp -r Marketplace dist_package/
+
+****CREATE INSTALLATION SCRIPTS****
+- Add README.md, install.sh, install.bat to the dist_package folder
+**README**
+    # MPSCRUBBER
+    ## Installation
+    ### Using install.sh (Unix-based systems)
+    ```sh
+    ./install.sh
+**install.sh**
+    ### install.sh
+
+    # This is a shell script for setting up the project on Unix-based systems (Linux/macOS).
+    ```sh
+    #!/bin/sh
+    # Create a virtual environment
+    python -m venv venv
+    # Activate the virtual environment
+    . venv/bin/activate
+    # Install the required packages
+    pip install -r requirements.txt
+    echo "Installation complete. To run the application, 
+    ctivate the virtual environment and run 'python main.py'."
+**install.bat**
+    @echo off
+    :: Create a virtual environment
+    python -m venv venv
+    :: Activate the virtual environment
+    call venv\Scripts\activate
+    :: Install the required packages
+    pip install -r requirements.txt
+    echo Installation complete. To run the application, activate the virtual environment and run 'python main.py'.
+    pause
+
+********STEP THREE********
+****ZIP IT UP****
+- Navigate to the MPSCRUBBER directory
+    - cd path\to\MPSCRUBBER
+- Zip the dist_package directory
+    - Compress-Archive -Path .\dist_package -DestinationPath .\mpscrubber_test_build.zip
+- NOTE: This can also be done in file explorer by right clicking and telling it to
+  zip the folder.
+

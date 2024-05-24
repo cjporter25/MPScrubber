@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 
-
 setup(
     name='mpscrubber',
     version='0.1',
@@ -8,21 +7,25 @@ setup(
     install_requires=[
         'attrs==23.1.0',
         'beautifulsoup4==4.12.2',
+        'build==1.2.1',
         'certifi==2023.7.22',
         'cffi==1.16.0',
         'chainmap==1.0.3',
         'charset-normalizer==3.3.2',
+        'colorama==0.4.6',
         'combomethod==1.0.12',
         'et-xmlfile==1.1.0',
         'greenlet==3.0.3',
         'h11==0.14.0',
         'idna==3.4',
+        'installer==0.7.0',
         'nulltype==2.3.1',
         'openpyxl==3.1.2',
         'options==1.4.10',
         'outcome==1.3.0.post0',
         'packaging==23.2',
         'pycparser==2.21',
+        'pyproject_hooks==1.1.0',
         'PyQt5==5.15.10',
         'PyQt5-Qt5==5.15.2',
         'PyQt5-sip==12.13.0',
