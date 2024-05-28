@@ -86,8 +86,8 @@ class ReportsManager:
             for row_idx, row in enumerate(data, start=data_row_start):
                 for col_idx, value in enumerate(row, start=1):
                     cell = worksheet.cell(row=row_idx, column=col_idx, value=value)
-                    if column_titles[col_idx - 1] == "Link":
-                        cell.value = "Click Here"
+                    if column_titles[col_idx - 1] == "Link" and not value.startswith("n/a"):
+                        cell.value = "Post Link"
                         cell.hyperlink = value
                         cell.style = "Hyperlink"
 
