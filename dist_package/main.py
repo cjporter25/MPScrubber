@@ -21,17 +21,16 @@ from webdriver_manager.chrome import ChromeDriverManager
 # from marketplace.craigslistMP import *
 from marketplace.facebookMP import *
 from marketplace.reporting import *
-# from scrubberGUI import *
+from scrubberGUI import *
 
 
-# input = input("Running MAIN(1) or TEST(2)? --> ")
+input = input("Running MAIN(1) or TEST(2)? --> ")
 
-#if input == "2":
-#    app = QApplication(sys.argv)
-#    window = ScrubberGUI()
-#    window.show()
-#    sys.exit(app.exec_())
-
+if input == "2":
+    app = QApplication(sys.argv)
+    window = ScrubberGUI()
+    window.show()
+    sys.exit(app.exec_())
 
 #**********************MOCK USER INPUT**********************#
 # prefMinPrice = 0
@@ -41,15 +40,14 @@ from marketplace.reporting import *
 # prefMinYear = 2000
 # prefMaxYear = 2015
 # prefSorting = SORTING_FILTERS["Date Listed: Newest First"] # Covered by the statement: SORTING_FILTERS["Date Listed: Newest First"]
-
 # prefBodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"] # "&carType=sedan%2Csuv%2Ctruck"
 # prefVehicleType = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
 #**********************MOCK USER INPUT**********************#
 
 
-
 # Build a list of URLS to access for each brand
-prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
+#prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
+prefBrands = ["Toyota", "Lexus"]
 fb = facebookMP()
 urls = fb.build_URLs(prefBrands)
 newDate = fb.get_current_date_and_time()
@@ -57,7 +55,6 @@ print(newDate)
 # Launch Chrome driver
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 wait = WebDriverWait(driver, 5)
-
 
 #****************************Main Scrubber Driver*********************************#
 
@@ -94,5 +91,5 @@ driver.quit()
 #****************************Generate Excel Report*********************************#
 rm = ReportsManager()
 rm.set_primary_directory()
-rm.build_new_report()
+rm.build_new_report(prefBrands, 60)
 #****************************Generate Excel Report*********************************#

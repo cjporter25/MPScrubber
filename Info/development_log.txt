@@ -115,6 +115,14 @@
       have already been added.
 
 
+***UPDATING PACKAGES LIST***
+    - Install the package that does the updating for you -->
+        - pip install pip-review
+    - Check for what needs updating -->
+        - pip-review --local
+    - Automatically update everything that needs to be updated -->
+        - pip-review --local --auto
+
 
 
     

@@ -39,19 +39,19 @@
 ********STEP TWO********
 ****BUILD THE PACKAGE****
 - "python -m build"
-- NOTE: This creates a dist folder containing the the .tar and .whl dsitribution
+- NOTE: This creates a "dist" folder containing the the .tar and .whl dsitribution
   packages.
 - NOTE: This also creates a [project_name].egg-info folder containing metadata
   about packages like dependencies and other package details. This is created
   by the "setuptools" module installed earlier.
 
 ****COPY OVER EVERYTHING****
-mkdir dist_package
-cp -r dist dist_package/
+mkdir dist_package                      <- Will get flagged since dist_package is already there
+cp -r dist dist_package/                <- Will get flagged since dist_package is already there
 cp requirements.txt dist_package/
 cp main.py dist_package/
-cp -r Marketplace dist_package/
-
+cp -r marketplace dist_package/
+NOTE: Could also use (robocopy marketplace dist_package\marketplace /MIR /XD __pycache__)
 ****CREATE INSTALLATION SCRIPTS****
 - Add README.md, install.sh, install.bat to the dist_package folder
 **README**
@@ -79,7 +79,7 @@ cp -r Marketplace dist_package/
     :: Create a virtual environment
     python -m venv venv
     :: Activate the virtual environment
-    call venv\Scripts\activate
+    call venv\Scripts\Activate
     :: Install the required packages
     pip install -r requirements.txt
     echo Installation complete. To run the application, activate the virtual environment and run 'python main.py'.
@@ -90,7 +90,10 @@ cp -r Marketplace dist_package/
 - Navigate to the MPSCRUBBER directory
     - cd path\to\MPSCRUBBER
 - Zip the dist_package directory
-    - Compress-Archive -Path .\dist_package -DestinationPath .\mpscrubber_test_build.zip
+    - Compress-Archive -Path .\dist_package -DestinationPath test_builds\mpscrubber_test_build.zip
+- To FORCE an overwrite of what was there, use this:
+    - Compress-Archive -Path .\dist_package -DestinationPath test_builds\mpscrubber_test_build.zip -Force
+    - NOTE: Simp[ly renaming the zip file would also work]
 - NOTE: This can also be done in file explorer by right clicking and telling it to
   zip the folder.
 

@@ -32,15 +32,15 @@ class ReportsManager:
             print("Folder already exists. No action required.")
 
 
-    def build_new_report(self):
+    def build_new_report(self, prefBrands, numPostings):
         currDateTime = self.get_current_date_and_time()
-        brandList = self.get_brand_list()
+        # brandList = self.get_brand_list()
         wb = Workbook()
         ws = wb.active
         
         cursor = self.conn.cursor()
-        for brand in brandList:
-            self.write_brand_data(brand, ws, cursor)
+        for brand in prefBrands:
+            self.write_brand_data(brand, ws, cursor, numPostings)
         
         # When saving, openpyxl saves a "workbook" not the "worksheet"
         newFile = self.save_new_report(currDateTime, wb)
@@ -62,10 +62,11 @@ class ReportsManager:
         brands = [table[0] for table in tables]
         return brands
     
-    def write_brand_data(self, brand, worksheet, cursor):
+    def write_brand_data(self, brand, worksheet, cursor, numPostings):
          # Fetch data sorted by DatePulled in descending order for the specified brand
         cursor.execute(f"SELECT * FROM {brand} ORDER BY DatePulled DESC")
-        data = cursor.fetchmany(5)  # Fetch the 5 most recent entries
+        # Fetch "numPostings" worth of most recent entries
+        data = cursor.fetchmany(numPostings)
         if data:
             # Write brand name in the first cell of a new row (bold and underlined)
             brand_cell_row = worksheet.max_row + 1
@@ -81,9 +82,14 @@ class ReportsManager:
                 title_cell = worksheet.cell(row=title_row, column=col_num, value=title)
                 title_cell.font = Font(bold=True)
 
-            # Write data below the column titles
-            for row in data:
-                worksheet.append(row)
+            data_row_start = title_row + 1
+            for row_idx, row in enumerate(data, start=data_row_start):
+                for col_idx, value in enumerate(row, start=1):
+                    cell = worksheet.cell(row=row_idx, column=col_idx, value=value)
+                    if column_titles[col_idx - 1] == "Link" and not value.startswith("n/a"):
+                        cell.value = "Post Link"
+                        cell.hyperlink = value
+                        cell.style = "Hyperlink"
 
         # Skip a line for the next brand's data
         worksheet.append([])
