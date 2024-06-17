@@ -54,13 +54,13 @@ cp -r marketplace dist_package/
 NOTE: Could also use (robocopy marketplace dist_package\marketplace /MIR /XD __pycache__)
 ****CREATE INSTALLATION SCRIPTS****
 - Add README.md, install.sh, install.bat to the dist_package folder
-**README**
+***README***
     # MPSCRUBBER
     ## Installation
     ### Using install.sh (Unix-based systems)
     ```sh
     ./install.sh
-**install.sh**
+***install.sh***
     ### install.sh
 
     # This is a shell script for setting up the project on Unix-based systems (Linux/macOS).
@@ -74,7 +74,7 @@ NOTE: Could also use (robocopy marketplace dist_package\marketplace /MIR /XD __p
     pip install -r requirements.txt
     echo "Installation complete. To run the application, 
     ctivate the virtual environment and run 'python main.py'."
-**install.bat**
+***install.bat***
     @echo off
     :: Create a virtual environment
     python -m venv venv
