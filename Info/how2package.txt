@@ -98,3 +98,7 @@
 - NOTE: This can also be done in file explorer by right clicking and telling it to
   zip the folder.
 
+*****USERS COMPUTER*****
+- Install Python, add PYTHON to PATH 
+- Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser (to run scripts)
+

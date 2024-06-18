@@ -21,7 +21,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 # from marketplace.craigslistMP import *
 from marketplace.facebookMP import *
 from marketplace.reporting import *
-from scrubberGUI import *
+from marketplace.scrubberGUI import *
 
 
 input = input("Running MAIN(1) or TEST(2)? --> ")
