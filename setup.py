@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mpscrubber',
-    version='0.2',
+    version='0.3',
     # marketplace is currently the only required folder for the package
     packages=find_packages(include=['marketplace', 'marketplace.*']),
     # Retrieve python requirements list

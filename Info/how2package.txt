@@ -45,13 +45,14 @@
   about packages like dependencies and other package details. This is created
   by the "setuptools" module installed earlier.
 
-****COPY OVER EVERYTHING****
-mkdir dist_package                      <- Will get flagged since dist_package is already there
-cp -r dist dist_package/                <- Will get flagged since dist_package is already there
-cp requirements.txt dist_package/
-cp main.py dist_package/
-cp -r marketplace dist_package/
-NOTE: Could also use (robocopy marketplace dist_package\marketplace /MIR /XD __pycache__)
+****COPY OVER EVERYTHING****               
+1. cp -r dist/* dist_package/dist
+2. cp requirements.txt dist_package/
+3. cp main.py dist_package/
+4. a. Remove-Item -Recurse -Force marketplace\__pycache__
+   b. cp -r marketplace/* dist_package/marketplace
+4. (One Liner) "robocopy marketplace dist_package\marketplace /MIR /XD __pycache__"
+
 ****CREATE INSTALLATION SCRIPTS****
 - Add README.md, install.sh, install.bat to the dist_package folder
 ***README***
@@ -93,11 +94,7 @@ NOTE: Could also use (robocopy marketplace dist_package\marketplace /MIR /XD __p
     - Compress-Archive -Path .\dist_package -DestinationPath test_builds\mpscrubber_test_build.zip
 - To FORCE an overwrite of what was there, use this:
     - Compress-Archive -Path .\dist_package -DestinationPath test_builds\mpscrubber_test_build.zip -Force
-    - NOTE: Simp[ly renaming the zip file would also work]
+    - NOTE: [Simply renaming the zip file would also work]
 - NOTE: This can also be done in file explorer by right clicking and telling it to
   zip the folder.
-
-
-
-  Testing git changes
 
