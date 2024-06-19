@@ -46,7 +46,7 @@ setup(
                         "requests==2.32.3",
                         "selenium==4.21.0",
                         "setuptools==70.0.0",
-                        "six==1.16.0",
+                        "six==1.12.0",
                         "sniffio==1.3.1",
                         "sortedcontainers==2.4.0",
                         "soupsieve==2.5",
