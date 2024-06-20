@@ -51,7 +51,7 @@ class ScrubberGUI(QWidget):
         # Generate button
         generate_button = QPushButton("Generate")
         generate_button.setStyleSheet("margin: 10px; padding: 10px;")
-        generate_button.clicked.connect(self.generate_clicked)
+        generate_button.clicked.connect(self.generate_report)
         main_layout.addWidget(generate_button, alignment=Qt.AlignCenter)
 
          # Apply style sheet
@@ -179,12 +179,13 @@ class ScrubberGUI(QWidget):
         layoutEX.addLayout(grid_layout)
         return layoutEX
 
-    def generate_clicked(self):
-        selectedOptions = [
-            self.option_list.item(i).text()
-            for i in range(self.option_list.count())
-            if self.checkboxes[i].isChecked()
-        ]
+    def generate_report(self):
+        selectedOptions = []
+        # selectedOptions = [
+        #    self.option_list.item(i).text()
+        #    for i in range(self.option_list.count())
+        #    if self.checkboxes[i].isChecked()
+        # ]
 
         print("Selected Options:", selectedOptions)
 

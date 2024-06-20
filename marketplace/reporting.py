@@ -31,7 +31,6 @@ class ReportsManager:
         else:
             print("Folder already exists. No action required.")
 
-
     def build_new_report(self, prefBrands, numPostings):
         currDateTime = self.get_current_date_and_time()
         # brandList = self.get_brand_list()

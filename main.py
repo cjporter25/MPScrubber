@@ -47,7 +47,7 @@ if input == "2":
 
 # Build a list of URLS to access for each brand
 #prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
-prefBrands = ["Toyota", "Lexus"]
+prefBrands = ["Chevy", "Toyota"]
 fb = facebookMP()
 urls = fb.build_URLs(prefBrands)
 newDate = fb.get_current_date_and_time()
@@ -91,5 +91,5 @@ driver.quit()
 #****************************Generate Excel Report*********************************#
 rm = ReportsManager()
 rm.set_primary_directory()
-rm.build_new_report(prefBrands, 60)
+rm.build_new_report(prefBrands, 10)
 #****************************Generate Excel Report*********************************#
