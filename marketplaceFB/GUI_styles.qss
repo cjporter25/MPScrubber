@@ -5,7 +5,7 @@ QWidget {
 QLabel{
     font-weight: bold;
     font-size: 18px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 QListWidget {
     background-color: #F0F2F5;

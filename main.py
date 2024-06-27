@@ -1,30 +1,20 @@
 # New System move - 4.15.24 - Christopher J. Porter
 
-#Selenium imports
+# Selenium imports
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
+# from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-#import codecs ////
-#import re ////
 
-# Standard Library Imports
-# import requests //// 
-# import logging ////
-# import random ////
-# import asyncio ////
-# import random ////
+# Marketplace Imports
+from marketplaceFB.facebookMP_scraper import *
+from marketplaceFB.facebookMP_reporting import *
+from marketplaceFB.facebookMP_GUI import *
 
 
-# from marketplace.craigslistMP import *
-from marketplace.facebookMP import *
-from marketplace.reporting import *
-from marketplace.scrubberGUI import *
-
-
-input = input("Running MAIN(1) or TEST(2)? --> ")
+input = input("Running MAIN(1) or Dev-GUI(2)? --> ")
 
 if input == "2":
     app = QApplication(sys.argv)
@@ -46,7 +36,7 @@ if input == "2":
 
 
 # Build a list of URLS to access for each brand
-#prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
+# prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
 prefBrands = ["Chevy", "Toyota"]
 fb = facebookMP()
 urls = fb.build_URLs(prefBrands)

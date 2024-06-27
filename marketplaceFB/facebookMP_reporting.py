@@ -1,6 +1,5 @@
 import os
 import sqlite3
-# import json
 
 import datetime
 from datetime import date
@@ -12,10 +11,10 @@ from openpyxl.utils import get_column_letter
 class ReportsManager:
     def __init__(self, folderPath):
         self.primaryDir = folderPath
-        self.conn = sqlite3.connect('./marketplace/facebookDB.db')
+        self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
     def __init__(self):
         self.primaryDir = "C:\\Users\\[USER_PROFILE]\\Desktop\\MPScrubberReports"
-        self.conn = sqlite3.connect('./marketplace/facebookDB.db')
+        self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
     def set_primary_directory(self):
         user_profile = os.environ.get('USERPROFILE')
         # user_profile becomes C:\Users\cj_po
@@ -98,6 +97,7 @@ class ReportsManager:
             column_letter = get_column_letter(col_num)
             max_length = 0
             for cell in worksheet[column_letter]:
+                # If the cell has content
                 if cell.value:
                     max_length = max(max_length, len(str(cell.value)))
             adjusted_width = max_length + 2  # Adding extra space for better readability

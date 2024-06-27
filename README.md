@@ -35,7 +35,7 @@
    - .venv\Scripts\Activate.ps1
 - THIRD: Run the program
    - python main.py
-- FOURTH: Choosing main or "test"
+- FOURTH: Choosing "main" or "Dev-GUI"
    - As of right now, choosing "main" will run the program with hard coded presets and 
      "test" will show what the GUI currently looks like.
 

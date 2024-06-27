@@ -62,11 +62,19 @@ SORTING_FILTERS = {"Suggested": "&sortBy=best_match",
                    "Year: Oldest First": "&sortBy=vehicle_year_ascend"}
 
 # Each vehicle manufacturer seems to have a unique ID. 
-MAKE_FILTERS = {"Chevy": "&make=1914016008726893",
+MAKE_FILTERS = {"Acura": "&make=280909549507187",
+                "Audi": "&make=1274042129420222",
+                "Buick": "&make=436791410393181",
+                "Chevy": "&make=1914016008726893",
+                "Chrysler": "&make=398368117562414",
                 "Dodge": "&make=402915273826151",
                 "Honda": "&make=308436969822020",
+                "Hyundai": "&make=590755841400441",
                 "Ford": "&make=297354680962030",
+                "Jeep": "&make=408221723080125",
                 "Lexus": "&make=2101813456521413",
+                "Nissan": "&make=2621742507840619",
+                "Ram": "&make=262465364692582",
                 "Toyota": "&make=2318041991806363",
                 }
 
@@ -76,3 +84,14 @@ BODYSTYLE_FILTERS = {"Base Body Style": "&carType=",
                      "Sedan-SUV-Truck": "&carType=sedan%2Csuv%2Ctruck"}
 
 VEHICLE_TYPE_FILTERS = {"Cars & Trucks": "&topLevelVehicleType=car_truck"}
+
+
+# Color Palette Constants
+PRIMARY_GREEN = "#217346"
+SECONDARY_GREEN = "#A9D18E"
+PRIMARY_BLUE = "#1877F2"
+SECONDARY_BLUE = "#E7F3FF"
+DARK_GREY = "#333333"
+LIGHT_GREY = "#F0F2F5"
+ALERT_RED = "#FF0000"
+WHITE = "#FFFFFF"

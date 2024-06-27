@@ -78,12 +78,21 @@
 ***install.bat***
     @echo off
     :: Create a virtual environment
-    python -m venv venv
+    python -m venv .venv
     :: Activate the virtual environment
-    call venv\Scripts\Activate
-    :: Install the required packages
-    pip install -r requirements.txt
-    echo Installation complete. To run the application, activate the virtual environment and run 'python main.py'.
+    call .venv\Scripts\activate
+    :: Check if the virtual environment is activated
+    if not defined VIRTUAL_ENV (
+        echo Error: Virtual environment not activated.
+        exit /b 1
+    )   
+    :: Install the required packages with verbose output
+    pip install -r requirements.txt --verbose
+    :: List the installed packages (No longer necessary)
+    :: pip list
+    echo Installation complete. To run the application, a new terminal window will be opened.
+    :: Open a new terminal window and navigate to the project directory
+    start powershell -NoExit -Command "cd '%~dp0'; . .venv\Scripts\Activate.ps1; pip list; echo Virtual environment activated. Run 'python main.py' to start the application."
     pause
 
 ********STEP THREE********
@@ -91,14 +100,14 @@
 - Navigate to the MPSCRUBBER directory
     - cd path\to\MPSCRUBBER
 - Zip the dist_package directory
-    - Compress-Archive -Path .\dist_package -DestinationPath test_builds\mpscrubber_test_build.zip
+    - Compress-Archive -Path .\dist_package -DestinationPath test_builds\mpscrubber_test_build_[v_#_#].zip
 - To FORCE an overwrite of what was there, use this:
-    - Compress-Archive -Path .\dist_package -DestinationPath test_builds\mpscrubber_test_build.zip -Force
+    - Compress-Archive -Path .\dist_package -DestinationPath test_builds\mpscrubber_test_build_[v_#_#].zip -Force
     - NOTE: [Simply renaming the zip file would also work]
 - NOTE: This can also be done in file explorer by right clicking and telling it to
   zip the folder.
 
 *****USERS COMPUTER*****
-- Install Python, add PYTHON to PATH 
+- Install Python, add PYTHON to PATH, (if not done automatically)
 - Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser (to run scripts)
 

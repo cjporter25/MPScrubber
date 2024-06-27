@@ -5,7 +5,7 @@ import time
 from bs4 import BeautifulSoup
 from datetime import date
 
-from marketplace.constantsFB import *
+from marketplaceFB.facebookMP_variables import *
 
 class facebookMP:
     def __init__(self, minPrice, maxPrice, minMiles, 
@@ -21,7 +21,7 @@ class facebookMP:
         self.brands = brands
         self.bodyStyles = bodyStyles
         self.vehicleTypes = vehicleTypes
-        self.connection = sqlite3.connect('./marketplace/facebookDB.db')
+        self.connection = sqlite3.connect('./marketplaceFB/facebookDB.db')
     def __init__(self):
         self.minPrice = "0"
         self.maxPrice = "50000"
@@ -33,7 +33,7 @@ class facebookMP:
         self.brands = ["Toyota", "Honda", "Chevy"]
         self.bodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
         self.vehicleTypes = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
-        self.connection = sqlite3.connect('./marketplace/facebookDB.db')
+        self.connection = sqlite3.connect('./marketplaceFB/facebookDB.db')
 
     def build_URLs(self, brands):
         fbURLs = []
@@ -235,57 +235,7 @@ class facebookMP:
         time.sleep(1)
         print("1")
         time.sleep(1)
-# REDACTED
-    def save_postings(self, newEntries, brand):
-        cursor = self.connection.cursor()
-        deleteCommand = '''DELETE FROM ''' + brand
-        cursor.execute(deleteCommand)
-        newTableCommand = '''CREATE TABLE IF NOT EXISTS ''' + brand + ''' (Year INT, Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)'''
-        cursor.execute(newTableCommand)
-        addManyCommand = '''INSERT INTO ''' + brand + ''' VALUES(?,?,?,?,?,?)'''
-        cursor.executemany(addManyCommand, newEntries)
-        self.connection.commit()
-        selectMany = '''SELECT * FROM ''' + brand
-        cursor.execute(selectMany)
-        print(cursor.fetchall())
-        self.connection.close()
 
-# REDACTED
-    def save_postings_test(self, newEntries, brand):
-        cursor = self.connection.cursor()
-        cursor.execute('''DELETE FROM Toyota''')
-        match brand:
-            case "Toyota":
-                cursor.execute('''CREATE TABLE IF NOT EXISTS Toyota
-                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
-                cursor.executemany('INSERT INTO Toyota VALUES(?,?,?,?,?)', newEntries)
-            case "Honda":
-                cursor.execute('''CREATE TABLE IF NOT EXISTS Honda
-                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
-                cursor.executemany('INSERT INTO Honda VALUES(?,?,?,?,?)', newEntries)
-            case "Chevy":
-                cursor.execute('''CREATE TABLE IF NOT EXISTS Chevy
-                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
-                cursor.executemany('INSERT INTO Chevy VALUES(?,?,?,?,?)', newEntries)
-            case "Ford":
-                cursor.execute('''CREATE TABLE IF NOT EXISTS Ford
-                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
-                cursor.executemany('INSERT INTO Ford VALUES(?,?,?,?,?)', newEntries)
-            case "Lexus":
-                cursor.execute('''CREATE TABLE IF NOT EXISTS Lexus
-                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
-                cursor.executemany('INSERT INTO Lexus VALUES(?,?,?,?,?)', newEntries)
-            case "Dodge":
-                cursor.execute('''CREATE TABLE IF NOT EXISTS Dodge
-                (Description TEXT, Price TEXT, Location TEXT, Mileage TEXT, Link TEXT)''')
-                cursor.executemany('INSERT INTO Dodge VALUES(?,?,?,?,?)', newEntries)
-            case _:
-                print("Brand provided was not valid, please try again!")
-        self.connection.commit()
-        test_loc = "Elk River, MN"
-        cursor.execute("SELECT * FROM Toyota WHERE Location=?", test_loc)
-        print(cursor.fetchall())
-        self.connection.close()
 
 
 

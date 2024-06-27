@@ -1,13 +1,4 @@
-# import chardet
 from setuptools import setup, find_packages
-
-# DIDN'T WORK
-# def read_requirements():
-  #  with open('requirements.txt', 'rb') as f:
-   #     raw_data = f.read()
-    #    result = chardet.detect(raw_data)
-    #    encoding = result['encoding']
-    #    return raw_data.decode(encoding).splitlines()
 
 setup(
     name='mpscrubber',
