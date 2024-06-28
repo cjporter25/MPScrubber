@@ -1,12 +1,19 @@
 import sys
 import json
 import os
+import pprint
+
+from marketplaceFB.facebookMP_scraper import *
+from marketplaceFB.facebookMP_reporting import *
+
+
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, 
                              QHBoxLayout, QListWidget, QCheckBox, 
                              QPushButton, QLabel, QGridLayout,
                              QSpacerItem, QSizePolicy, QLineEdit)
 from PyQt5.QtCore import Qt
-import pprint
+
+
 
 class ScrubberGUI(QWidget):
     def __init__(self):
@@ -15,7 +22,7 @@ class ScrubberGUI(QWidget):
         # (x), (y), (width), (height)
         # 100/100 means 100 pixels down and to the right from the top
         #       left of the screen
-        self.setGeometry(100, 100, 600, 400)  # Set window size and position
+        self.setGeometry(200, 200, 600, 400)  # Set window size and position
 
         self.init_variables()
 

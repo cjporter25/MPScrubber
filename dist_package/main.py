@@ -9,13 +9,27 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 # Marketplace Imports
-from marketplaceFB.facebookMP_scraper import *
-from marketplaceFB.facebookMP_reporting import *
+
 from marketplaceFB.facebookMP_GUI import *
 
+
+# input = input("Running MAIN(1) or Dev-GUI(2)? --> ")
+
+
 app = QApplication(sys.argv)
-window = ScrubberGUI()
+window = ScrubberGUI() 
+# Set the window to stay on top
+window.setWindowFlags(window.windowFlags() | Qt.WindowStaysOnTopHint)
 window.show()
+
+# Bring the window to the front
+window.raise_()
+window.activateWindow()
+
+# Reset the window flags to default so it doesn't always stay on top
+# after it gains focus
+window.setWindowFlags(window.windowFlags() & ~Qt.WindowStaysOnTopHint)
+window.show()   
 sys.exit(app.exec_())
 
 #**********************MOCK USER INPUT**********************#

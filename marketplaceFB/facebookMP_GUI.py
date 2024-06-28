@@ -22,7 +22,7 @@ class ScrubberGUI(QWidget):
         # (x), (y), (width), (height)
         # 100/100 means 100 pixels down and to the right from the top
         #       left of the screen
-        self.setGeometry(100, 100, 600, 400)  # Set window size and position
+        self.setGeometry(200, 200, 600, 400)  # Set window size and position
 
         self.init_variables()
 
