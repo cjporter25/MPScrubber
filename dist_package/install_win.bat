@@ -29,6 +29,11 @@ echo ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 echo ' Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser '
 echo ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 echo.
+
+
+:: Create a shortcut on the desktop
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0create_shortcut.ps1"
+
 :: Open a new terminal window and navigate to the project directory
-start powershell -NoExit -Command "cd '%~dp0'; . .venv\Scripts\Activate.ps1; { Virtual environment activated... Type 'python main.py' and press [ENTER] to start the application... NOTE: Alternative option in the future will include an application run file to avoid the terminal altogether post installation! }"
+:: start powershell -NoExit -Command "cd '%~dp0'; . .venv\Scripts\Activate.ps1; { Virtual environment activated... Type 'python main.py' and press [ENTER] to start the application... NOTE: Alternative option in the future will include an application run file to avoid the terminal altogether post installation! }"
 pause

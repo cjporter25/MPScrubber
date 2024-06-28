@@ -13,14 +13,10 @@ from marketplaceFB.facebookMP_scraper import *
 from marketplaceFB.facebookMP_reporting import *
 from marketplaceFB.facebookMP_GUI import *
 
-
-input = input("Running MAIN(1) or Dev-GUI(2)? --> ")
-
-if input == "2":
-    app = QApplication(sys.argv)
-    window = ScrubberGUI()
-    window.show()
-    sys.exit(app.exec_())
+app = QApplication(sys.argv)
+window = ScrubberGUI()
+window.show()
+sys.exit(app.exec_())
 
 #**********************MOCK USER INPUT**********************#
 # prefMinPrice = 0
