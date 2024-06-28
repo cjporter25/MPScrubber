@@ -228,7 +228,7 @@ class ScrubberGUI(QWidget):
                     "Sort 2": self.sorting_checkbox2_fb.isChecked()
                 }
             },
-            "excelFilters": {
+            "reportFilters": {
                 "Date Pulled": {
                     "Date 1": self.date_pulled_checkbox1.isChecked(),
                     "Date 2": self.date_pulled_checkbox2.isChecked()

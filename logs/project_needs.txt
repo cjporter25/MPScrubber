@@ -35,10 +35,22 @@
       developer tools again to see what it has to change to.
 
 ***PRE-CHECKING DATABASE FOR ENTRIES ALREADY PRESENT****
-    - (1.15.23) The program currently functions as a means to retrieve and store data from the
+    - (1.15.24) The program currently functions as a means to retrieve and store data from the
       facebook marketplace, however, there is no means by which the program won't add something
       if it's already present. The next major hurdle is to implement a function that checks whether
       a posting has already been added to the database.
+
+***SEPARATION OF CONCERNS***
+    - (6.19.24) The program currently has a python class (facebookMP) that was doing too much and should
+      be split into it's two distinct functions - scraping the facebook page & communicating with the DB.
+
+***GUI RESPONSE ACTIVATES SCRAPPING***
+    - (6.26.24) The program is currently hard coded for most of the variables necessary to actual have
+      the scraping run. This was on purpose to ensure the functional side works as intended. Since I amount
+      now in the feature realm, I can focus on having a GUI that a user can interact with that will tailor 
+      what is scrapped and what is reported. The goal is to have a variety of input spaces and checkboxes
+      that will be parsed and saved to a dictionary object that the project code will interpret to run the 
+      scrapping process.
 
 
     

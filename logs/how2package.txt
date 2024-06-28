@@ -49,8 +49,8 @@
 1. cp -r dist/* dist_package/dist
 2. cp requirements.txt dist_package/
 3. cp main.py dist_package/
-4. a. Remove-Item -Recurse -Force marketplace\__pycache__
-   b. cp -r marketplace/* dist_package/marketplace
+4. a. Remove-Item -Recurse -Force marketplaceFB\__pycache__
+   b. cp -r marketplaceFB/* dist_package/marketplaceFB
 4. (One Liner) "robocopy marketplace dist_package\marketplace /MIR /XD __pycache__"
 
 ****CREATE INSTALLATION SCRIPTS****

@@ -1,3 +1,5 @@
+::install_win.bat
+
 @echo off
 
 :: Create a virtual environment

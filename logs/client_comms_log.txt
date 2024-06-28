@@ -22,6 +22,13 @@
         current project status and potential future function. In preparation for a virtual screen share this coming Friday,
         05.24.24, the short term goal was to devise a means to push test builds to the client such that they're able to 
         test features on their own.
+    - (06.19.24 - In person meet) During an in person meeting, I was able to demonstrate how the project can be installed 
+      on a client's machine and that this process is mostly automated. 
+        - After that was shown, the beginnings of the GUI was shown and the client offered feedback on what they'd expect out 
+        of it. I explained that the current direction is to simply get the GUI elements to respond correctly and then we'll 
+        go from there.
+    - (06.28.24 - Phone call) Client graciously offered to connect me to an interested party about this project and I look
+      forward to seeing where this could take this project or my skills as a whole.
 
 ***PROJECT FOCUS***
     - Initial Full Scope and Summary:
