@@ -50,8 +50,10 @@
 2. cp requirements.txt dist_package/
 3. cp main.py dist_package/
 4. a. Remove-Item -Recurse -Force marketplaceFB\__pycache__
-   b. cp -r marketplaceFB/* dist_package/marketplaceFB
+   b. cp -r marketplaceFB/ dist_package/marketplaceFB/
 4. (One Liner) "robocopy marketplace dist_package\marketplace /MIR /XD __pycache__"
+5. cp README.md dist_package/README.md
+    (This is in case there's changes to the README.md)
 
 ****CREATE INSTALLATION SCRIPTS****
 - Add README.md, install.sh, install.bat to the dist_package folder
