@@ -1,5 +1,5 @@
 # Define the path to the PowerShell script
-$targetPath = "$PSScriptRoot\mpscrubber_run.bat"
+$targetPath = "$PSScriptRoot\launcher.bat"
 
 # Define the path to the batch file (optional, if you want the shortcut to point to the batch file instead)
 #$targetPath = "$PSScriptRoot\run_application.bat"

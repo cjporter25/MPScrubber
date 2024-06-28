@@ -9,8 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 # Marketplace Imports
-from marketplaceFB.facebookMP_scraper import *
-from marketplaceFB.facebookMP_reporting import *
+
 from marketplaceFB.facebookMP_GUI import *
 
 

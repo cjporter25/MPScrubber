@@ -1,12 +1,19 @@
 import sys
 import json
 import os
+import pprint
+
+from marketplaceFB.facebookMP_scraper import *
+from marketplaceFB.facebookMP_reporting import *
+
+
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, 
                              QHBoxLayout, QListWidget, QCheckBox, 
                              QPushButton, QLabel, QGridLayout,
                              QSpacerItem, QSizePolicy, QLineEdit)
 from PyQt5.QtCore import Qt
-import pprint
+
+
 
 class ScrubberGUI(QWidget):
     def __init__(self):
