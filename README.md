@@ -52,6 +52,10 @@
 - (UPDATED 6.18.24) - The installation script also activates the virtual environment,
   and places the user in a terminal showing the project folder. The user should
   therefore be able to skip to step 3.
+- (UPDATED 7.1.24) The installation now installs what is necessary and creates a shortcut
+  on the desktop. This shortcut runs the application in it's GUI state. IT IS NOT FUNCTIONAL
+  AT THIS TIME. Once the next official version is released, the input into the GUI should
+  cause the program to run as expected.
 - FIRST: Navigate to the project folder
    - cd C:\Users\[USER_ACCOUNT]\Desktop\mpscrubber_test_build\dist_package
 - SECOND: Activate the virtual environment
