@@ -47,55 +47,12 @@
 
 ****COPY OVER EVERYTHING****               
 1. cp -r dist/* dist_package/dist
-2. cp requirements.txt dist_package/
-3. cp main.py dist_package/
-4. a. Remove-Item -Recurse -Force marketplaceFB\__pycache__
-   b. cp -r marketplaceFB/ dist_package/marketplaceFB/
-4. (One Liner) "robocopy marketplace dist_package\marketplace /MIR /XD __pycache__"
-5. cp README.md dist_package/README.md
-    (This is in case there's changes to the README.md)
+2. cp main.py dist_package/
+3. robocopy marketplaceFB dist_package\marketplaceFB /MIR /XD __pycache__
+4. cp README.md dist_package/README.md 
 
 ****CREATE INSTALLATION SCRIPTS****
 - Add README.md, install.sh, install.bat to the dist_package folder
-***README***
-    # MPSCRUBBER
-    ## Installation
-    ### Using install.sh (Unix-based systems)
-    ```sh
-    ./install.sh
-***install.sh***
-    ### install.sh
-
-    # This is a shell script for setting up the project on Unix-based systems (Linux/macOS).
-    ```sh
-    #!/bin/sh
-    # Create a virtual environment
-    python -m venv venv
-    # Activate the virtual environment
-    . venv/bin/activate
-    # Install the required packages
-    pip install -r requirements.txt
-    echo "Installation complete. To run the application, 
-    ctivate the virtual environment and run 'python main.py'."
-***install.bat***
-    @echo off
-    :: Create a virtual environment
-    python -m venv .venv
-    :: Activate the virtual environment
-    call .venv\Scripts\activate
-    :: Check if the virtual environment is activated
-    if not defined VIRTUAL_ENV (
-        echo Error: Virtual environment not activated.
-        exit /b 1
-    )   
-    :: Install the required packages with verbose output
-    pip install -r requirements.txt --verbose
-    :: List the installed packages (No longer necessary)
-    :: pip list
-    echo Installation complete. To run the application, a new terminal window will be opened.
-    :: Open a new terminal window and navigate to the project directory
-    start powershell -NoExit -Command "cd '%~dp0'; . .venv\Scripts\Activate.ps1; pip list; echo Virtual environment activated. Run 'python main.py' to start the application."
-    pause
 
 ********STEP THREE********
 ****ZIP IT UP****

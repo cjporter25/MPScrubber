@@ -31,41 +31,37 @@
      anmdd click "Install".
    - Download and install Python 3.x from [python.org](https://www.python.org/downloads/).
    - Make sure to check the box to add Python to your PATH during the installation process.
+2. **Install Chrome**:
+   - This program currently uses a chrome based web driver to complete it's scrapping functions. If chrome is not installed, this program will not work.
 
-2. **Unzip the Package**:
-   - Extract the contents of `mpscrubber_test_build[v#].zip` from the test_builds folder
-     to some directory.
-   - It is recommended that the program be extracted (at this time) to 
-     the desktop as the reports will show up there.
+3. **Unzip the Package**:
+   - Extract the contents of `mpscrubber_test_build_v_#_#_#.zip` from the test_builds folder
+     to some directory. Recommend using the latest version as the remaining instructions are tailored to how it is most recently structured.
+   - When choosing a location to extract to, it is recommended that the program be extracted (at this time) to the desktop as the reports will show up there.
 
 3. **Run the Installation Script**:
-   - For Windows, double-click `install.bat` or run it from the command prompt:
+   - For Windows, double-click the `install_win` file inside the main directory or run it from the command prompt:
      ```bat
      install.bat
      ```
-   - For Unix-based systems, run the installation script:
-     ```sh
-     ./install.sh
-     ```
+   - NOTE: This is currently not installable on an Apple System!
 
-4. **Run the Application**:
-- (UPDATED 6.18.24) - The installation script also activates the virtual environment,
-  and places the user in a terminal showing the project folder. The user should
-  therefore be able to skip to step 3.
-- FIRST: Navigate to the project folder
-   - cd C:\Users\[USER_ACCOUNT]\Desktop\mpscrubber_test_build\dist_package
-- SECOND: Activate the virtual environment
-   - .venv\Scripts\Activate.ps1
-- THIRD: Run the program
-   - python main.py
-- FOURTH: Choosing "main" or "Dev-GUI"
-   - As of right now, choosing "main" will run the program with hard coded presets and 
-     "test" will show what the GUI currently looks like.
+4. **Run the Application**: PLEASE READ
+- Post Install (What to Expect)
+   - The installation process will automatically create a python virtual environment that includes all the python modules necessary to make the program work. Once this step is complete, a shortcut labeled "MPScrubber" should appear on the desktop.
+- RUN
+   - Double click the desktop shortcut and the script will automatically activate the virtual environment and run the program.
+- User Prompts (IMPORTANT)
+   - The user will be prompted with two options: `Demo` or `Dev-GUI`. The demo has pre-selected scrapping variables to provide the user a demo of what the program currently is capable of. Please do give it time to complete as a chrome window The dev-gui represents the simple GUI that is in development. The eventual goal is to have this GUI be the main driver of user input to scrape the way they want given Facebook's various filtering options.
+   - Once the program window is closed, the whole program will exit. To have it run again, simply launch it again through the provided shortcut.
 
 
 ## Folder Structure
 
 ### dist
+   - When a build is created using the "build" module, via the command "python -m build", 
+     the resulting two file types are created - 1. A .tar.gz file which contains the actual 
+     source code
 
 ### dist-package
 

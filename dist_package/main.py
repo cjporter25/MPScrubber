@@ -13,24 +13,30 @@ from webdriver_manager.chrome import ChromeDriverManager
 from marketplaceFB.facebookMP_GUI import *
 
 
-# input = input("Running MAIN(1) or Dev-GUI(2)? --> ")
+firstInput = input("Running Demo(1) or Dev-GUI(2)? --> ")
 
+if (firstInput == "1"):
+    secondInput = input("Are you sure? This demo will take roughly 30 seconds to complete. If you are sure press (Y/y) for yes or (N/n) for no: ")
+    if secondInput == "N" or secondInput == "n":
+        print("Okay! Opening the example GUI instead. Rerun the application to run the demo if you'd like.")
+        firstInput = "2"
 
-app = QApplication(sys.argv)
-window = ScrubberGUI() 
-# Set the window to stay on top
-window.setWindowFlags(window.windowFlags() | Qt.WindowStaysOnTopHint)
-window.show()
+if (firstInput == "2"):
+    app = QApplication(sys.argv)
+    window = ScrubberGUI() 
+    # Set the window to stay on top
+    window.setWindowFlags(window.windowFlags() | Qt.WindowStaysOnTopHint)
+    window.show()
 
-# Bring the window to the front
-window.raise_()
-window.activateWindow()
+    # Bring the window to the front
+    window.raise_()
+    window.activateWindow()
 
-# Reset the window flags to default so it doesn't always stay on top
-# after it gains focus
-window.setWindowFlags(window.windowFlags() & ~Qt.WindowStaysOnTopHint)
-window.show()   
-sys.exit(app.exec_())
+    # Reset the window flags to default so it doesn't always stay on top
+    # after it gains focus
+    window.setWindowFlags(window.windowFlags() & ~Qt.WindowStaysOnTopHint)
+    window.show()   
+    sys.exit(app.exec_())
 
 #**********************MOCK USER INPUT**********************#
 # prefMinPrice = 0
@@ -47,7 +53,7 @@ sys.exit(app.exec_())
 
 # Build a list of URLS to access for each brand
 # prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
-prefBrands = ["Chevy", "Toyota"]
+prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
 fb = facebookMP()
 urls = fb.build_URLs(prefBrands)
 newDate = fb.get_current_date_and_time()

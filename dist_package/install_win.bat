@@ -14,13 +14,28 @@ if not defined VIRTUAL_ENV (
     exit /b 1
 )
 
-:: Install the required packages with verbose output
-pip install -r requirements.txt --verbose
+:: Get ready to install dependencies from build ".whl"
+setlocal enabledelayedexpansion
+set WHL_FILE=
 
-:: List the installed packages (No longer necessary)
-:: pip list
+:: Find any .whl file in the dist folder. There should only be one at this time.
+for %%f in ("dist\*.whl") do (
+    set WHL_FILE=%%f
+)
+
+:: If one is not found, echo there was an error to the console
+if "%WHL_FILE%" == "" (
+    echo Error: No .whl file found in the dist folder.
+    exit /b 1
+)
+
+:: If found use "pip install" on the found .whl file with verbose output to 
+:: install all requirements for the program
+pip install %WHL_FILE% --verbose
+
+
 echo. 
-echo Installation complete. To run the application, a new terminal window will be opened.
+echo Installation complete. To run the application, double-click the shortcut now on the desktop
 echo.
 echo NOTE: You may be required to allow your computer to run sripts. If so, type in the 
 echo following command within any terminal instance and press enter:
@@ -31,9 +46,6 @@ echo ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 echo.
 
 
-:: Create a shortcut on the desktop
+:: Create a shortcut on the desktop.
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0create_shortcut.ps1"
-
-:: Open a new terminal window and navigate to the project directory
-:: start powershell -NoExit -Command "cd '%~dp0'; . .venv\Scripts\Activate.ps1; { Virtual environment activated... Type 'python main.py' and press [ENTER] to start the application... NOTE: Alternative option in the future will include an application run file to avoid the terminal altogether post installation! }"
 pause

@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name='mpscrubber',
-    version='0.3.1',
+    version='0.4',
     # marketplace is currently the only required folder for the package
-    packages=find_packages(include=['marketplace', 'marketplace.*']),
+    packages=find_packages(include=['marketplaceFB', 'marketplaceFB.*']),
     # Retrieve python requirements list
     install_requires=["attrs==23.2.0",
                         "beautifulsoup4==4.12.3",
