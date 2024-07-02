@@ -1,9 +1,8 @@
 # MPSCRUBBER
 
 ## Table of Contents
-1. [Project Overview](#project-overview)
-2. [Installation & Usage](#usage)
-3. [Folder Structure](#folder-structure)
+1. [Installation & Usage](#usage)
+2. [Folder Structure](#folder-structure)
     - [dist](#dist)
     - [dist_package](#dist_package)
     - [marketplaceCL](#marketplaceCL)
@@ -12,16 +11,9 @@
     - [test_builds](#test_builds)
     - [user_data](#user_data)
     - [Other Files](#other-files)
-4. [Contributing](#contributing)
-5. [License](#license)
-6. [Contact](#contact)
-
-## Project Overview
-   [Placeholder]
-
-## Potential Use Cases
-   [Placeholder]
-
+3. [Contributing](#contributing)
+4. [License](#license)
+5. [Contact](#contact)
 
 ## Installation & Usage
 
@@ -54,6 +46,8 @@
 - User Prompts (IMPORTANT)
    - The user will be prompted with two options: `Demo` or `Dev-GUI`. The demo has pre-selected scrapping variables to provide the user a demo of what the program currently is capable of. Please do give it time to complete as a chrome window The dev-gui represents the simple GUI that is in development. The eventual goal is to have this GUI be the main driver of user input to scrape the way they want given Facebook's various filtering options.
    - Once the program window is closed, the whole program will exit. To have it run again, simply launch it again through the provided shortcut.
+- Demo
+   - This demo is preset to scrape for and output the 10 most recently posted used-vehicles from Chevy, Toyota, Ford, Lexus, and Dodge (as of running the program). Unfortuantely, to maintain an up-to-date database, the program would need to run 24/7. Therefore, the output excel sheet will only include the ten most recently added things to the database which could be 10 brand new vehicles at the time of running the script on your own system.
 
 
 ## Folder Structure
@@ -64,21 +58,31 @@
      source code
 
 ### dist-package
+   - This contains the .whl and .tar files, the main program files, and the necessary scripts to install and activate a virtual environment, as well as create a shortcut on the desktop for convenience. It holds all the would be folders and files to be a part of a test_build.
+   - `dist` - (Not shown) Is still a part of the test_build zip file. Contains the most recent .tar.gz and .whl build.
+   - `marketplaceFB` - Contains a direct copy of the files found in the marketplaceFB folder later in this directory
+   - `create_shortcut` - An assistive script that runs at the end of the install_win script. Simply creates a shortcut on the desktop that points to and executes "launcher.bat" where ever it was extracted to.
+   - `install_win` - Installation script that creates a virtual environment in the project directory and adds all the necessary modules. It then creates the aforementioned desktop shortcut.
+   - `launcher.bat` - Executes the mpscrubber.ps1 file with specific permissions to allow the running of scripts.
+   - `main.py` - The main driver of the program. Either outputs the test GUI or runs a pre-set demo of the scrapping and reporting in action
+   - `mpscrubber.ps1` - Ensures the virtual environment is active, the runs main.py
+   - `README.md` - An updated README.md to ship with a build
 
 ### logs
+   - Contains a variety of personal logs to look back on in the event I need to reference a step taken during a past endeavor or conversation. It also includes various text documents simply for my learning to ensure the steps I take are consistently the same each time a build is made.
 
 ### marketplaceCL
    - Currently not in use! If this project expands its scope outside of the facebook marketplace,
    future marketplaces will have dedicated directories for the scripts that run there.
 
 ### marketplaceFB
-   - `facebookDB.db`
-   - `facebookMP_database.py`
-   - `facebookMP_GUI.py`
-   - `facebookMP_reporting.py`
-   - `facebookMP_scraper.py`
-   - `facebookMP_variables.py`
-   - `GUI_styles.qss`
+   - `facebookDB.db` - The attached SQLite database to keep a permanent record of all scrapping activities.
+   - `facebookMP_database.py` - Will eventually handle all interactions specific to the SQlite database
+   - `facebookMP_GUI.py` - An in development python GUI that will eventually be the main driver of the scrapping
+   - `facebookMP_reporting.py` - Handles all interactions specific to gathering, organizing, and outputting the requested scrapping data to an excel spreadsheet.
+   - `facebookMP_scraper.py` - Handles all duties specific to scrapping the facebook marketplace
+   - `facebookMP_variables.py` - Contains a variety of constants used by the other modules, i.e., HTML class tags which can be long, nonsensical, and prone to change.
+   - `GUI_styles.qss` - Similar to a css sheet for HTML, the python GUI module used in this project uses a ".qss" file to control the styling of the GUI.
 
 ### project_images
    - Contains a variety of images taken of the project during development. Since this project
@@ -96,10 +100,10 @@
    and the program will simply spit out what it just did or recently did again.
 
 ### Other Files
-   - `.gitignore`
-   - `LICENSE`
+   - `.gitignore` - Created by gitignore.io
+   - `LICENSE` - Basic MIT license.
    - `main.py` - Main driver of the program
-   - `README.md`
+   - `README.md` - This file
    - `requirements.txt` - Contains the list of python libraries installed in the projects virtual environment
    - `setup.py` - This file contains the necessary structure for the "build" python module to create an installable package
    - `update_setup.py` - Potentially redacted. Was an attempt to automatically update the "install_requires"
