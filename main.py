@@ -19,19 +19,33 @@ from marketplaceFB.facebookMP_GUI import *
 
 def listener(stop_event):
     # Redirect stdout and stderr to capture the output
+    print("Started listening...")
     f = io.StringIO()
     with redirect_stdout(f), redirect_stderr(f):
         while not stop_event.is_set():
             output = f.getvalue()
+            if "usb_service_win.cc:105 SetupDiGetDeviceProperty" in output:
+                stack_trace = ''.join(traceback.format_stack())
+                with open('debug.log', 'a') as log_file:
+                    log_file.write("Detected USB device property setup failure\n")
+                    log_file.write("Stack trace:\n")
+                    log_file.write(stack_trace)
+                    log_file.write("\n")
+                print("Detected USB device property setup failure. Stack trace saved to debug.log.")
+                print("Stack trace:\n", stack_trace)
             if "Created TensorFlow Lite XNNPACK delegate for CPU" in output:
-                print("Detected TensorFlow Lite XNNPACK delegate initialization")
-                print(traceback.format_stack())
-            if "SetupDiGetDeviceProperty failed: Element not found. (0x490)" in output:
-                print("Detected USB device property setup failure")
-                print(traceback.format_stack())
+                stack_trace = ''.join(traceback.format_stack())
+                with open('debug.log', 'a') as log_file:
+                    log_file.write("Detected TensorFlow Lite XNNPACK delegate initialization\n")
+                    log_file.write("Stack trace:\n")
+                    log_file.write(stack_trace)
+                    log_file.write("\n")
+                print("Detected TensorFlow Lite XNNPACK delegate initialization. Stack trace saved to debug.log.")
+                print("Stack trace:\n", stack_trace)
             f.truncate(0)  # Clear the StringIO buffer
             f.seek(0)
             time.sleep(1)
+    print("Finished Listening...")
 
 
 firstInput = input("Running Demo(1) or Dev-GUI(2)? --> ")
@@ -114,13 +128,13 @@ for url in urls:
     # fb.show_table_ordered(currBrand, "DatePulled")
     print(f"Current total for {currBrand}: {db.get_row_count(currBrand)}")
 
-    # Start the listener and wait threads
+    # Start the listener before the wait function
     stop_event = threading.Event()
 
     listener_thread = threading.Thread(target=listener, args=(stop_event,))
-    wait_thread = threading.Thread(target=db.wait())
-
     listener_thread.start()
+
+    wait_thread = threading.Thread(target=db.wait)
     wait_thread.start()
 
     # Wait for the wait thread to finish
