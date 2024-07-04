@@ -13,8 +13,10 @@
 *.pptx
 *.sdf
 *.tax2010
+*.tax
 *.vcf
 *.xml
+*.log
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

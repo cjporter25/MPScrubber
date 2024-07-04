@@ -29,7 +29,7 @@ FB_MP_VEHICLES = "https://www.facebook.com/marketplace/category/vehicles/"
 # 107996279221955 represents the location ID of St. Paul. Every location facebook
 #       has stored has a unique location ID. They are maybe geographical coordinates
 #       but unsure at this time.
-FB_MP_VEHICLES_STPAUL = "107996279221955/vehicles?"
+FB_MP_VEHICLES_STPAUL = "107996279221955/vehicles/?"
 
 
 # The url can specify what the min and max price should be for search results. The URL

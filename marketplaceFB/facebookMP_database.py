@@ -104,14 +104,7 @@ class FB_DatabaseManager:
             print(tableName)
     def wait(self):
         print("Mandatory pull delay...")
-        print("5")
-        time.sleep(1) 
-        print("4")
-        time.sleep(1)
-        print("3")
-        time.sleep(1)
-        print("2")
-        time.sleep(1)
-        print("1")
-        time.sleep(1)
+        for i in range(5, 0, -1):
+            print(i)
+            time.sleep(1)
     

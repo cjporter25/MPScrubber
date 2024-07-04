@@ -1,16 +1,37 @@
 # New System move - 4.15.24 - Christopher J. Porter
+import sys
+import threading
+import traceback
+import io
+from contextlib import redirect_stdout, redirect_stderr
 
 # Selenium imports
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.common.by import By
+
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 # Marketplace Imports
-
 from marketplaceFB.facebookMP_GUI import *
+
+
+def listener(stop_event):
+    # Redirect stdout and stderr to capture the output
+    f = io.StringIO()
+    with redirect_stdout(f), redirect_stderr(f):
+        while not stop_event.is_set():
+            output = f.getvalue()
+            if "Created TensorFlow Lite XNNPACK delegate for CPU" in output:
+                print("Detected TensorFlow Lite XNNPACK delegate initialization")
+                print(traceback.format_stack())
+            if "SetupDiGetDeviceProperty failed: Element not found. (0x490)" in output:
+                print("Detected USB device property setup failure")
+                print(traceback.format_stack())
+            f.truncate(0)  # Clear the StringIO buffer
+            f.seek(0)
+            time.sleep(1)
 
 
 firstInput = input("Running Demo(1) or Dev-GUI(2)? --> ")
@@ -18,6 +39,7 @@ firstInput = input("Running Demo(1) or Dev-GUI(2)? --> ")
 if (firstInput == "1"):
     secondInput = input("Are you sure? This demo will take roughly 30 seconds to complete. If you are sure press (Y/y) for yes or (N/n) for no: ")
     if secondInput == "N" or secondInput == "n":
+        print("Switching to GUI mode")
         print("Okay! Opening the example GUI instead. Rerun the application to run the demo if you'd like.")
         firstInput = "2"
 
@@ -58,7 +80,7 @@ fb = FB_Scrapper()
 db = FB_DatabaseManager()
 urls = fb.build_URLs(prefBrands)
 newDate = fb.get_current_date_and_time()
-print(newDate)
+print(f"Current date and time: {newDate}")
 
 
 # Launch Chrome driver
@@ -76,22 +98,41 @@ for url in urls:
         wait.until(EC.url_to_be(url[1])) #Wait to let the page load
         if get_url == url[1]:    #If the used URL matches the original, grab the page source
             page_source = driver.page_source
-    except:
-        print("Timed Out, or an error occurred while loading")
+    except Exception as e:
+        print(f"Error occurred while loading URL {url[1]}: {e}")
         continue
 
     # url[0] contains a string of the current brand being looked at
     currBrand = url[0]
 
-    print("Retrieving posting data...")
+    print(f"Retrieving posting data for brand: {currBrand}")
     newEntries = fb.retrieve_postings(page_source)
-    print("Creating or initializing table for " + currBrand.upper() + "...")
+    print(f"Creating or initializing table for {currBrand.upper()}")
     db.create_table(currBrand)
-    print("Inserting new entries...")
+    print(f"Inserting new entries for {currBrand}")
     db.insert_entries(currBrand, newEntries)
     # fb.show_table_ordered(currBrand, "DatePulled")
-    print("Current total: " + db.get_row_count(currBrand))
-    db.wait()
+    print(f"Current total for {currBrand}: {db.get_row_count(currBrand)}")
+
+    # Start the listener and wait threads
+    stop_event = threading.Event()
+
+    listener_thread = threading.Thread(target=listener, args=(stop_event,))
+    wait_thread = threading.Thread(target=db.wait())
+
+    listener_thread.start()
+    wait_thread.start()
+
+    # Wait for the wait thread to finish
+    wait_thread.join()
+
+    # Signal the listener to stop
+    stop_event.set()
+    listener_thread.join()
+
+    # print("Before mandatory pull delay")
+    # db.wait()
+    # print("After mandatory pull delay")
 #****************************Main Scrubber Driver*********************************#
 
 # Close chrome driver
@@ -99,6 +140,7 @@ driver.quit()
 
 #****************************Generate Excel Report*********************************#
 rm = ReportsManager()
-rm.set_primary_directory()
 rm.build_new_report(prefBrands, 10)
 #****************************Generate Excel Report*********************************#
+
+
