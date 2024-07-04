@@ -52,12 +52,15 @@ if (firstInput == "2"):
 
 
 # Build a list of URLS to access for each brand
+prefBrands = ["Chevy", "Toyota"]
 # prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
-prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
-fb = facebookMP()
+fb = FB_Scrapper()
+db = FB_DatabaseManager()
 urls = fb.build_URLs(prefBrands)
 newDate = fb.get_current_date_and_time()
 print(newDate)
+
+
 # Launch Chrome driver
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 wait = WebDriverWait(driver, 5)
@@ -83,12 +86,12 @@ for url in urls:
     print("Retrieving posting data...")
     newEntries = fb.retrieve_postings(page_source)
     print("Creating or initializing table for " + currBrand.upper() + "...")
-    fb.create_table(currBrand)
+    db.create_table(currBrand)
     print("Inserting new entries...")
-    fb.insert_entries(currBrand, newEntries)
+    db.insert_entries(currBrand, newEntries)
     # fb.show_table_ordered(currBrand, "DatePulled")
-    print("Current total: " + fb.get_row_count(currBrand))
-    fb.wait()
+    print("Current total: " + db.get_row_count(currBrand))
+    db.wait()
 #****************************Main Scrubber Driver*********************************#
 
 # Close chrome driver

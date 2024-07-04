@@ -5,9 +5,9 @@ import time
 from bs4 import BeautifulSoup
 from datetime import date
 
-from marketplaceFB.facebookMP_variables import *
+from marketplaceFB.facebookMP_database import *
 
-class facebookMP:
+class FB_Scrapper:
     def __init__(self, minPrice, maxPrice, minMiles, 
                  maxMiles, minYear, maxYear, sorting, 
                  brands, bodyStyles, vehicleTypes):
@@ -50,8 +50,6 @@ class facebookMP:
             urlPlusBrand = [brand, url]
             fbURLs.append(urlPlusBrand)
         return fbURLs
-    def validate_db(self):
-        cursor = self.connection.cursor()
     def retrieve_postings(self, page_source):
         dbEntries = []
         soup = BeautifulSoup(page_source, features= "html.parser") 
@@ -98,108 +96,13 @@ class facebookMP:
             dbEntries.append(newEntry)
             count+=1
         return dbEntries
-    
-    def create_table(self, brand):
-        cursor = self.connection.cursor()
-        newTableCommand = '''
-            CREATE TABLE IF NOT EXISTS {} (
-                PrimaryKey TEXT,
-                DatePulled TEXT,
-                DatePosted TEXT,
-                Year INT,
-                Price INT,
-                Mileage INT,
-                Description TEXT,
-                Location TEXT,
-                Link TEXT
-            )'''.format(brand)
-        cursor.execute(newTableCommand)
-        self.connection.commit()
-    
-    def insert_entries(self, brand, newEntries):
-        cursor = self.connection.cursor()
-        for entry in newEntries:
-            primaryKey = entry[0]
-            # Trailing comma indicates the "primaryKey" as a single item tuple
-            cursor.execute("SELECT 1 FROM {} WHERE PrimaryKey = ?".format(brand), (primaryKey,))
-            existingEntry = cursor.fetchone()
-
-            # If entry already exists, Skip insertion
-            if existingEntry:
-                print("Entry with primary key '{}' already exists. Skipping insertion.".format(primaryKey))
-            else:
-                insertCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?,?,?)'''.format(brand)
-                cursor.execute(insertCommand, entry)
-        #insertManyCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?,?)'''.format(brand)
-        #cursor.executemany(insertManyCommand, newEntries)
-        self.connection.commit()
-
-    def get_row_count(self, brand):
-        cursor = self.connection.cursor()
-        query = f"SELECT COUNT(*) FROM {brand}"
-        cursor.execute(query)
-        rowCount = cursor.fetchone()[0]
-        cursor.close()
-        return str(rowCount)
-    
-    def show_table(self, brand):
-        cursor = self.connection.cursor()
-        select_many_command = '''SELECT * FROM {}'''.format(brand)
-
-        try:
-            cursor.execute(select_many_command)
-            table = cursor.fetchall()
-
-            # Print table rows excluding the last element. The last element will always be
-            #   the URL of the post
-            for row in table:
-                row_without_url = row[:-1]  # Exclude the last element
-                print(row_without_url)
-        except sqlite3.Error as e:
-            print("Error fetching data:", e)
-        finally:
-            cursor.close()
-    def show_table_ordered(self, brand, order_by_column):
-        print("SHOWING TABLE FOR " + brand + " .......")
-        cursor = self.connection.cursor()
-        select_ordered_command = '''SELECT * FROM {} ORDER BY {}'''.format(brand, order_by_column)
-
-        try:
-            cursor.execute(select_ordered_command)
-            table = cursor.fetchall()
-
-            # Print table rows
-            for row in table:
-                row_without_url = row[:-1]  # Exclude the last element
-                print(row_without_url)
-        except sqlite3.Error as e:
-            print("Error fetching data:", e)
-        finally:
-            cursor.close()
-
-    def list_tables(self):
-        cursor = self.connection.cursor()
-
-        # Query sqlite_master table to get a list of all tables
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = cursor.fetchall()
-
-        # Close the cursor and connection
-        cursor.close()
-
-        # Extract table names from the fetched data
-        tableList = [table[0] for table in tables]
-        
-        print("Tables in the database:")
-        for tableName in tableList:
-            print(tableName)
 
     def convert_to_int(self, newString):
         try:
-            #print("Trying to convert:" + newString)
+            # print("Trying to convert:" + newString)
             numericString = ''.join(c for c in newString if c.isdigit())
             price = int(numericString)
-            #print("Converted to:" + numericString)
+            # print("Converted to:" + numericString)
             return price
         except ValueError as e:
             error_part = newString[e.args[0]:e.args[1]] if isinstance(e.args, tuple) and len(e.args) == 2 else None
@@ -222,19 +125,6 @@ class facebookMP:
         currTime = time.strftime("%H:%M:%S")
         currDateTime = currDate + "." + currTime
         return currDateTime
-
-    def wait(self):
-        print("Mandatory pull delay...")
-        print("5")
-        time.sleep(1) 
-        print("4")
-        time.sleep(1)
-        print("3")
-        time.sleep(1)
-        print("2")
-        time.sleep(1)
-        print("1")
-        time.sleep(1)
 
 
 
