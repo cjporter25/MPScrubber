@@ -4,11 +4,18 @@ import time
 
 from marketplaceFB.facebookMP_variables import *
 
+
 class FB_DatabaseManager:
     def __init__(self):
         self.connection = sqlite3.connect('./marketplaceFB/facebookDB.db')
+        self.numTotalEntries = 0
+        self.numExistingEntries = 0
+        self.ucBrand = ""
+        
         
     def create_table(self, brand):
+        self.set_brand_name_upper_case(brand)
+        print(f"Creating or initializing table for {self.ucBrand}")
         cursor = self.connection.cursor()
         newTableCommand = '''
             CREATE TABLE IF NOT EXISTS {} (
@@ -26,7 +33,9 @@ class FB_DatabaseManager:
         self.connection.commit()
     
     def insert_entries(self, brand, newEntries):
+        print(f"Inserting new entries for {self.ucBrand}")
         cursor = self.connection.cursor()
+        insertionsSkipped = 0
         for entry in newEntries:
             primaryKey = entry[0]
             # Trailing comma indicates the "primaryKey" as a single item tuple
@@ -35,12 +44,11 @@ class FB_DatabaseManager:
 
             # If entry already exists, Skip insertion
             if existingEntry:
-                print("Entry with primary key '{}' already exists. Skipping insertion.".format(primaryKey))
+                insertionsSkipped = insertionsSkipped + 1
             else:
                 insertCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?,?,?)'''.format(brand)
                 cursor.execute(insertCommand, entry)
-        #insertManyCommand = '''INSERT INTO {} VALUES(?,?,?,?,?,?,?,?)'''.format(brand)
-        #cursor.executemany(insertManyCommand, newEntries)
+        self.set_num_existing_entries(insertionsSkipped)
         self.connection.commit()
 
     def get_row_count(self, brand):
@@ -49,7 +57,26 @@ class FB_DatabaseManager:
         cursor.execute(query)
         rowCount = cursor.fetchone()[0]
         cursor.close()
-        return str(rowCount)
+        self.set_num_total_entries(rowCount)
+        return rowCount
+
+    def list_tables(self):
+        cursor = self.connection.cursor()
+
+        # Query sqlite_master table to get a list of all tables
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+
+        # Close the cursor and connection
+        cursor.close()
+
+        # Extract table names from the fetched data
+        tableList = [table[0] for table in tables]
+        
+        print("Tables in the database:")
+        for tableName in tableList:
+            print(tableName)
+
 
     def show_table(self, brand):
         cursor = self.connection.cursor()
@@ -85,26 +112,22 @@ class FB_DatabaseManager:
             print("Error fetching data:", e)
         finally:
             cursor.close()
-
-    def list_tables(self):
-        cursor = self.connection.cursor()
-
-        # Query sqlite_master table to get a list of all tables
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = cursor.fetchall()
-
-        # Close the cursor and connection
-        cursor.close()
-
-        # Extract table names from the fetched data
-        tableList = [table[0] for table in tables]
-        
-        print("Tables in the database:")
-        for tableName in tableList:
-            print(tableName)
+    def show_brand_meta_data(self, brand):
+        print(f"Current total for {self.ucBrand}: {str(self.get_row_count(brand))}")
+        print(f"Number of entries already present for {self.ucBrand}: {str(self.get_num_existing_entries())}")
     def wait(self):
-        print("Mandatory pull delay...")
+        print("Automated Detection System Prevention. Waiting 5 seconds before scrapping the next brand...")
         for i in range(5, 0, -1):
-            print(i)
+            print("...")
             time.sleep(1)
-    
+        
+    def get_num_total_entries(self):
+        return self.numTotalEntries
+    def get_num_existing_entries(self):
+        return self.numExistingEntries
+    def set_num_existing_entries(self, existingEntries):
+        self.numExistingEntries = existingEntries
+    def set_num_total_entries(self, totalEntries):
+        self.numTotalEntries = totalEntries
+    def set_brand_name_upper_case(self, brand):
+        self.ucBrand = brand.upper()

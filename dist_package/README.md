@@ -20,7 +20,7 @@
 1. **Install Python**:
    - RECOMMENDED: Install Python directly from the Microsoft Store.
      This creates the def "Python" PATH. Simply choose the most recent Python version 
-     anmdd click "Install".
+     and click "Install".
    - Download and install Python 3.x from [python.org](https://www.python.org/downloads/).
    - Make sure to check the box to add Python to your PATH during the installation process.
 2. **Install Chrome**:
@@ -28,27 +28,26 @@
 
 3. **Unzip the Package**:
    - Extract the contents of `mpscrubber_test_build_v_#_#_#.zip` from the test_builds folder
-     to some directory. Recommend using the latest version as the remaining instructions are tailored to how it is most recently structured.
+     to a directory of your choice. I recommend using the latest version as the following instructions are tailored to how it is most recently structured.
    - When choosing a location to extract to, it is recommended that the program be extracted (at this time) to the desktop as the reports will show up there.
 
 3. **Run the Installation Script**:
-   - For Windows, double-click the `install_win` file inside the main directory or run it from the command prompt:
+   - For Windows, double-click the `install_win` file inside the main directory of the project or run it from the command prompt:
      ```bat
      install.bat
      ```
-   - NOTE: This is currently not installable on an Apple System!
+   - NOTE: This is currently not installable on MacOS or Linux
 
-4. **Run the Application**: PLEASE READ
+4. **Run the Application**: (PLEASE READ)
 - Post Install (What to Expect)
    - The installation process will automatically create a python virtual environment that includes all the python modules necessary to make the program work. Once this step is complete, a shortcut labeled "MPScrubber" should appear on the desktop.
-- RUN
+- RUN THE PROGRAM
    - Double click the desktop shortcut and the script will automatically activate the virtual environment and run the program.
 - User Prompts (IMPORTANT)
-   - The user will be prompted with two options: `Demo` or `Dev-GUI`. The demo has pre-selected scrapping variables to provide the user a demo of what the program currently is capable of. Please do give it time to complete as a chrome window The dev-gui represents the simple GUI that is in development. The eventual goal is to have this GUI be the main driver of user input to scrape the way they want given Facebook's various filtering options.
+   - The user will be prompted with two options: `Demo` or `Dev-GUI`. The demo has pre-selected scrapping variables to provide the user a demo of what the program currently is capable of. Please do give it time to complete as multiple, unique chrome windows will open and close. This shouldn't affect any other workflow currently occuring within chrome as it opens a brand new window. The dev-gui represents the simple GUI that is in development. The eventual goal is to have this GUI be the main driver of user input to scrape the way they want using Facebook's various filtering options.
    - Once the program window is closed, the whole program will exit. To have it run again, simply launch it again through the provided shortcut.
-- Demo
+- Demo (More Details)
    - This demo is preset to scrape for and output the 10 most recently posted used-vehicles from Chevy, Toyota, Ford, Lexus, and Dodge (as of running the program). Unfortuantely, to maintain an up-to-date database, the program would need to run 24/7. Therefore, the output excel sheet will only include the ten most recently added things to the database which could be 10 brand new vehicles at the time of running the script on your own system.
-
 
 ## Folder Structure
 
@@ -77,7 +76,7 @@
 
 ### marketplaceFB
    - `facebookDB.db` - The attached SQLite database to keep a permanent record of all scrapping activities.
-   - `facebookMP_database.py` - Will eventually handle all interactions specific to the SQlite database
+   - `facebookMP_database.py` - Handles all interactions specific to the SQlite database
    - `facebookMP_GUI.py` - An in development python GUI that will eventually be the main driver of the scrapping
    - `facebookMP_reporting.py` - Handles all interactions specific to gathering, organizing, and outputting the requested scrapping data to an excel spreadsheet.
    - `facebookMP_scraper.py` - Handles all duties specific to scrapping the facebook marketplace

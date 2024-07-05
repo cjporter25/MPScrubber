@@ -1,51 +1,17 @@
 # New System move - 4.15.24 - Christopher J. Porter
 import sys
-import threading
-import traceback
-import io
-from contextlib import redirect_stdout, redirect_stderr
 
 # Selenium imports
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
-
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 # Marketplace Imports
 from marketplaceFB.facebookMP_GUI import *
 
-
-def listener(stop_event):
-    # Redirect stdout and stderr to capture the output
-    print("Started listening...")
-    f = io.StringIO()
-    with redirect_stdout(f), redirect_stderr(f):
-        while not stop_event.is_set():
-            output = f.getvalue()
-            if "usb_service_win.cc:105 SetupDiGetDeviceProperty" in output:
-                stack_trace = ''.join(traceback.format_stack())
-                with open('debug.log', 'a') as log_file:
-                    log_file.write("Detected USB device property setup failure\n")
-                    log_file.write("Stack trace:\n")
-                    log_file.write(stack_trace)
-                    log_file.write("\n")
-                print("Detected USB device property setup failure. Stack trace saved to debug.log.")
-                print("Stack trace:\n", stack_trace)
-            if "Created TensorFlow Lite XNNPACK delegate for CPU" in output:
-                stack_trace = ''.join(traceback.format_stack())
-                with open('debug.log', 'a') as log_file:
-                    log_file.write("Detected TensorFlow Lite XNNPACK delegate initialization\n")
-                    log_file.write("Stack trace:\n")
-                    log_file.write(stack_trace)
-                    log_file.write("\n")
-                print("Detected TensorFlow Lite XNNPACK delegate initialization. Stack trace saved to debug.log.")
-                print("Stack trace:\n", stack_trace)
-            f.truncate(0)  # Clear the StringIO buffer
-            f.seek(0)
-            time.sleep(1)
-    print("Finished Listening...")
 
 
 firstInput = input("Running Demo(1) or Dev-GUI(2)? --> ")
@@ -74,22 +40,10 @@ if (firstInput == "2"):
     window.show()   
     sys.exit(app.exec_())
 
-#**********************MOCK USER INPUT**********************#
-# prefMinPrice = 0
-# prefMaxPrice = 20000
-# prefMinMiles = 50000
-# prefMaxMiles = 100000
-# prefMinYear = 2000
-# prefMaxYear = 2015
-# prefSorting = SORTING_FILTERS["Date Listed: Newest First"] # Covered by the statement: SORTING_FILTERS["Date Listed: Newest First"]
-# prefBodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"] # "&carType=sedan%2Csuv%2Ctruck"
-# prefVehicleType = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
-#**********************MOCK USER INPUT**********************#
-
 
 # Build a list of URLS to access for each brand
-prefBrands = ["Chevy", "Toyota"]
-# prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
+prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
+# prefBrands = ["Chevy", "Toyota"]
 fb = FB_Scrapper()
 db = FB_DatabaseManager()
 urls = fb.build_URLs(prefBrands)
@@ -98,10 +52,15 @@ print(f"Current date and time: {newDate}")
 
 
 # Launch Chrome driver
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+chrome_options = Options()
+chrome_options.add_argument('--log-level=3') # Suppress logs
+chrome_options.add_argument('--disable-logging')
+chrome_options.add_argument('--silent')
+chrome_options.add_argument('--no-sandbox')  
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 wait = WebDriverWait(driver, 5)
 
-#****************************Main Scrubber Driver*********************************#
+#****************************Main Scrapper Driver*********************************#
 
 # Open each URL 
 for url in urls:
@@ -118,36 +77,13 @@ for url in urls:
 
     # url[0] contains a string of the current brand being looked at
     currBrand = url[0]
+    print(f"Retrieving posting data for brand: {currBrand.upper()}")
 
-    print(f"Retrieving posting data for brand: {currBrand}")
     newEntries = fb.retrieve_postings(page_source)
-    print(f"Creating or initializing table for {currBrand.upper()}")
     db.create_table(currBrand)
-    print(f"Inserting new entries for {currBrand}")
     db.insert_entries(currBrand, newEntries)
-    # fb.show_table_ordered(currBrand, "DatePulled")
-    print(f"Current total for {currBrand}: {db.get_row_count(currBrand)}")
-
-    # Start the listener before the wait function
-    stop_event = threading.Event()
-
-    listener_thread = threading.Thread(target=listener, args=(stop_event,))
-    listener_thread.start()
-
-    wait_thread = threading.Thread(target=db.wait)
-    wait_thread.start()
-
-    # Wait for the wait thread to finish
-    wait_thread.join()
-
-    # Signal the listener to stop
-    stop_event.set()
-    listener_thread.join()
-
-    # print("Before mandatory pull delay")
-    # db.wait()
-    # print("After mandatory pull delay")
-#****************************Main Scrubber Driver*********************************#
+    db.show_brand_meta_data(currBrand)
+    db.wait()
 
 # Close chrome driver
 driver.quit()

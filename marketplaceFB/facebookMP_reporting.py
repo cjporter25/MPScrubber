@@ -21,18 +21,13 @@ class ReportsManager:
     def set_primary_directory(self):
         user_profile = os.environ.get('USERPROFILE')
         # user_profile becomes C:\Users\cj_po
-        print(user_profile)
         primaryDir = user_profile + "\\Desktop\\MPScrubberReports"
-        print(primaryDir)
 
         # Check if the folder exists
         if not os.path.exists(primaryDir):
         # Create the folder if it doesn't exist
             os.makedirs(primaryDir)
             print("Folder created successfully:", primaryDir)
-        else:
-            print("Folder already exists. No action required.")
-        
         return primaryDir
 
     def build_new_report(self, prefBrands, numPostings):
@@ -115,9 +110,8 @@ class ReportsManager:
         reportFilePath = self.primaryDir + "\\" + reportFileName
         # If the report doesn't already exist (which it shouldn't)
         if not os.path.exists(reportFilePath):
-            print(reportFilePath)
             workbook.save(reportFilePath)
-            print("Excel file created successfully:", reportFilePath)
+            print("Report created successfully. Opening now!")
         else:
             pass
         return reportFilePath

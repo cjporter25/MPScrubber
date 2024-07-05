@@ -13,22 +13,22 @@ class ReportsManager:
         self.primaryDir = folderPath
         self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
     def __init__(self):
-        self.primaryDir = "C:\\Users\\[USER_PROFILE]\\Desktop\\MPScrubberReports"
+        # self.primaryDir = "C:\\Users\\[USER_PROFILE]\\Desktop\\MPScrubberReports"
+        self.primaryDir = self.set_primary_directory()
         self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
+
+
     def set_primary_directory(self):
         user_profile = os.environ.get('USERPROFILE')
         # user_profile becomes C:\Users\cj_po
-        print(user_profile)
-        self.primaryDir = user_profile + "\\Desktop\\MPScrubberReports"
-        print(self.primaryDir)
+        primaryDir = user_profile + "\\Desktop\\MPScrubberReports"
 
         # Check if the folder exists
-        if not os.path.exists(self.primaryDir):
+        if not os.path.exists(primaryDir):
         # Create the folder if it doesn't exist
-            os.makedirs(self.primaryDir)
-            print("Folder created successfully:", self.primaryDir)
-        else:
-            print("Folder already exists. No action required.")
+            os.makedirs(primaryDir)
+            print("Folder created successfully:", primaryDir)
+        return primaryDir
 
     def build_new_report(self, prefBrands, numPostings):
         currDateTime = self.get_current_date_and_time()
@@ -110,9 +110,8 @@ class ReportsManager:
         reportFilePath = self.primaryDir + "\\" + reportFileName
         # If the report doesn't already exist (which it shouldn't)
         if not os.path.exists(reportFilePath):
-            print(reportFilePath)
             workbook.save(reportFilePath)
-            print("Excel file created successfully:", reportFilePath)
+            print("Report created successfully. Opening now!")
         else:
             pass
         return reportFilePath

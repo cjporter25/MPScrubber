@@ -11,6 +11,10 @@ QListWidget {
     background-color: #F0F2F5;
     color: #333333;
 }
+QCheckBox {
+    max-width: 180px;
+    max-height: 30px;
+}
 QPushButton {
     background-color: #1877F2;
     color: #ffffff;
@@ -21,4 +25,9 @@ QPushButton:hover {
 }
 QPushButton:pressed {
     background-color: #CCCCCC;
+}
+
+QGridlayout {
+    max-width: 400px;
+    max-height: 700px;
 }

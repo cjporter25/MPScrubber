@@ -41,7 +41,7 @@
 4. **Run the Application**: (PLEASE READ)
 - Post Install (What to Expect)
    - The installation process will automatically create a python virtual environment that includes all the python modules necessary to make the program work. Once this step is complete, a shortcut labeled "MPScrubber" should appear on the desktop.
-- RUN
+- RUN THE PROGRAM
    - Double click the desktop shortcut and the script will automatically activate the virtual environment and run the program.
 - User Prompts (IMPORTANT)
    - The user will be prompted with two options: `Demo` or `Dev-GUI`. The demo has pre-selected scrapping variables to provide the user a demo of what the program currently is capable of. Please do give it time to complete as multiple, unique chrome windows will open and close. This shouldn't affect any other workflow currently occuring within chrome as it opens a brand new window. The dev-gui represents the simple GUI that is in development. The eventual goal is to have this GUI be the main driver of user input to scrape the way they want using Facebook's various filtering options.
@@ -76,7 +76,7 @@
 
 ### marketplaceFB
    - `facebookDB.db` - The attached SQLite database to keep a permanent record of all scrapping activities.
-   - `facebookMP_database.py` - Will eventually handle all interactions specific to the SQlite database
+   - `facebookMP_database.py` - Handles all interactions specific to the SQlite database
    - `facebookMP_GUI.py` - An in development python GUI that will eventually be the main driver of the scrapping
    - `facebookMP_reporting.py` - Handles all interactions specific to gathering, organizing, and outputting the requested scrapping data to an excel spreadsheet.
    - `facebookMP_scraper.py` - Handles all duties specific to scrapping the facebook marketplace
