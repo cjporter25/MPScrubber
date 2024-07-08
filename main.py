@@ -1,5 +1,9 @@
 # New System move - 4.15.24 - Christopher J. Porter
 import sys
+import threading
+import csv
+import time
+import psutil
 
 # Selenium imports
 from selenium import webdriver
@@ -11,6 +15,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # Marketplace Imports
 from marketplaceFB.facebookMP_GUI import *
+from marketplaceFB.facebookMP_performance import *
+
 
 
 
@@ -39,6 +45,10 @@ if (firstInput == "2"):
     window.setWindowFlags(window.windowFlags() & ~Qt.WindowStaysOnTopHint)
     window.show()   
     sys.exit(app.exec_())
+
+
+# Start network monitoring
+start_network_monitoring()
 
 
 # Build a list of URLS to access for each brand
@@ -93,5 +103,6 @@ driver.quit()
 rm = ReportsManager()
 rm.build_new_report(prefBrands, 10)
 #****************************Generate Excel Report*********************************#
+
 
 

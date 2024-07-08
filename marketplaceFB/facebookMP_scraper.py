@@ -39,7 +39,7 @@ class FB_Scrapper:
     def build_URLs(self, brands):
         fbURLs = []
         for brand in brands: 
-            url = FB_MP_MAIN + FB_MP_VEHICLES_STPAUL \
+            url = FB_MP_MAIN + FB_MP_STPAUL \
                     + PRICE_FILTERS["Min Price"] + self.minPrice \
                     + PRICE_FILTERS["Max Price"] + self.maxPrice \
                     + MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
@@ -51,6 +51,7 @@ class FB_Scrapper:
             urlPlusBrand = [brand, url]
             fbURLs.append(urlPlusBrand)
         return fbURLs
+    
     def retrieve_postings(self, page_source):
         dbEntries = []
         soup = BeautifulSoup(page_source, features= "html.parser") 
