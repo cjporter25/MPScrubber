@@ -1,5 +1,9 @@
 # New System move - 4.15.24 - Christopher J. Porter
 import sys
+import threading
+import csv
+import time
+import psutil
 
 # Selenium imports
 from selenium import webdriver
@@ -11,6 +15,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # Marketplace Imports
 from marketplaceFB.facebookMP_GUI import *
+from marketplaceFB.facebookMP_performance import *
+
 
 
 
@@ -41,6 +47,10 @@ if (firstInput == "2"):
     sys.exit(app.exec_())
 
 
+# Start network monitoring
+start_network_monitoring()
+
+
 # Build a list of URLS to access for each brand
 prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
 # prefBrands = ["Chevy", "Toyota"]
@@ -57,6 +67,7 @@ chrome_options.add_argument('--log-level=3') # Suppress logs
 chrome_options.add_argument('--disable-logging')
 chrome_options.add_argument('--silent')
 chrome_options.add_argument('--no-sandbox')  
+chrome_options.add_argument('--headless') 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 wait = WebDriverWait(driver, 5)
 
@@ -92,5 +103,6 @@ driver.quit()
 rm = ReportsManager()
 rm.build_new_report(prefBrands, 10)
 #****************************Generate Excel Report*********************************#
+
 
 

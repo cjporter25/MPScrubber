@@ -14,6 +14,16 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout,
 from PyQt5.QtCore import Qt
 
 
+# PrimaryKey TEXT,
+# DatePulled TEXT,
+# DatePosted TEXT,
+# Year INT,
+# Price INT,
+# Mileage INT,
+# Description TEXT,
+# Location TEXT,
+# Link TEXT
+
 
 class ScrubberGUI(QWidget):
     def __init__(self):
@@ -45,14 +55,16 @@ class ScrubberGUI(QWidget):
         # Add the filters layout to the main layout
         main_layout.addLayout(filters_layout)
 
-        # Add a spacer item to push the Generate button to the bottom
-        main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
-
         # Generate button
         generate_button = QPushButton("Generate")
         generate_button.setStyleSheet("margin: 10px; padding: 10px;")
         generate_button.clicked.connect(self.generate_report)
         main_layout.addWidget(generate_button, alignment=Qt.AlignCenter)
+
+        # Add a spacer item to push everything up
+        main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+
 
          # Apply style sheet
         stylesheet = self.load_stylesheet("marketplaceFB/GUI_styles.qss")
@@ -95,14 +107,32 @@ class ScrubberGUI(QWidget):
         self.locMinneapolis = QCheckBox("Minneapolis")
 
         # Initialize instance variables for Database filters
-        self.datePulledNewestFirst = QCheckBox("Newest First")
-        self.datePulledOldestFirst = QCheckBox("Oldest First")
+        
         self.dbYearMin = QLineEdit()
         self.dbYearMax = QLineEdit()
         self.dbPriceMin = QLineEdit()
         self.dbPriceMax = QLineEdit()
         self.dbMileageMin = QLineEdit()
         self.dbMileageMax = QLineEdit()
+        self.dbMakeAcura = QCheckBox("Acura")
+        self.dbMakeAudi = QCheckBox("Audi")
+        self.dbMakeBuick = QCheckBox("Buick")
+        self.dbMakeChevy = QCheckBox("Chevy")
+        self.dbMakeChrysler = QCheckBox("Chrysler")
+        self.dbMakeDodge = QCheckBox("Dodge")
+        self.dbMakeFord = QCheckBox("Ford")
+        self.dbMakeGMC = QCheckBox("GMC")
+        self.dbMakeHonda = QCheckBox("Honda")
+        self.dbMakeHyundai = QCheckBox("Hyundai")
+        self.dbMakeJeep = QCheckBox("Jeep")
+        self.dbMakeLexus = QCheckBox("Lexus")
+        self.dbMakeNissan = QCheckBox("Nissan")
+        self.dbMakeRam = QCheckBox("Ram")
+        self.dbMakeToyota= QCheckBox("Toyota")
+        self.datePostedNewestFirst = QCheckBox("Date Posted: Newest First")
+        self.datePostedOldestFirst = QCheckBox("Date Posted: Oldest First")
+        self.dateScrapedNewestFirst = QCheckBox("Date Scraped: Newest First")
+        self.dateScrapedOldestFirst = QCheckBox("Date Scraped: Oldest First")
         self.dbLocationAlpha = QCheckBox("Location: A-Z")
         self.dbLocationAlphaRev = QCheckBox("Location: Z-A")
 
@@ -115,7 +145,7 @@ class ScrubberGUI(QWidget):
         grid_layout = QGridLayout()
 
         # Price
-        label1 = QLabel("Price")
+        label1 = QLabel("Price (0 - $50,000)")
         grid_layout.addWidget(label1, 0, 0, 1, 3)
         self.fbPriceMin.setPlaceholderText("Min")
         self.fbPriceMax.setPlaceholderText("Max")
@@ -123,7 +153,7 @@ class ScrubberGUI(QWidget):
         grid_layout.addWidget(self.fbPriceMax, 1, 2)
 
         # Mileage
-        label2 = QLabel("Mileage")
+        label2 = QLabel("Mileage (0 - 200,000)")
         grid_layout.addWidget(label2, 2, 0, 1, 3)
         self.fbMileageMin.setPlaceholderText("Min")
         self.fbMileageMax.setPlaceholderText("Max")
@@ -131,7 +161,7 @@ class ScrubberGUI(QWidget):
         grid_layout.addWidget(self.fbMileageMax, 3, 2)
 
         # Year
-        label3 = QLabel("Year")
+        label3 = QLabel("Year (2000 - 2024)")
         grid_layout.addWidget(label3, 4, 0, 1, 3)
         self.fbYearMin.setPlaceholderText("Min")
         self.fbYearMax.setPlaceholderText("Max")
@@ -139,7 +169,7 @@ class ScrubberGUI(QWidget):
         grid_layout.addWidget(self.fbYearMax, 5, 2)
 
         # Make
-        label4 = QLabel("Make")
+        label4 = QLabel("Make (15 per)")
                   # addWidget(widget, row, column, rowSpan, columnSpan, alignment)
         grid_layout.addWidget(label4, 6, 0, 1, 3)
         grid_layout.addWidget(self.fbMakeAudi, 7, 1)
@@ -158,13 +188,13 @@ class ScrubberGUI(QWidget):
         grid_layout.addWidget(self.fbMakeRam, 13, 2)
         grid_layout.addWidget(self.fbMakeToyota, 14, 1)
 
-        label5 = QLabel("Location")
+        label5 = QLabel("Location (Choose 1)")
         grid_layout.addWidget(label5, 15, 0, 1, 3)
         grid_layout.addWidget(self.locMinneapolis, 16, 1)
         grid_layout.addWidget(self.locStPaul, 16, 2)
 
         # Sorting Type
-        label6 = QLabel("Sorting Type")
+        label6 = QLabel("Sorting Type (Choose 1)")
         grid_layout.addWidget(label6, 17, 0, 1, 3)
         grid_layout.addWidget(self.dateListedNewestFirst, 18, 1)
         grid_layout.addWidget(self.dateListedOldestFirst, 18, 2)
@@ -210,36 +240,39 @@ class ScrubberGUI(QWidget):
         label4 = QLabel("Make")
                   # addWidget(widget, row, column, rowSpan, columnSpan, alignment)
         grid_layout.addWidget(label4, 6, 0, 1, 3)
-        grid_layout.addWidget(self.fbMakeAudi, 7, 1)
-        grid_layout.addWidget(self.fbMakeAcura, 7, 2)
-        grid_layout.addWidget(self.fbMakeBuick, 8, 1)
-        grid_layout.addWidget(self.fbMakeChevy, 8, 2)
-        grid_layout.addWidget(self.fbMakeChrysler, 9, 1)
-        grid_layout.addWidget(self.fbMakeDodge, 9, 2)
-        grid_layout.addWidget(self.fbMakeFord, 10, 1)
-        grid_layout.addWidget(self.fbMakeGMC, 10, 2)
-        grid_layout.addWidget(self.fbMakeHonda, 11, 1)
-        grid_layout.addWidget(self.fbMakeHyundai, 11, 2)
-        grid_layout.addWidget(self.fbMakeJeep, 12, 1)
-        grid_layout.addWidget(self.fbMakeLexus, 12, 2)
-        grid_layout.addWidget(self.fbMakeNissan, 13, 1)
-        grid_layout.addWidget(self.fbMakeRam, 13, 2)
-        grid_layout.addWidget(self.fbMakeToyota, 14, 1)
+        grid_layout.addWidget(self.dbMakeAudi, 7, 1)
+        grid_layout.addWidget(self.dbMakeAcura, 7, 2)
+        grid_layout.addWidget(self.dbMakeBuick, 8, 1)
+        grid_layout.addWidget(self.dbMakeChevy, 8, 2)
+        grid_layout.addWidget(self.dbMakeChrysler, 9, 1)
+        grid_layout.addWidget(self.dbMakeDodge, 9, 2)
+        grid_layout.addWidget(self.dbMakeFord, 10, 1)
+        grid_layout.addWidget(self.dbMakeGMC, 10, 2)
+        grid_layout.addWidget(self.dbMakeHonda, 11, 1)
+        grid_layout.addWidget(self.dbMakeHyundai, 11, 2)
+        grid_layout.addWidget(self.dbMakeJeep, 12, 1)
+        grid_layout.addWidget(self.dbMakeLexus, 12, 2)
+        grid_layout.addWidget(self.dbMakeNissan, 13, 1)
+        grid_layout.addWidget(self.dbMakeRam, 13, 2)
+        grid_layout.addWidget(self.dbMakeToyota, 14, 1)
 
         # Date Posted
-
+        label6 = QLabel("Date Posted")
+        grid_layout.addWidget(label6, 15, 0, 1, 3)
+        grid_layout.addWidget(self.datePostedNewestFirst, 16, 1)
+        grid_layout.addWidget(self.datePostedOldestFirst, 16, 2)
 
         # Date Pulled
-        label1 = QLabel("Date Pulled")
-        grid_layout.addWidget(label1, 0, 0, 1, 3)
-        grid_layout.addWidget(self.datePulledNewestFirst, 1, 1)
-        grid_layout.addWidget(self.datePulledOldestFirst, 1, 2)
+        label6 = QLabel("Date Scraped")
+        grid_layout.addWidget(label6, 17, 0, 1, 3)
+        grid_layout.addWidget(self.dateScrapedNewestFirst, 18, 1)
+        grid_layout.addWidget(self.dateScrapedOldestFirst, 18, 2)
 
         # Location
-        label5 = QLabel("Location")
-        grid_layout.addWidget(label5, 8, 0, 1, 3)
-        grid_layout.addWidget(self.dbLocationAlpha, 9, 1)
-        grid_layout.addWidget(self.dbLocationAlphaRev, 9, 2)
+        label7 = QLabel("Location")
+        grid_layout.addWidget(label7, 19, 0, 1, 3)
+        grid_layout.addWidget(self.dbLocationAlpha, 20, 1)
+        grid_layout.addWidget(self.dbLocationAlphaRev, 20, 2)
 
         layoutEX.addLayout(grid_layout)
         return layoutEX
@@ -280,8 +313,8 @@ class ScrubberGUI(QWidget):
                 }
             },
             "databaseFilters": {
-                "Date Pulled": {"datePulledNewestFirst": self.datePulledNewestFirst.isChecked(),
-                                "datePulledOldestFirst": self.datePulledOldestFirst.isChecked(),},
+                "Date Pulled": {"NewestFirst": self.dateScrapedNewestFirst.isChecked(),
+                                "OldestFirst": self.dateScrapedOldestFirst.isChecked(),},
                 "Year": {"Min": self.dbYearMin.text(), "Max": self.dbYearMax.text()},
                 "Price": {"Min": self.dbPriceMin.text(), "Max": self.dbPriceMax.text()},
                 "Mileage": {"Min": self.dbMileageMin.text(), "Max": self.dbMileageMax.text()},

@@ -29,7 +29,8 @@ FB_MP_VEHICLES = "https://www.facebook.com/marketplace/category/vehicles/"
 # 107996279221955 represents the location ID of St. Paul. Every location facebook
 #       has stored has a unique location ID. They are maybe geographical coordinates
 #       but unsure at this time.
-FB_MP_VEHICLES_STPAUL = "107996279221955/vehicles/?"
+FB_MP_STPAUL = "107996279221955/vehicles/?"
+FB_MP_MINNEAPOLIS = "minneapolis/vehicles?"
 
 
 # The url can specify what the min and max price should be for search results. The URL
@@ -68,9 +69,9 @@ MAKE_FILTERS = {"Acura": "&make=280909549507187",
                 "Chevy": "&make=1914016008726893",
                 "Chrysler": "&make=398368117562414",
                 "Dodge": "&make=402915273826151",
+                "Ford": "&make=297354680962030",
                 "Honda": "&make=308436969822020",
                 "Hyundai": "&make=590755841400441",
-                "Ford": "&make=297354680962030",
                 "Jeep": "&make=408221723080125",
                 "Lexus": "&make=2101813456521413",
                 "Nissan": "&make=2621742507840619",
