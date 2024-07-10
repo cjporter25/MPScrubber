@@ -32,7 +32,9 @@ class ScrubberGUI(QWidget):
         # (x), (y), (width), (height)
         # 100/100 means 100 pixels down and to the right from the top
         #       left of the screen
-        self.setGeometry(200, 200, 800, 700)  # Set window size and position
+        self.setGeometry(200, 200, 800, 1000)  # Set window size and position
+        # Set fixed window size
+        self.setFixedSize(800, 1000)  # Width: 800, Height: 700
 
         self.init_variables()
 
@@ -76,12 +78,19 @@ class ScrubberGUI(QWidget):
         self.setLayout(main_layout)  
     def init_variables(self):
         # Initialize instance variables for Facebook filters
-        self.fbPriceMin = QLineEdit()
-        self.fbPriceMax = QLineEdit()
-        self.fbMileageMin = QLineEdit()
-        self.fbMileageMax = QLineEdit()
         self.fbYearMin = QLineEdit()
+        self.fbYearMin.setPlaceholderText("Min")
         self.fbYearMax = QLineEdit()
+        self.fbYearMax.setPlaceholderText("Max")
+        self.fbPriceMin = QLineEdit()
+        self.fbPriceMin.setPlaceholderText("Min")
+        self.fbPriceMax = QLineEdit()
+        self.fbPriceMax.setPlaceholderText("Max")
+        self.fbMileageMin = QLineEdit()
+        self.fbMileageMin.setPlaceholderText("Min")
+        self.fbMileageMax = QLineEdit()
+        self.fbMileageMax.setPlaceholderText("Max")
+        
         self.fbMakeAcura = QCheckBox("Acura")
         self.fbMakeAudi = QCheckBox("Audi")
         self.fbMakeBuick = QCheckBox("Buick")
@@ -97,8 +106,8 @@ class ScrubberGUI(QWidget):
         self.fbMakeNissan = QCheckBox("Nissan")
         self.fbMakeRam = QCheckBox("Ram")
         self.fbMakeToyota= QCheckBox("Toyota")
-        self.dateListedNewestFirst = QCheckBox("Date Listed: Newest First")
-        self.dateListedOldestFirst = QCheckBox("Date Listed: Oldest First")
+        self.fbDateListedNewestFirst = QCheckBox("Date Listed: Newest First")
+        self.fbDateListedOldestFirst = QCheckBox("Date Listed: Oldest First")
         self.mileageLowestFirst = QCheckBox("Mileage: Lowest First")
         self.mileageHighestFirst = QCheckBox("Mileage: Highest First")
         self.priceLowestFirst = QCheckBox("Price: Lowest First")
@@ -109,11 +118,17 @@ class ScrubberGUI(QWidget):
         # Initialize instance variables for Database filters
         
         self.dbYearMin = QLineEdit()
+        self.dbYearMin.setPlaceholderText("Min")
         self.dbYearMax = QLineEdit()
+        self.dbYearMax.setPlaceholderText("Max")
         self.dbPriceMin = QLineEdit()
+        self.dbPriceMin.setPlaceholderText("Min")
         self.dbPriceMax = QLineEdit()
+        self.dbPriceMax.setPlaceholderText("Max")
         self.dbMileageMin = QLineEdit()
+        self.dbMileageMin.setPlaceholderText("Min")
         self.dbMileageMax = QLineEdit()
+        self.dbMileageMax.setPlaceholderText("Max")
         self.dbMakeAcura = QCheckBox("Acura")
         self.dbMakeAudi = QCheckBox("Audi")
         self.dbMakeBuick = QCheckBox("Buick")
@@ -129,48 +144,53 @@ class ScrubberGUI(QWidget):
         self.dbMakeNissan = QCheckBox("Nissan")
         self.dbMakeRam = QCheckBox("Ram")
         self.dbMakeToyota= QCheckBox("Toyota")
-        self.datePostedNewestFirst = QCheckBox("Date Posted: Newest First")
-        self.datePostedOldestFirst = QCheckBox("Date Posted: Oldest First")
-        self.dateScrapedNewestFirst = QCheckBox("Date Scraped: Newest First")
-        self.dateScrapedOldestFirst = QCheckBox("Date Scraped: Oldest First")
+        self.dbDatePostedNewestFirst = QCheckBox("Date Posted: Newest First")
+        self.dbDatePostedOldestFirst = QCheckBox("Date Posted: Oldest First")
+        self.dbYearNewestFirst = QCheckBox("Year: Newest First")
+        self.dbYearOldestFirst = QCheckBox("Year: Oldest First")
+        self.dbPriceHighestFirst = QCheckBox("Price: Highest First")
+        self.dbPriceLowestFirst = QCheckBox("Price: Lowest First")
+        self.dbMileageHighestFirst = QCheckBox("Mileage: Highest First")
+        self.dbMileageLowestFirst = QCheckBox("Mileage: Lowest First")
         self.dbLocationAlpha = QCheckBox("Location: A-Z")
         self.dbLocationAlphaRev = QCheckBox("Location: Z-A")
 
+
+        self.dbNewestEntries = QCheckBox("Database: Newest Entries")
+        self.dbOldestEntries = QCheckBox("Database: Oldest Entries")
+        self.dbAllEntries =  QCheckBox("Database: Whole Database")
+        self.dbNumEntriesPer = QLineEdit()
+        self.dbNumEntriesPer.setPlaceholderText("#")
+
     def create_facebook_filter_layout(self):
         layoutFB = QVBoxLayout()
-        title_label = QLabel("Facebook Scraping Filters")
-        title_label.setStyleSheet("font-weight: bold; font-size: 18px; margin-bottom: 10px;")
+        title_label = QLabel("Facebook Scraping")
+        # title_label.setStyleSheet("font-weight: bold; font-size: 18px; margin-bottom: 10px;")
         layoutFB.addWidget(title_label)
 
         grid_layout = QGridLayout()
 
-        # Price
-        label1 = QLabel("Price (0 - $50,000)")
+        # Year
+        label1 = QLabel("Year (2000 - 2024)")
         grid_layout.addWidget(label1, 0, 0, 1, 3)
-        self.fbPriceMin.setPlaceholderText("Min")
-        self.fbPriceMax.setPlaceholderText("Max")
-        grid_layout.addWidget(self.fbPriceMin, 1, 1)
-        grid_layout.addWidget(self.fbPriceMax, 1, 2)
+        grid_layout.addWidget(self.fbYearMin, 1, 1)
+        grid_layout.addWidget(self.fbYearMax, 1, 2)
+
+        # Price
+        label2 = QLabel("Price (0 - $50,000)")
+        grid_layout.addWidget(label2, 2, 0, 1, 3)
+        grid_layout.addWidget(self.fbPriceMin, 3, 1)
+        grid_layout.addWidget(self.fbPriceMax, 3, 2)
 
         # Mileage
-        label2 = QLabel("Mileage (0 - 200,000)")
-        grid_layout.addWidget(label2, 2, 0, 1, 3)
-        self.fbMileageMin.setPlaceholderText("Min")
-        self.fbMileageMax.setPlaceholderText("Max")
-        grid_layout.addWidget(self.fbMileageMin, 3, 1)
-        grid_layout.addWidget(self.fbMileageMax, 3, 2)
-
-        # Year
-        label3 = QLabel("Year (2000 - 2024)")
+        label3 = QLabel("Mileage (0 - 200,000)")
         grid_layout.addWidget(label3, 4, 0, 1, 3)
-        self.fbYearMin.setPlaceholderText("Min")
-        self.fbYearMax.setPlaceholderText("Max")
-        grid_layout.addWidget(self.fbYearMin, 5, 1)
-        grid_layout.addWidget(self.fbYearMax, 5, 2)
+        grid_layout.addWidget(self.fbMileageMin, 5, 1)
+        grid_layout.addWidget(self.fbMileageMax, 5, 2)
 
         # Make
         label4 = QLabel("Make (15 per)")
-                  # addWidget(widget, row, column, rowSpan, columnSpan, alignment)
+        # addWidget(widget, row, column, rowSpan, columnSpan, alignment)
         grid_layout.addWidget(label4, 6, 0, 1, 3)
         grid_layout.addWidget(self.fbMakeAudi, 7, 1)
         grid_layout.addWidget(self.fbMakeAcura, 7, 2)
@@ -196,8 +216,8 @@ class ScrubberGUI(QWidget):
         # Sorting Type
         label6 = QLabel("Sorting Type (Choose 1)")
         grid_layout.addWidget(label6, 17, 0, 1, 3)
-        grid_layout.addWidget(self.dateListedNewestFirst, 18, 1)
-        grid_layout.addWidget(self.dateListedOldestFirst, 18, 2)
+        grid_layout.addWidget(self.fbDateListedNewestFirst, 18, 1)
+        grid_layout.addWidget(self.fbDateListedOldestFirst, 18, 2)
         grid_layout.addWidget(self.mileageLowestFirst, 19, 1)
         grid_layout.addWidget(self.mileageHighestFirst, 19, 2)
         grid_layout.addWidget(self.priceLowestFirst, 20, 1)
@@ -207,8 +227,8 @@ class ScrubberGUI(QWidget):
         return layoutFB
     def create_report_filter_layout(self):
         layoutEX = QVBoxLayout()
-        title_label = QLabel("Database Report Filters")
-        title_label.setStyleSheet("font-weight: bold; font-size: 18px; margin-bottom: 10px;")
+        title_label = QLabel("Database Report")
+        # title_label.setStyleSheet("font-weight: bold; font-size: 18px; margin-bottom: 10px;")
         layoutEX.addWidget(title_label)
 
         grid_layout = QGridLayout()
@@ -216,29 +236,23 @@ class ScrubberGUI(QWidget):
         # Year
         label1 = QLabel("Year")
         grid_layout.addWidget(label1, 0, 0, 1, 3)
-        self.dbYearMin.setPlaceholderText("Min")
-        self.dbYearMax.setPlaceholderText("Max")
         grid_layout.addWidget(self.dbYearMin, 1, 1)
         grid_layout.addWidget(self.dbYearMax, 1, 2)
 
         # Price
         label2 = QLabel("Price")
         grid_layout.addWidget(label2, 2, 0, 1, 3)
-        self.dbPriceMin.setPlaceholderText("Min")
-        self.dbPriceMax.setPlaceholderText("Max")
         grid_layout.addWidget(self.dbPriceMin, 3, 1)
         grid_layout.addWidget(self.dbPriceMax, 3, 2)
 
         # Mileage
         label3 = QLabel("Mileage")
         grid_layout.addWidget(label3, 4, 0, 1, 3)
-        self.dbMileageMin.setPlaceholderText("Min")
-        self.dbMileageMax.setPlaceholderText("Max")
         grid_layout.addWidget(self.dbMileageMin, 5, 1)
         grid_layout.addWidget(self.dbMileageMax, 5, 2)
 
         label4 = QLabel("Make")
-                  # addWidget(widget, row, column, rowSpan, columnSpan, alignment)
+        # addWidget(widget, row, column, rowSpan, columnSpan, alignment)
         grid_layout.addWidget(label4, 6, 0, 1, 3)
         grid_layout.addWidget(self.dbMakeAudi, 7, 1)
         grid_layout.addWidget(self.dbMakeAcura, 7, 2)
@@ -256,23 +270,29 @@ class ScrubberGUI(QWidget):
         grid_layout.addWidget(self.dbMakeRam, 13, 2)
         grid_layout.addWidget(self.dbMakeToyota, 14, 1)
 
-        # Date Posted
-        label6 = QLabel("Date Posted")
-        grid_layout.addWidget(label6, 15, 0, 1, 3)
-        grid_layout.addWidget(self.datePostedNewestFirst, 16, 1)
-        grid_layout.addWidget(self.datePostedOldestFirst, 16, 2)
-
-        # Date Pulled
-        label6 = QLabel("Date Scraped")
-        grid_layout.addWidget(label6, 17, 0, 1, 3)
-        grid_layout.addWidget(self.dateScrapedNewestFirst, 18, 1)
-        grid_layout.addWidget(self.dateScrapedOldestFirst, 18, 2)
-
-        # Location
-        label7 = QLabel("Location")
-        grid_layout.addWidget(label7, 19, 0, 1, 3)
+        # Sorting Type
+        label5 = QLabel("Sorting Type (Choose 1)")
+        grid_layout.addWidget(label5, 15, 0, 1, 3)
+        grid_layout.addWidget(self.dbDatePostedNewestFirst, 16, 1)
+        grid_layout.addWidget(self.dbDatePostedOldestFirst, 16, 2)
+        grid_layout.addWidget(self.dbYearNewestFirst, 17, 1)
+        grid_layout.addWidget(self.dbYearOldestFirst, 17, 2)
+        grid_layout.addWidget(self.dbPriceHighestFirst, 18, 1)
+        grid_layout.addWidget(self.dbPriceLowestFirst, 18, 2)
+        grid_layout.addWidget(self.dbMileageHighestFirst, 19, 1)
+        grid_layout.addWidget(self.dbMileageLowestFirst, 19, 2)
         grid_layout.addWidget(self.dbLocationAlpha, 20, 1)
         grid_layout.addWidget(self.dbLocationAlphaRev, 20, 2)
+
+        label6 = QLabel("Portion of Database (Choose 1)")
+        grid_layout.addWidget(label6, 21, 0, 1, 3)
+        grid_layout.addWidget(self.dbNewestEntries, 22, 1)
+        grid_layout.addWidget(self.dbOldestEntries, 22, 2)
+        grid_layout.addWidget(self.dbAllEntries, 23, 1)
+
+        label7 = QLabel("Number of Entries")
+        grid_layout.addWidget(label7, 24, 0, 1, 3)
+        grid_layout.addWidget(self.dbNumEntriesPer, 25, 1)
 
         layoutEX.addLayout(grid_layout)
         return layoutEX
@@ -304,8 +324,8 @@ class ScrubberGUI(QWidget):
                              "Minneapolis": self.locMinneapolis.isChecked()},
             
                 "Sorting Type": {
-                    "dateListedNewestFirst": self.dateListedNewestFirst.isChecked(),
-                    "dateListedOldestFirst": self.dateListedOldestFirst.isChecked(),
+                    "dateListedNewestFirst": self.fbDateListedNewestFirst.isChecked(),
+                    "dateListedOldestFirst": self.fbDateListedOldestFirst.isChecked(),
                     "mileageLowestFirst": self.mileageLowestFirst.isChecked(),
                     "mileageHighestFirst": self.mileageHighestFirst.isChecked(),
                     "priceLowestFirst": self.priceLowestFirst.isChecked(),
@@ -313,8 +333,8 @@ class ScrubberGUI(QWidget):
                 }
             },
             "databaseFilters": {
-                "Date Pulled": {"NewestFirst": self.dateScrapedNewestFirst.isChecked(),
-                                "OldestFirst": self.dateScrapedOldestFirst.isChecked(),},
+                "Database": {"NewestEntries": self.dbNewestEntries.isChecked(),
+                             "OldestEntries": self.dbOldestEntries.isChecked(),},
                 "Year": {"Min": self.dbYearMin.text(), "Max": self.dbYearMax.text()},
                 "Price": {"Min": self.dbPriceMin.text(), "Max": self.dbPriceMax.text()},
                 "Mileage": {"Min": self.dbMileageMin.text(), "Max": self.dbMileageMax.text()},

@@ -52,10 +52,12 @@ start_network_monitoring()
 
 
 # Build a list of URLS to access for each brand
-prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
-# prefBrands = ["Chevy", "Toyota"]
+#prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
+# prefBrands = ["Lexus", "Toyota", "Ford"]
+prefBrands = ["Chevy", "Toyota"]
 fb = FB_Scrapper()
 db = FB_DatabaseManager()
+prefBrands = sorted(prefBrands)
 urls = fb.build_URLs(prefBrands)
 newDate = fb.get_current_date_and_time()
 print(f"Current date and time: {newDate}")
@@ -101,7 +103,7 @@ driver.quit()
 
 #****************************Generate Excel Report*********************************#
 rm = ReportsManager()
-rm.build_new_report(prefBrands, 10)
+rm.build_new_report(prefBrands, 15)
 #****************************Generate Excel Report*********************************#
 
 

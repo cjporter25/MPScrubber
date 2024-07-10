@@ -59,7 +59,7 @@ class FB_Scrapper:
         postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])
         count = 0
         for post in postings:
-            if count == 10: #Limit 10 posts at a time
+            if count == 15: #Limit 10 posts at a time
                 break
             try:
                 # www.facebook.com/[link]
@@ -100,11 +100,13 @@ class FB_Scrapper:
         return dbEntries
 
     def convert_to_int(self, newString):
+        if newString == "FREE" or newString == "Free":
+            return 0
         try:
-            # print("Trying to convert:" + newString)
+            # Create new numeric string by removing non-digits
             numericString = ''.join(c for c in newString if c.isdigit())
+            # Type cast to Int
             price = int(numericString)
-            # print("Converted to:" + numericString)
             return price
         except ValueError as e:
             error_part = newString[e.args[0]:e.args[1]] if isinstance(e.args, tuple) and len(e.args) == 2 else None

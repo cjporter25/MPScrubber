@@ -7,6 +7,16 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
+# PrimaryKey TEXT,
+# DatePulled TEXT,
+# DatePosted TEXT,
+# Year INT,
+# Price INT,
+# Mileage INT,
+# Description TEXT,
+# Location TEXT,
+# Link TEXT
+
 
 class ReportsManager:
     def __init__(self, folderPath):
@@ -61,8 +71,9 @@ class ReportsManager:
         return brands
     
     def write_brand_data(self, brand, worksheet, cursor, numPostings):
-         # Fetch data sorted by DatePulled in descending order for the specified brand
-        cursor.execute(f"SELECT * FROM {brand} ORDER BY DatePulled DESC")
+        sortingType = "Price"
+        # Fetch data sorted by DatePulled in descending order for the specified brand
+        cursor.execute(f"SELECT * FROM {brand} ORDER BY {sortingType} DESC")
         # Fetch "numPostings" worth of most recent entries
         data = cursor.fetchmany(numPostings)
         if data:
@@ -72,7 +83,7 @@ class ReportsManager:
             brand_cell.font = Font(bold=True, underline='single')
 
             # Write column titles in the following row (bold)
-            column_titles = ["PrimaryKey", "DatePulled", "DatePosted", 
+            column_titles = ["PrimaryKey", "DateScraped", "DatePosted", 
                             "Year", "Price", "Mileage", 
                             "Description", "Location", "Link"]
             title_row = brand_cell_row + 1
