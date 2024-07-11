@@ -32,7 +32,7 @@ class ScrubberGUI(QWidget):
         # (x), (y), (width), (height)
         # 100/100 means 100 pixels down and to the right from the top
         #       left of the screen
-        self.setGeometry(200, 200, 800, 1000)  # Set window size and position
+        self.setGeometry(200, 200, 0, 0)  # Set window size and position
         # Set fixed window size
         self.setFixedSize(800, 1000)  # Width: 800, Height: 700
 
@@ -57,11 +57,8 @@ class ScrubberGUI(QWidget):
         # Add the filters layout to the main layout
         main_layout.addLayout(filters_layout)
 
-        # Generate button
-        generate_button = QPushButton("Generate")
-        generate_button.setStyleSheet("margin: 10px; padding: 10px;")
-        generate_button.clicked.connect(self.generate_report)
-        main_layout.addWidget(generate_button, alignment=Qt.AlignCenter)
+        # Add the buttons layout to the main layout
+        main_layout.addLayout(self.create_button_layout())
 
         # Add a spacer item to push everything up
         main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -156,9 +153,9 @@ class ScrubberGUI(QWidget):
         self.dbLocationAlphaRev = QCheckBox("Location: Z-A")
 
 
-        self.dbNewestEntries = QCheckBox("Database: Newest Entries")
-        self.dbOldestEntries = QCheckBox("Database: Oldest Entries")
-        self.dbAllEntries =  QCheckBox("Database: Whole Database")
+        self.dbNewestEntries = QCheckBox("DB: Newest Entries")
+        self.dbOldestEntries = QCheckBox("DB: Oldest Entries")
+        self.dbAllEntries =  QCheckBox("DB: All Entries")
         self.dbNumEntriesPer = QLineEdit()
         self.dbNumEntriesPer.setPlaceholderText("#")
 
@@ -223,8 +220,14 @@ class ScrubberGUI(QWidget):
         grid_layout.addWidget(self.priceLowestFirst, 20, 1)
         grid_layout.addWidget(self.priceHighestFirst, 20, 2)
 
+
+        # Add spacer items to fill vertical space
+        grid_layout.setRowStretch(21, 1)  # Add spacer after the last item to fill remaining vertical space
+
+
         layoutFB.addLayout(grid_layout)
         return layoutFB
+    
     def create_report_filter_layout(self):
         layoutEX = QVBoxLayout()
         title_label = QLabel("Database Report")
@@ -297,7 +300,33 @@ class ScrubberGUI(QWidget):
         layoutEX.addLayout(grid_layout)
         return layoutEX
 
-    def generate_report(self):
+    def create_button_layout(self):
+        # Horizontal layout for action buttons
+        buttonsLayout = QHBoxLayout()
+
+        # Add buttons
+        buttonScrape = QPushButton("Scrape Facebook")
+        # Padding increases distance from text to edge of button
+        # Margin increases distance from edge of button to other items
+        
+        buttonScrape.clicked.connect(self.scrape_facebook)
+        buttonsLayout.addWidget(buttonScrape)
+
+        buttonReport = QPushButton("Generate Database Report")
+        buttonReport.clicked.connect(self.generate_database_report)
+        buttonsLayout.addWidget(buttonReport)
+
+        buttonBoth = QPushButton("Scrape and Generate")
+        buttonBoth.clicked.connect(self.scrape_and_generate_report)
+        buttonsLayout.addWidget(buttonBoth)
+
+        buttonAutomate = QPushButton("Automate")
+        buttonAutomate.clicked.connect(self.scrape_and_generate_report)
+        buttonsLayout.addWidget(buttonAutomate)
+
+        return buttonsLayout
+
+    def collect_filter_choices(self):
         filters = {
             "scrappingFilters": {
                 "Price": {"Min": self.fbPriceMin.text(), "Max": self.fbPriceMax.text()},
@@ -334,16 +363,67 @@ class ScrubberGUI(QWidget):
             },
             "databaseFilters": {
                 "Database": {"NewestEntries": self.dbNewestEntries.isChecked(),
-                             "OldestEntries": self.dbOldestEntries.isChecked(),},
+                             "OldestEntries": self.dbOldestEntries.isChecked(),
+                             "AllEntries": self.dbAllEntries.isChecked(),},
                 "Year": {"Min": self.dbYearMin.text(), "Max": self.dbYearMax.text()},
                 "Price": {"Min": self.dbPriceMin.text(), "Max": self.dbPriceMax.text()},
                 "Mileage": {"Min": self.dbMileageMin.text(), "Max": self.dbMileageMax.text()},
                 "Location": {"Alphabetical": self.dbLocationAlpha.isChecked(), 
-                             "AlphabeticalRev": self.dbLocationAlphaRev.isChecked(),}
+                             "AlphabeticalRev": self.dbLocationAlphaRev.isChecked(),},
+                "Make": {
+                    "Acura": self.dbMakeAcura.isChecked(),
+                    "Audi": self.dbMakeAudi.isChecked(),
+                    "Buick": self.dbMakeBuick.isChecked(),
+                    "Chevy": self.dbMakeChevy.isChecked(),
+                    "Chrysler": self.dbMakeChrysler.isChecked(),
+                    "Dodge": self.dbMakeDodge.isChecked(),
+                    "Ford": self.dbMakeFord.isChecked(),
+                    "GMC": self.dbMakeGMC.isChecked(),
+                    "Honda": self.dbMakeHonda.isChecked(),
+                    "Hyundai": self.dbMakeHyundai.isChecked(),
+                    "Jeep": self.dbMakeJeep.isChecked(),
+                    "Lexus": self.dbMakeLexus.isChecked(),
+                    "Nissan": self.dbMakeNissan.isChecked(),
+                    "Ram": self.dbMakeRam.isChecked(),
+                    "Toyota": self.dbMakeToyota.isChecked(),
+            },
+                "Sorting Type": {
+                    "datePostedNewestFirst": self.dbDatePostedNewestFirst.isChecked(),
+                    "datePostedOldestFirst": self.dbDatePostedOldestFirst.isChecked(),
+                    "yearNewestFirst": self.dbYearNewestFirst.isChecked(),
+                    "yearOldestFirst": self.dbYearOldestFirst.isChecked(),
+                    "priceHighestFirst": self.dbPriceHighestFirst.isChecked(),
+                    "priceLowestFirst": self.dbPriceLowestFirst.isChecked(),
+                    "mileageHighestFirst": self.dbMileageHighestFirst.isChecked(),
+                    "mileageLowestFirst": self.dbMileageLowestFirst.isChecked(),
+                },
             }
         }
+        return filters
 
+    def scrape_facebook(self):
+        filters = self.collect_filter_choices()["scrappingFilters"]
+        # Call the function to scrape Facebook using the filters
+        print("Scraping Facebook with filters:")
         pprint.pprint(filters)
+
+    def generate_database_report(self):
+        filters = self.collect_filter_choices()["databaseFilters"]
+        # Call the function to generate a report using the filters
+        print("Generating report with filters:")
+        pprint.pprint(filters)
+
+    def scrape_and_generate_report(self):
+        filters = self.collect_filter_choices()
+        # Call the function to scrape Facebook and generate a report using the filters
+        print("Scraping Facebook and generating report with filters:")
+        pprint.pprint(filters)
+    
+    def scrape_facebook_automated(self):
+        filters = self.collect_filter_choices()["scrappingFilters"]
+        print("Automated Options")
+        pprint.pprint(filters)
+
 
     # Offload stylesheet to an external file for main GUI code clarity
     def load_stylesheet(self, styleSheet):
