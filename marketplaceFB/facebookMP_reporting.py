@@ -71,7 +71,7 @@ class ReportsManager:
         return brands
     
     def write_brand_data(self, brand, worksheet, cursor, numPostings):
-        sortingType = "Price"
+        sortingType = "DatePulled"
         # Fetch data sorted by DatePulled in descending order for the specified brand
         cursor.execute(f"SELECT * FROM {brand} ORDER BY {sortingType} DESC")
         # Fetch "numPostings" worth of most recent entries

@@ -327,7 +327,7 @@ class ScrubberGUI(QWidget):
         return buttonsLayout
 
     def collect_filter_choices(self):
-        filters = {
+        userChoicesGUI = {
             "scrappingFilters": {
                 "Price": {"Min": self.fbPriceMin.text(), "Max": self.fbPriceMax.text()},
                 "Mileage": {"Min": self.fbMileageMin.text(), "Max": self.fbMileageMax.text()},
@@ -399,19 +399,37 @@ class ScrubberGUI(QWidget):
                 },
             }
         }
-        return filters
+        return userChoicesGUI
 
     def scrape_facebook(self):
-        filters = self.collect_filter_choices()["scrappingFilters"]
+        fbFilters = self.collect_filter_choices()["scrappingFilters"]
         # Call the function to scrape Facebook using the filters
         print("Scraping Facebook with filters:")
-        pprint.pprint(filters)
+        pprint.pprint(fbFilters)
+        minYear = self.convert_to_int_or_default(fbFilters["Year"]["Min"], "2000")
+        maxYear = self.convert_to_int_or_default(fbFilters["Year"]["Max"], "2024")
+        minPrice = self.convert_to_int_or_default(fbFilters["Price"]["Min"], "0")
+        maxPrice = self.convert_to_int_or_default(fbFilters["Price"]["Max"], "50000")
+        minMileage = self.convert_to_int_or_default(fbFilters["Mileage"]["Min"], "0")
+        maxMileage = self.convert_to_int_or_default(fbFilters["Mileage"]["Max"], "200000")
+
+        sorting = SORTING_FILTERS["Date Listed: Newest First"]
+        brands = self.get_selected_brands(fbFilters)
+        location = FB_MP_STPAUL
+        print(type(location))
+        bodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
+        vehicleTypes = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
+        scrapper = FB_Scrapper(minYear, maxYear, minPrice, 
+                               maxPrice, minMileage, maxMileage,
+                               brands, location, sorting,
+                               bodyStyles, vehicleTypes)
+        scrapper.scrape()
 
     def generate_database_report(self):
-        filters = self.collect_filter_choices()["databaseFilters"]
+        dbFilters = self.collect_filter_choices()["databaseFilters"]
         # Call the function to generate a report using the filters
         print("Generating report with filters:")
-        pprint.pprint(filters)
+        pprint.pprint(dbFilters)
 
     def scrape_and_generate_report(self):
         filters = self.collect_filter_choices()
@@ -424,6 +442,16 @@ class ScrubberGUI(QWidget):
         print("Automated Options")
         pprint.pprint(filters)
 
+    # Should theoretically work for both scrapping and database selections
+    def get_selected_brands(self, filters):
+        selectedBrands = []
+        # For every "make" key and "isClicked" value in the specific 
+        #   "Make" chunk of the dictionary, add the clicked ones to a list
+        for make, isClicked in filters["Make"].items():
+            if isClicked:
+                selectedBrands.append(make)
+        # Should already be alphabetical, but just making sure
+        return sorted(selectedBrands)
 
     # Offload stylesheet to an external file for main GUI code clarity
     def load_stylesheet(self, styleSheet):
@@ -433,7 +461,18 @@ class ScrubberGUI(QWidget):
         except FileNotFoundError:
             print(f"Error: The stylesheet file '{styleSheet}' was not found.")
             return ""
-    def button_clicked(self):
-        print("Button clicked!")
+
+    def convert_to_int_or_default(self, value, default):
+        if value == "FREE" or value == "Free":
+            return 0
+        try:
+            # Create new numeric string by removing non-digits
+            numericString = ''.join(c for c in value if c.isdigit())
+            # Type cast to Int
+            num = int(numericString)
+            return str(num)
+        except ValueError:
+            return default
+    
 
                        

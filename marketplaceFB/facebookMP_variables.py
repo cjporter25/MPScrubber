@@ -79,6 +79,8 @@ MAKE_FILTERS = {"Acura": "&make=280909549507187",
                 "Toyota": "&make=2318041991806363",
                 }
 
+DEF_BRAND_LIST = ["Dodge", "Jeep", "Chrysler"]
+
 # Multiple body styles can be selected, resulting in a URL scheme looking like this -->
 #   "&carType=minivan%2Csedan%2Csuv" instead of just "&carType=sedan"
 BODYSTYLE_FILTERS = {"Base Body Style": "&carType=",

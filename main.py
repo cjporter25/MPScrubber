@@ -5,19 +5,9 @@ import csv
 import time
 import psutil
 
-# Selenium imports
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-
 # Marketplace Imports
 from marketplaceFB.facebookMP_GUI import *
 from marketplaceFB.facebookMP_performance import *
-
-
 
 
 firstInput = input("Running Demo(1) or Dev-GUI(2)? --> ")
