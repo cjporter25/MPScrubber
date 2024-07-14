@@ -43,7 +43,6 @@ class FB_Scrapper:
         chrome_options.add_argument('--log-level=3') # Suppress logs except fatal ones
         chrome_options.add_argument('--disable-logging') # Suppress logs further
         chrome_options.add_argument('--silent') # Suppress logs further
-        chrome_options.add_argument('--no-sandbox') # Avoids permission issues
         chrome_options.add_argument('--headless') # No chrome window output
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         wait = WebDriverWait(driver, 5)
@@ -78,7 +77,7 @@ class FB_Scrapper:
     def build_URLs(self, brands):
         fbURLs = []
         for brand in brands: 
-            url = FB_MP_MAIN + FB_MP_STPAUL \
+            url = FB_MP_MAIN + self.location \
                     + PRICE_FILTERS["Min Price"] + self.minPrice \
                     + PRICE_FILTERS["Max Price"] + self.maxPrice \
                     + MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
@@ -88,6 +87,7 @@ class FB_Scrapper:
                     + self.sorting + MAKE_FILTERS[brand] \
                     + self.bodyStyles + self.vehicleTypes
             urlPlusBrand = [brand, url]
+            print(urlPlusBrand)
             fbURLs.append(urlPlusBrand)
         return fbURLs
     
@@ -140,6 +140,8 @@ class FB_Scrapper:
 
     def convert_to_int(self, newString):
         if newString == "FREE" or newString == "Free":
+            return 0
+        if newString == None:
             return 0
         try:
             # Create new numeric string by removing non-digits

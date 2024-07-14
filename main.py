@@ -58,7 +58,7 @@ chrome_options = Options()
 chrome_options.add_argument('--log-level=3') # Suppress logs
 chrome_options.add_argument('--disable-logging')
 chrome_options.add_argument('--silent')
-chrome_options.add_argument('--no-sandbox')  
+# chrome_options.add_argument('--no-sandbox')  
 chrome_options.add_argument('--headless') 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 wait = WebDriverWait(driver, 5)

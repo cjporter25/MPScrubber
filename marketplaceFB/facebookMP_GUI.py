@@ -2,6 +2,7 @@ import sys
 import json
 import os
 import pprint
+import random
 
 from marketplaceFB.facebookMP_scraper import *
 from marketplaceFB.facebookMP_reporting import *
@@ -328,7 +329,7 @@ class ScrubberGUI(QWidget):
 
     def collect_filter_choices(self):
         userChoicesGUI = {
-            "scrappingFilters": {
+            "ScrappingFilters": {
                 "Price": {"Min": self.fbPriceMin.text(), "Max": self.fbPriceMax.text()},
                 "Mileage": {"Min": self.fbMileageMin.text(), "Max": self.fbMileageMax.text()},
                 "Year": {"Min": self.fbYearMin.text(), "Max": self.fbYearMax.text()},
@@ -355,13 +356,13 @@ class ScrubberGUI(QWidget):
                 "Sorting Type": {
                     "dateListedNewestFirst": self.fbDateListedNewestFirst.isChecked(),
                     "dateListedOldestFirst": self.fbDateListedOldestFirst.isChecked(),
-                    "mileageLowestFirst": self.mileageLowestFirst.isChecked(),
-                    "mileageHighestFirst": self.mileageHighestFirst.isChecked(),
                     "priceLowestFirst": self.priceLowestFirst.isChecked(),
                     "priceHighestFirst": self.priceHighestFirst.isChecked(),
+                    "mileageLowestFirst": self.mileageLowestFirst.isChecked(),
+                    "mileageHighestFirst": self.mileageHighestFirst.isChecked(),
                 }
             },
-            "databaseFilters": {
+            "DatabaseFilters": {
                 "Database": {"NewestEntries": self.dbNewestEntries.isChecked(),
                              "OldestEntries": self.dbOldestEntries.isChecked(),
                              "AllEntries": self.dbAllEntries.isChecked(),},
@@ -388,21 +389,21 @@ class ScrubberGUI(QWidget):
                     "Toyota": self.dbMakeToyota.isChecked(),
             },
                 "Sorting Type": {
-                    "datePostedNewestFirst": self.dbDatePostedNewestFirst.isChecked(),
-                    "datePostedOldestFirst": self.dbDatePostedOldestFirst.isChecked(),
+                    "dateListedNewestFirst": self.dbDatePostedNewestFirst.isChecked(),
+                    "dateListedOldestFirst": self.dbDatePostedOldestFirst.isChecked(),
                     "yearNewestFirst": self.dbYearNewestFirst.isChecked(),
                     "yearOldestFirst": self.dbYearOldestFirst.isChecked(),
-                    "priceHighestFirst": self.dbPriceHighestFirst.isChecked(),
                     "priceLowestFirst": self.dbPriceLowestFirst.isChecked(),
-                    "mileageHighestFirst": self.dbMileageHighestFirst.isChecked(),
+                    "priceHighestFirst": self.dbPriceHighestFirst.isChecked(),
                     "mileageLowestFirst": self.dbMileageLowestFirst.isChecked(),
+                    "mileageHighestFirst": self.dbMileageHighestFirst.isChecked(),
                 },
             }
         }
         return userChoicesGUI
 
     def scrape_facebook(self):
-        fbFilters = self.collect_filter_choices()["scrappingFilters"]
+        fbFilters = self.collect_filter_choices()["ScrappingFilters"]
         # Call the function to scrape Facebook using the filters
         print("Scraping Facebook with filters:")
         pprint.pprint(fbFilters)
@@ -424,12 +425,28 @@ class ScrubberGUI(QWidget):
                                brands, location, sorting,
                                bodyStyles, vehicleTypes)
         scrapper.scrape()
+        print("Scrapping Complete!")
+        return
+    
+        for i in range(30, 0, -1):
+            scrapper.scrape()
+            print("BIG WAIT")
+            randomInt = random.randint(10,50)
+            time.sleep(randomInt)
 
     def generate_database_report(self):
-        dbFilters = self.collect_filter_choices()["databaseFilters"]
+        dbFilters = self.collect_filter_choices()["DatabaseFilters"]
         # Call the function to generate a report using the filters
         print("Generating report with filters:")
         pprint.pprint(dbFilters)
+        minYear = self.convert_to_int_or_default(dbFilters["Year"]["Min"], "2000")
+        maxYear = self.convert_to_int_or_default(dbFilters["Year"]["Max"], "2024")
+        minPrice = self.convert_to_int_or_default(dbFilters["Price"]["Min"], "0")
+        maxPrice = self.convert_to_int_or_default(dbFilters["Price"]["Max"], "50000")
+        minMileage = self.convert_to_int_or_default(dbFilters["Mileage"]["Min"], "0")
+        maxMileage = self.convert_to_int_or_default(dbFilters["Mileage"]["Max"], "200000")
+        brands = self.get_selected_brands(dbFilters)
+        location = ""
 
     def scrape_and_generate_report(self):
         filters = self.collect_filter_choices()
@@ -438,7 +455,7 @@ class ScrubberGUI(QWidget):
         pprint.pprint(filters)
     
     def scrape_facebook_automated(self):
-        filters = self.collect_filter_choices()["scrappingFilters"]
+        filters = self.collect_filter_choices()["ScrappingFilters"]
         print("Automated Options")
         pprint.pprint(filters)
 
@@ -452,6 +469,17 @@ class ScrubberGUI(QWidget):
                 selectedBrands.append(make)
         # Should already be alphabetical, but just making sure
         return sorted(selectedBrands)
+    def get_selected_sorting_option(self, filters):
+        sortingOption = ""
+        numClicked = 0
+        for sortType, isClicked in filters["Sorting Type"].items():
+            if isClicked:
+                numClicked += 1
+                sortingOption = sortType
+            if numClicked > 1:
+                sortingOption = "dateListedNewestFirst"
+                break
+        return sortingOption
 
     # Offload stylesheet to an external file for main GUI code clarity
     def load_stylesheet(self, styleSheet):
