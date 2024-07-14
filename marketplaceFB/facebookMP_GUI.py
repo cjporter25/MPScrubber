@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout,
                              QHBoxLayout, QListWidget, QCheckBox, 
                              QPushButton, QLabel, QGridLayout,
                              QSpacerItem, QSizePolicy, QLineEdit)
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QObject, QThread, pyqtSignal
 
 
 # PrimaryKey TEXT,
@@ -114,7 +114,6 @@ class ScrubberGUI(QWidget):
         self.locMinneapolis = QCheckBox("Minneapolis")
 
         # Initialize instance variables for Database filters
-        
         self.dbYearMin = QLineEdit()
         self.dbYearMin.setPlaceholderText("Min")
         self.dbYearMax = QLineEdit()
@@ -159,6 +158,11 @@ class ScrubberGUI(QWidget):
         self.dbAllEntries =  QCheckBox("DB: All Entries")
         self.dbNumEntriesPer = QLineEdit()
         self.dbNumEntriesPer.setPlaceholderText("#")
+
+
+        # Initialize Worker Threads
+        
+        self.dbThread = QThread()
 
     def create_facebook_filter_layout(self):
         layoutFB = QVBoxLayout()
@@ -310,20 +314,24 @@ class ScrubberGUI(QWidget):
         # Padding increases distance from text to edge of button
         # Margin increases distance from edge of button to other items
         
-        buttonScrape.clicked.connect(self.scrape_facebook)
+        buttonScrape.clicked.connect(self.button_scrape_facebook)
         buttonsLayout.addWidget(buttonScrape)
 
         buttonReport = QPushButton("Generate Database Report")
-        buttonReport.clicked.connect(self.generate_database_report)
+        buttonReport.clicked.connect(self.button_generate_database_report)
         buttonsLayout.addWidget(buttonReport)
 
         buttonBoth = QPushButton("Scrape and Generate")
-        buttonBoth.clicked.connect(self.scrape_and_generate_report)
+        buttonBoth.clicked.connect(self.button_scrape_and_generate_report)
         buttonsLayout.addWidget(buttonBoth)
 
         buttonAutomate = QPushButton("Automate")
-        buttonAutomate.clicked.connect(self.scrape_and_generate_report)
+        buttonAutomate.clicked.connect(self.button_scrape_and_generate_report)
         buttonsLayout.addWidget(buttonAutomate)
+
+        buttonTrends = QPushButton("See Trends")
+        buttonTrends.clicked.connect(self.button_see_trends)
+        buttonsLayout.addWidget(buttonTrends)
 
         return buttonsLayout
 
@@ -402,7 +410,7 @@ class ScrubberGUI(QWidget):
         }
         return userChoicesGUI
 
-    def scrape_facebook(self):
+    def button_scrape_facebook(self):
         fbFilters = self.collect_filter_choices()["ScrappingFilters"]
         # Call the function to scrape Facebook using the filters
         print("Scraping Facebook with filters:")
@@ -424,17 +432,29 @@ class ScrubberGUI(QWidget):
                                maxPrice, minMileage, maxMileage,
                                brands, location, sorting,
                                bodyStyles, vehicleTypes)
-        scrapper.scrape()
-        print("Scrapping Complete!")
-        return
-    
-        for i in range(30, 0, -1):
-            scrapper.scrape()
-            print("BIG WAIT")
-            randomInt = random.randint(10,50)
-            time.sleep(randomInt)
+        
+        self.fbThread = QThread()
+        self.worker = FB_Worker_Scrapper(scrapper)
+        self.worker.moveToThread(self.fbThread)
 
-    def generate_database_report(self):
+        # Set "what to do" when thread is started
+        self.fbThread.started.connect(self.worker.run)
+        # Tell the thread to "quit" was the worker is finished
+        self.worker.finished.connect(self.fbThread.quit)
+        # Tell the worker to schedule itslef for deletion later when it's safe
+        self.worker.finished.connect(self.worker.deleteLater)
+        # Tell the thread to do the same
+        self.fbThread.finished.connect(self.fbThread.deleteLater)
+
+        # Start the Thread
+        self.fbThread.start()
+
+        self.fbThread.finished.connect(self.on_scrape_finished)
+
+        return
+ 
+
+    def button_generate_database_report(self):
         dbFilters = self.collect_filter_choices()["DatabaseFilters"]
         # Call the function to generate a report using the filters
         print("Generating report with filters:")
@@ -448,16 +468,28 @@ class ScrubberGUI(QWidget):
         brands = self.get_selected_brands(dbFilters)
         location = ""
 
-    def scrape_and_generate_report(self):
+    def button_scrape_and_generate_report(self):
         filters = self.collect_filter_choices()
         # Call the function to scrape Facebook and generate a report using the filters
         print("Scraping Facebook and generating report with filters:")
         pprint.pprint(filters)
     
-    def scrape_facebook_automated(self):
+    def button_automated(self):
         filters = self.collect_filter_choices()["ScrappingFilters"]
         print("Automated Options")
         pprint.pprint(filters)
+    def button_see_trends(self):
+        brands = ["Chevy", "Toyota", "Honda", "Dodge", "Chrysler", "Jeep"]
+        db = FB_DatabaseManager()
+        allBrands = db.fetch_brand_list()
+        print(allBrands)
+        tm = FB_TrendsAnalyzer()
+        tm.plot_compare_trends_without_data_points(db, brands)
+        tm.plot_compare_trends_with_data_points(db, allBrands)
+        return
+
+    def on_scrape_finished(self):
+        print("Scrapping Complete!")
 
     # Should theoretically work for both scrapping and database selections
     def get_selected_brands(self, filters):
@@ -469,7 +501,7 @@ class ScrubberGUI(QWidget):
                 selectedBrands.append(make)
         # Should already be alphabetical, but just making sure
         return sorted(selectedBrands)
-    def get_selected_sorting_option(self, filters):
+    def get_selected_fb_sorting_options(self, filters):
         sortingOption = ""
         numClicked = 0
         for sortType, isClicked in filters["Sorting Type"].items():
@@ -480,6 +512,8 @@ class ScrubberGUI(QWidget):
                 sortingOption = "dateListedNewestFirst"
                 break
         return sortingOption
+    def get_selected_db_sorting_options(self, filters):
+        return
 
     # Offload stylesheet to an external file for main GUI code clarity
     def load_stylesheet(self, styleSheet):
@@ -493,6 +527,8 @@ class ScrubberGUI(QWidget):
     def convert_to_int_or_default(self, value, default):
         if value == "FREE" or value == "Free":
             return 0
+        if value == None:
+            return 0
         try:
             # Create new numeric string by removing non-digits
             numericString = ''.join(c for c in value if c.isdigit())
@@ -501,6 +537,19 @@ class ScrubberGUI(QWidget):
             return str(num)
         except ValueError:
             return default
+
+class FB_Worker_Scrapper(QObject):
+    # Emits a "signal" indicating a task has finished
+    finished = pyqtSignal()
+    # Emits a "signal" indicating a task is in progress
+    # Usage: self.progress.emit(f"Progress: {i})
+    progress = pyqtSignal(str)
+    def __init__(self, FBScrapper):
+        super().__init__()
+        self.FBScrapper = FBScrapper
+    def run(self):
+        self.FBScrapper.scrape()
+        self.finished.emit()
     
 
                        

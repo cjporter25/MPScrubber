@@ -7,6 +7,8 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
+
+
 # PrimaryKey TEXT,
 # DatePulled TEXT,
 # DatePosted TEXT,
@@ -18,15 +20,10 @@ from openpyxl.utils import get_column_letter
 # Link TEXT
 
 
-class ReportsManager:
-    def __init__(self, folderPath):
-        self.primaryDir = folderPath
+class FB_ExcelReportManager:
+    def __init__(self, primaryDir=None):
+        self.primaryDir = primaryDir if primaryDir is not None else self.set_primary_directory()
         self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
-    def __init__(self):
-        # self.primaryDir = "C:\\Users\\[USER_PROFILE]\\Desktop\\MPScrubberReports"
-        self.primaryDir = self.set_primary_directory()
-        self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
-
 
     def set_primary_directory(self):
         user_profile = os.environ.get('USERPROFILE')
@@ -114,7 +111,6 @@ class ReportsManager:
             adjusted_width = max_length + 2  # Adding extra space for better readability
             worksheet.column_dimensions[column_letter].width = adjusted_width
 
-
     def save_new_report(self, currDateTime, workbook):
         # Excel file type = .xlsx
         reportFileName = "MPReport(" + currDateTime + ").xlsx"
@@ -134,5 +130,72 @@ class ReportsManager:
             s.system(f'open "{file_path}"')
     
 
+import numpy as np
+import pandas as pd
+import plotly.express as px
 
+# INTERPRETING TRENDS
+# Points Above the Trend Line:
+#   Higher Price: A vehicle above the trend line shows that the price is higher than what is expected
+#       Potential Implications:
+#           Better Condition: The vehicle might be in better condition compared to others with similar mileage.
+#           Additional Features: The vehicle may have additional features/options
+#           Brand Reputation: The brand/model may have a better reputation/higher demand
+#           Market Conditions: Market conditions/seller strategies point to selling at a higher price
+# Points Below the Trend Line:
+#   Lower Price: A data point below the trend line indicates that the vehicle is priced lower than what is expected based on the trend. This could be due to several factors:
+#       Potential Implications:
+#           Poor Condition: The vehicle might be in worse condition compared to others with similar mileage.
+#           Missing Features: The vehicle may lack features found in similar models
+#           Urgent Sale: The seller may be looking for a quick sale/will accept a lower price
+#           Market Conditions: Market conditions suck or pricing is competitive for brand/model
+
+class FB_TrendsAnalyzer:
+    def __init__(self):
+        self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
+        self.lowestSlope = 0
+        self.highestSlope = 0
+    def plot_compare_trends_with_data_points(self, db, brands):
+        fig = px.scatter(title='Mileage vs. Price Trends Comparison', labels={'Mileage': 'Mileage', 'Price': 'Price'})
+        for brand in brands:
+            data = db.fetch_mileage_and_prices(brand)
+            df = pd.DataFrame(data, columns=['Mileage', 'Price'])
+
+            # Filter out invalid data, i.e., anything below 0 isn't possible and should be considered 
+            #   non-applicable to the data set
+            df = df[(df['Mileage'] > 0) & (df['Price'] > 0)]
+
+            # Calculate the trend (linear regression)
+            slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
+            trendline = slope * df['Mileage'] + intercept
+            if self.lowestSlope == 0 & self.highestSlope == 0:
+                self.lowestSlope = slope
+                self.highestSlope = slope
+            else:
+                return
+            # Add scatter and trendline to the plot
+            fig.add_scatter(x=df['Mileage'], y=df['Price'], mode='markers', name=f'{brand} Data')
+            fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend')
+
+        fig.show()
+    def plot_compare_trends_without_data_points(self, db, brands):
+        fig = px.scatter(title='Mileage vs. Price (All Brands)', labels={'Mileage': 'Mileage', 'Price': 'Price'})
+        for brand in brands:
+            print(db.fetch_num_entries(brand))
+            if db.fetch_num_entries(brand) < 100:
+                continue
+            data = db.fetch_mileage_and_prices(brand)
+            df = pd.DataFrame(data, columns=['Mileage', 'Price'])
+
+            # Filter out invalid data
+            f = df[(df['Mileage'] > 0) & (df['Price'] > 0)]
+
+            # Calculate the trend (linear regression)
+            slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
+            trendline = slope * df['Mileage'] + intercept
+
+            # Add only the trendline to the plot
+            fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend')
+
+        fig.show()
    

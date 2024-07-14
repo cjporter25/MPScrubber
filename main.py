@@ -92,7 +92,7 @@ for url in urls:
 driver.quit()
 
 #****************************Generate Excel Report*********************************#
-rm = ReportsManager()
+rm = FB_ExcelReportManager()
 rm.build_new_report(prefBrands, 15)
 #****************************Generate Excel Report*********************************#
 

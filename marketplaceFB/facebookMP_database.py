@@ -51,7 +51,7 @@ class FB_DatabaseManager:
         self.set_num_existing_entries(insertionsSkipped)
         self.connection.commit()
 
-    def get_row_count(self, brand):
+    def fetch_num_entries(self, brand):
         cursor = self.connection.cursor()
         query = f"SELECT COUNT(*) FROM {brand}"
         cursor.execute(query)
@@ -113,14 +113,27 @@ class FB_DatabaseManager:
         finally:
             cursor.close()
     def show_brand_meta_data(self, brand):
-        print(f"Current total for {self.ucBrand}: {str(self.get_row_count(brand))}")
+        print(f"Current total for {self.ucBrand}: {str(self.fetch_num_entries(brand))}")
         print(f"Number of entries already present for {self.ucBrand}: {str(self.get_num_existing_entries())}")
-    def wait(self):
-        print("Automated Detection System Prevention. Waiting 5 seconds before scrapping the next brand...")
-        for i in range(5, 0, -1):
-            print("...")
-            time.sleep(1)
-        
+    def fetch_mileage_and_prices(self, brand):
+        cursor = self.connection.cursor()
+        query = f'SELECT Mileage, Price FROM {brand}'
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self.connection.commit()
+        return rows
+    def fetch_brand_list(self):
+        cursor = self.connection.cursor()
+        # Query sqlite_master table to get a list of all tables
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        # Extract table names from the fetched data
+        tableList = [table[0] for table in tables]
+
+        # Close the cursor and connection
+        cursor.close()
+        return tableList
+
     def get_num_total_entries(self):
         return self.numTotalEntries
     def get_num_existing_entries(self):
@@ -131,3 +144,9 @@ class FB_DatabaseManager:
         self.numTotalEntries = totalEntries
     def set_brand_name_upper_case(self, brand):
         self.ucBrand = brand.upper()
+    
+    def wait(self):
+        print("Automated Detection System Prevention. Waiting 5 seconds before scrapping the next brand...")
+        for i in range(5, 0, -1):
+            print("...")
+            time.sleep(1)
