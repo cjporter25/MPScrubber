@@ -6,6 +6,7 @@ import random
 
 from marketplaceFB.facebookMP_scraper import *
 from marketplaceFB.facebookMP_reporting import *
+from marketplaceFB.facebookMP_notifications import *
 
 
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, 
@@ -479,13 +480,21 @@ class ScrubberGUI(QWidget):
         print("Automated Options")
         pprint.pprint(filters)
     def button_see_trends(self):
-        brands = ["Chevy", "Toyota", "Honda", "Dodge", "Chrysler", "Jeep"]
+        brands = ["Dodge", "Chrysler", "Jeep"]
         db = FB_DatabaseManager()
         allBrands = db.fetch_brand_list()
-        print(allBrands)
         tm = FB_TrendsAnalyzer()
+
         tm.plot_compare_trends_without_data_points(db, brands)
+        tm.plot_compare_trends_with_data_points(db, brands)
+        tm.plot_compare_trends_without_data_points(db, allBrands)
         tm.plot_compare_trends_with_data_points(db, allBrands)
+        
+        goodDeals = tm.check_for_good_deal(db, brands)
+        notif = FB_NotificationsManager()
+        notif.confirmEnvVariables()
+        notif.testServerConnection()
+        # BNotifications.sendGoodDealsEmail(goodDeals)
         return
 
     def on_scrape_finished(self):

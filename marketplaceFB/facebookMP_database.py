@@ -51,15 +51,6 @@ class FB_DatabaseManager:
         self.set_num_existing_entries(insertionsSkipped)
         self.connection.commit()
 
-    def fetch_num_entries(self, brand):
-        cursor = self.connection.cursor()
-        query = f"SELECT COUNT(*) FROM {brand}"
-        cursor.execute(query)
-        rowCount = cursor.fetchone()[0]
-        cursor.close()
-        self.set_num_total_entries(rowCount)
-        return rowCount
-
     def list_tables(self):
         cursor = self.connection.cursor()
 
@@ -113,15 +104,10 @@ class FB_DatabaseManager:
         finally:
             cursor.close()
     def show_brand_meta_data(self, brand):
-        print(f"Current total for {self.ucBrand}: {str(self.fetch_num_entries(brand))}")
+        print(f"Current total for {self.ucBrand}: {str(self.fetch_total_number_of_entries(brand))}")
         print(f"Number of entries already present for {self.ucBrand}: {str(self.get_num_existing_entries())}")
-    def fetch_mileage_and_prices(self, brand):
-        cursor = self.connection.cursor()
-        query = f'SELECT Mileage, Price FROM {brand}'
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        self.connection.commit()
-        return rows
+
+
     def fetch_brand_list(self):
         cursor = self.connection.cursor()
         # Query sqlite_master table to get a list of all tables
@@ -133,6 +119,37 @@ class FB_DatabaseManager:
         # Close the cursor and connection
         cursor.close()
         return tableList
+    def fetch_total_number_of_entries(self, brand):
+        cursor = self.connection.cursor()
+        query = f"SELECT COUNT(*) FROM {brand}"
+        cursor.execute(query)
+        rowCount = cursor.fetchone()[0]
+        cursor.close()
+        self.set_num_total_entries(rowCount)
+        return rowCount
+    def fetch_mileage_and_prices_most_recent(self, brand):
+        cursor = self.connection.cursor()
+        sortingType = "DatePulled"
+        query = f'SELECT PrimaryKey, Mileage, Price FROM {brand} ORDER BY {sortingType} DESC'
+        # Fetch data sorted by DatePulled in descending order for the specified brand
+        cursor.execute(query)
+        # Fetch "numPostings" worth of most recent entries
+        data = cursor.fetchmany(15)
+        return data
+    def fetch_mileage_and_prices_all(self, brand):
+        cursor = self.connection.cursor()
+        query = f'SELECT Mileage, Price FROM {brand}'
+        cursor.execute(query)
+        data = cursor.fetchall()
+        return data
+    def fetch_details_by_primary_key(self, brand, primaryKey):
+        cursor = self.connection.cursor()
+        query = f'SELECT PrimaryKey, Year, Price, Mileage, Description, Location, Link FROM {brand} WHERE PrimaryKey = ?'
+        cursor.execute(query, (primaryKey,))
+        row = cursor.fetchone()
+        if row:
+            return {row[0]: {"year": row[1], "price": row[2], "mileage": row[3], "description": row[4], "location": row[5], "link": row[6]}}
+        return {}
 
     def get_num_total_entries(self):
         return self.numTotalEntries
@@ -144,7 +161,6 @@ class FB_DatabaseManager:
         self.numTotalEntries = totalEntries
     def set_brand_name_upper_case(self, brand):
         self.ucBrand = brand.upper()
-    
     def wait(self):
         print("Automated Detection System Prevention. Waiting 5 seconds before scrapping the next brand...")
         for i in range(5, 0, -1):

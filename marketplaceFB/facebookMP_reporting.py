@@ -133,6 +133,7 @@ class FB_ExcelReportManager:
 import numpy as np
 import pandas as pd
 import plotly.express as px
+from marketplaceFB.facebookMP_database import *
 
 # INTERPRETING TRENDS
 # Points Above the Trend Line:
@@ -158,37 +159,36 @@ class FB_TrendsAnalyzer:
     def plot_compare_trends_with_data_points(self, db, brands):
         fig = px.scatter(title='Mileage vs. Price Trends Comparison', labels={'Mileage': 'Mileage', 'Price': 'Price'})
         for brand in brands:
-            data = db.fetch_mileage_and_prices(brand)
+            data = db.fetch_mileage_and_prices_all(brand)
             df = pd.DataFrame(data, columns=['Mileage', 'Price'])
 
             # Filter out invalid data, i.e., anything below 0 isn't possible and should be considered 
             #   non-applicable to the data set
-            df = df[(df['Mileage'] > 0) & (df['Price'] > 0)]
+            df = df[(df['Mileage'] > 1000) & (df['Price'] > 100)]
 
             # Calculate the trend (linear regression)
             slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
             trendline = slope * df['Mileage'] + intercept
-            if self.lowestSlope == 0 & self.highestSlope == 0:
-                self.lowestSlope = slope
-                self.highestSlope = slope
-            else:
-                return
             # Add scatter and trendline to the plot
             fig.add_scatter(x=df['Mileage'], y=df['Price'], mode='markers', name=f'{brand} Data')
             fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend')
-
+        # Make graph only show above -1000 on both axis
+        # Set max to the highest one plus a little extra
+        fig.update_layout(
+            xaxis=dict(range=[-1000, df['Mileage'].max() * 1.1]),
+            yaxis=dict(range=[-1000, df['Price'].max() * 1.1])
+        )
         fig.show()
     def plot_compare_trends_without_data_points(self, db, brands):
         fig = px.scatter(title='Mileage vs. Price (All Brands)', labels={'Mileage': 'Mileage', 'Price': 'Price'})
         for brand in brands:
-            print(db.fetch_num_entries(brand))
-            if db.fetch_num_entries(brand) < 100:
+            if db.fetch_total_number_of_entries(brand) < 50:
                 continue
-            data = db.fetch_mileage_and_prices(brand)
+            data = db.fetch_mileage_and_prices_all(brand)
             df = pd.DataFrame(data, columns=['Mileage', 'Price'])
 
             # Filter out invalid data
-            f = df[(df['Mileage'] > 0) & (df['Price'] > 0)]
+            df = df[(df['Mileage'] > 1000) & (df['Price'] > 100)]
 
             # Calculate the trend (linear regression)
             slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
@@ -196,6 +196,59 @@ class FB_TrendsAnalyzer:
 
             # Add only the trendline to the plot
             fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend')
+        # Make graph only show above 0 on both axis
+        # Set max to the highest one plus a little extra
+        fig.update_layout(
+            xaxis=dict(range=[0, df['Mileage'].max() * 1.1]),
+            yaxis=dict(range=[0, df['Price'].max() * 1.1])
+        )
 
         fig.show()
+    def check_for_good_deal(self, db, brands):
+        fig = px.scatter(title='Mileage vs. Price Trends with Good Deals', labels={'Mileage': 'Mileage', 'Price': 'Price'})
+        goodDeals = {}
+        for brand in brands:
+            allData = db.fetch_mileage_and_prices_all(brand)
+            newData = db.fetch_mileage_and_prices_most_recent(brand)
+
+            # Create DataFrame and filter out invalid data
+            df = pd.DataFrame(allData, columns=['Mileage', 'Price'])
+            df = df[(df['Mileage'] > 100) & (df['Price'] > 100)]
+
+            # Calculate the trend (linear regression)
+            slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
+            trendLine = slope * df['Mileage'] + intercept
+
+            # Add only the trendline to the plot
+            fig.add_scatter(x=df['Mileage'], y=trendLine, mode='lines', name=f'{brand} Trend')
+
+            for entry in newData:
+                primaryKey = entry[0]
+                mileage = entry[1]
+                price = entry[2]
+                if mileage > 0 and price > 0:
+                    isGoodDeal = self.is_entry_good_deal(df, mileage, price)
+                    if isGoodDeal:
+                        fig.add_scatter(x=[mileage], y=[price], mode='markers', name=f'{brand} {primaryKey}', marker=dict(color='red'))
+                        goodDeals.update(db.fetch_details_by_primary_key(brand, primaryKey))
+        # Show the plot
+        fig.update_layout(
+            xaxis=dict(range=[0, df['Mileage'].max() * 1.1]),
+            yaxis=dict(range=[0, df['Price'].max() * 1.1])
+        )
+        fig.show()
+
+        return goodDeals
+
+    def is_entry_good_deal(self, df, mileage, price):
+        # Calculate the trend (linear regression)
+        slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
+        # Calculate the expected price at the given mileage
+        expectedPrice = slope * mileage + intercept
+        # Determine if the price is below the trend line but within 10% of the expected price on that trend
+        lowerBound = expectedPrice - (expectedPrice * 0.10)
+        # Is the posted price within 10%?
+        isGoodDeal = lowerBound <= price < expectedPrice
+        # Return the result
+        return isGoodDeal
    
