@@ -68,7 +68,6 @@ class FB_DatabaseManager:
         for tableName in tableList:
             print(tableName)
 
-
     def show_table(self, brand):
         cursor = self.connection.cursor()
         select_many_command = '''SELECT * FROM {}'''.format(brand)
@@ -134,7 +133,7 @@ class FB_DatabaseManager:
         # Fetch data sorted by DatePulled in descending order for the specified brand
         cursor.execute(query)
         # Fetch "numPostings" worth of most recent entries
-        data = cursor.fetchmany(15)
+        data = cursor.fetchmany(30)
         return data
     def fetch_mileage_and_prices_all(self, brand):
         cursor = self.connection.cursor()
@@ -163,6 +162,6 @@ class FB_DatabaseManager:
         self.ucBrand = brand.upper()
     def wait(self):
         print("Automated Detection System Prevention. Waiting 5 seconds before scrapping the next brand...")
-        for i in range(5, 0, -1):
+        for i in range(3, 0, -1):
             print("...")
             time.sleep(1)

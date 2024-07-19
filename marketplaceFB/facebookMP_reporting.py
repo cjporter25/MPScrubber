@@ -158,49 +158,58 @@ class FB_TrendsAnalyzer:
         self.highestSlope = 0
     def plot_compare_trends_with_data_points(self, db, brands):
         fig = px.scatter(title='Mileage vs. Price Trends Comparison', labels={'Mileage': 'Mileage', 'Price': 'Price'})
-        for brand in brands:
+        color_cycle = px.colors.qualitative.Plotly
+        for i, brand in enumerate(brands):
             data = db.fetch_mileage_and_prices_all(brand)
             df = pd.DataFrame(data, columns=['Mileage', 'Price'])
 
             # Filter out invalid data, i.e., anything below 0 isn't possible and should be considered 
             #   non-applicable to the data set
-            df = df[(df['Mileage'] > 1000) & (df['Price'] > 100)]
+            df = df[(df['Mileage'] > 1000) & (df['Price'] > 1000)]
 
             # Calculate the trend (linear regression)
             slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
             trendline = slope * df['Mileage'] + intercept
-            # Add scatter and trendline to the plot
-            fig.add_scatter(x=df['Mileage'], y=df['Price'], mode='markers', name=f'{brand} Data')
-            fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend')
+
+            # Set color for the brand
+            color = color_cycle[i % len(color_cycle)]
+
+            fig.add_scatter(x=df['Mileage'], y=df['Price'], mode='markers', name=f'{brand} Data', marker=dict(color=color))
+            fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend', line=dict(color=color))
         # Make graph only show above -1000 on both axis
         # Set max to the highest one plus a little extra
         fig.update_layout(
-            xaxis=dict(range=[-1000, df['Mileage'].max() * 1.1]),
-            yaxis=dict(range=[-1000, df['Price'].max() * 1.1])
+            xaxis=dict(range=[-1000, df['Mileage'].max() * 1.01]),
+            yaxis=dict(range=[-1000, df['Price'].max() * 1.01])
         )
         fig.show()
     def plot_compare_trends_without_data_points(self, db, brands):
         fig = px.scatter(title='Mileage vs. Price (All Brands)', labels={'Mileage': 'Mileage', 'Price': 'Price'})
-        for brand in brands:
+        color_cycle = px.colors.qualitative.Plotly
+        for i, brand in enumerate(brands):
             if db.fetch_total_number_of_entries(brand) < 50:
                 continue
             data = db.fetch_mileage_and_prices_all(brand)
             df = pd.DataFrame(data, columns=['Mileage', 'Price'])
 
             # Filter out invalid data
-            df = df[(df['Mileage'] > 1000) & (df['Price'] > 100)]
+            df = df[(df['Mileage'] > 1000) & (df['Price'] > 1000)]
 
             # Calculate the trend (linear regression)
             slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
             trendline = slope * df['Mileage'] + intercept
 
+            # Set color for the brand
+            color = color_cycle[i % len(color_cycle)]
+
             # Add only the trendline to the plot
-            fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend')
+            fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend', line=dict(color=color))
+
         # Make graph only show above 0 on both axis
         # Set max to the highest one plus a little extra
         fig.update_layout(
-            xaxis=dict(range=[0, df['Mileage'].max() * 1.1]),
-            yaxis=dict(range=[0, df['Price'].max() * 1.1])
+            xaxis=dict(range=[-1000, df['Mileage'].max() * 1.01]),
+            yaxis=dict(range=[-1000, df['Price'].max() * 1.01])
         )
 
         fig.show()
@@ -233,8 +242,8 @@ class FB_TrendsAnalyzer:
                         goodDeals.update(db.fetch_details_by_primary_key(brand, primaryKey))
         # Show the plot
         fig.update_layout(
-            xaxis=dict(range=[0, df['Mileage'].max() * 1.1]),
-            yaxis=dict(range=[0, df['Price'].max() * 1.1])
+            xaxis=dict(range=[0, df['Mileage'].max() * 1.01]),
+            yaxis=dict(range=[0, df['Price'].max() * 1.01])
         )
         fig.show()
 

@@ -311,28 +311,27 @@ class ScrubberGUI(QWidget):
         buttonsLayout = QHBoxLayout()
 
         # Add buttons
-        buttonScrape = QPushButton("Scrape Facebook")
         # Padding increases distance from text to edge of button
         # Margin increases distance from edge of button to other items
-        
+        buttonScrape = QPushButton("Scrape")
         buttonScrape.clicked.connect(self.button_scrape_facebook)
         buttonsLayout.addWidget(buttonScrape)
 
-        buttonReport = QPushButton("Generate Database Report")
+        buttonReport = QPushButton("Report")
         buttonReport.clicked.connect(self.button_generate_database_report)
         buttonsLayout.addWidget(buttonReport)
 
-        buttonBoth = QPushButton("Scrape and Generate")
+        buttonBoth = QPushButton("Scrape and Report")
         buttonBoth.clicked.connect(self.button_scrape_and_generate_report)
         buttonsLayout.addWidget(buttonBoth)
-
-        buttonAutomate = QPushButton("Automate")
-        buttonAutomate.clicked.connect(self.button_scrape_and_generate_report)
-        buttonsLayout.addWidget(buttonAutomate)
 
         buttonTrends = QPushButton("See Trends")
         buttonTrends.clicked.connect(self.button_see_trends)
         buttonsLayout.addWidget(buttonTrends)
+
+        buttonAutomate = QPushButton("Automate")
+        buttonAutomate.clicked.connect(self.button_scrape_and_generate_report)
+        buttonsLayout.addWidget(buttonAutomate)
 
         return buttonsLayout
 
@@ -415,7 +414,6 @@ class ScrubberGUI(QWidget):
         fbFilters = self.collect_filter_choices()["ScrappingFilters"]
         # Call the function to scrape Facebook using the filters
         print("Scraping Facebook with filters:")
-        pprint.pprint(fbFilters)
         minYear = self.convert_to_int_or_default(fbFilters["Year"]["Min"], "2000")
         maxYear = self.convert_to_int_or_default(fbFilters["Year"]["Max"], "2024")
         minPrice = self.convert_to_int_or_default(fbFilters["Price"]["Min"], "0")
@@ -454,7 +452,6 @@ class ScrubberGUI(QWidget):
 
         return
  
-
     def button_generate_database_report(self):
         dbFilters = self.collect_filter_choices()["DatabaseFilters"]
         # Call the function to generate a report using the filters
@@ -480,21 +477,20 @@ class ScrubberGUI(QWidget):
         print("Automated Options")
         pprint.pprint(filters)
     def button_see_trends(self):
-        brands = ["Dodge", "Chrysler", "Jeep"]
+        dbFilters = self.collect_filter_choices()["DatabaseFilters"]
+        brands = self.get_selected_brands(dbFilters)
         db = FB_DatabaseManager()
         allBrands = db.fetch_brand_list()
         tm = FB_TrendsAnalyzer()
 
-        tm.plot_compare_trends_without_data_points(db, brands)
+        #tm.plot_compare_trends_without_data_points(db, brands)
         tm.plot_compare_trends_with_data_points(db, brands)
         tm.plot_compare_trends_without_data_points(db, allBrands)
         tm.plot_compare_trends_with_data_points(db, allBrands)
         
         goodDeals = tm.check_for_good_deal(db, brands)
         notif = FB_NotificationsManager()
-        notif.confirmEnvVariables()
-        notif.testServerConnection()
-        # BNotifications.sendGoodDealsEmail(goodDeals)
+        #notif.sendGoodDealsEmail(goodDeals)
         return
 
     def on_scrape_finished(self):

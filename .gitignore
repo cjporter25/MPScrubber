@@ -17,6 +17,7 @@
 *.vcf
 *.xml
 *.log
+*.json
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

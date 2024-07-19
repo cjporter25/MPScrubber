@@ -40,8 +40,8 @@ def log_network_usage(netLog="network_usage_log.csv", interval=0.25):
             recvSpeedMbps = round(((recvSpeed * 8)/1000)/1024, 2)
 
             # Convert the total to MB
-            totalSentMB = totalBytesSent / (1024 * 1024)
-            totalRecvMB = totalBytesRecv / (1024 * 1024)
+            totalSentMB = round((totalBytesSent / (1024 * 1024)), 2)
+            totalRecvMB = round((totalBytesRecv / (1024 * 1024)), 2)
 
             timer += interval
 

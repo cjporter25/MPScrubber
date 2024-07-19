@@ -6,40 +6,78 @@ import time
 from bs4 import BeautifulSoup
 from datetime import date
 
+# Selenium imports
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+
 from marketplaceFB.facebookMP_database import *
 
 class FB_Scrapper:
-    def __init__(self, minPrice, maxPrice, minMiles, 
-                 maxMiles, minYear, maxYear, sorting, 
-                 brands, bodyStyles, vehicleTypes):
+    def __init__(self, minYear="2000", maxYear="2024", minPrice="0", 
+                 maxPrice="50000", minMiles="0", maxMiles="250000",
+                 brands=None, location=None, sorting=None, 
+                 bodyStyles=None, vehicleTypes=None):
+        self.minYear = minYear
+        self.maxYear = maxYear
         self.minPrice = minPrice
         self.maxPrice = maxPrice
         self.minMiles = minMiles
         self.maxMiles = maxMiles
-        self.minYear = minYear
-        self.maxYear = maxYear
-        self.sorting = sorting
-        self.brands = brands
-        self.bodyStyles = bodyStyles
-        self.vehicleTypes = vehicleTypes
-        self.connection = sqlite3.connect('./marketplaceFB/facebookDB.db')
-    def __init__(self):
-        self.minPrice = "0"
-        self.maxPrice = "50000"
-        self.minMiles = "0"
-        self.maxMiles = "300000"
-        self.minYear = "1990"
-        self.maxYear = "2024"
-        self.sorting = SORTING_FILTERS["Date Listed: Newest First"]
-        self.brands = ["Toyota", "Honda", "Chevy"]
-        self.bodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
-        self.vehicleTypes = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
-        self.connection = sqlite3.connect('./marketplaceFB/facebookDB.db')
+        self.brands = brands if brands is not None else DEF_BRAND_LIST
+        self.location = location if location is not None else FB_MP_STPAUL
+        self.sorting = sorting if sorting is not None else SORTING_FILTERS["Date Listed: Newest First"]
+        self.bodyStyles = bodyStyles if bodyStyles is not None else BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
+        self.vehicleTypes = vehicleTypes if vehicleTypes is not None else VEHICLE_TYPE_FILTERS["Cars & Trucks"]
+    def scrape(self):
+        newDate = self.get_current_date_and_time()
+        print(f"Current date and time: {newDate}")
+        fbURLs = self.build_URLs(self.brands)
+        db = FB_DatabaseManager()
+
+        # Launch Chrome driver
+        chrome_options = Options()
+        chrome_options.add_argument('--log-level=3') # Suppress logs except fatal ones
+        chrome_options.add_argument('--disable-logging') # Suppress logs further
+        chrome_options.add_argument('--silent') # Suppress logs further
+        chrome_options.add_argument('--headless') # No chrome window output
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        wait = WebDriverWait(driver, 5)
+
+        
+        # Open each URL 
+        for url in fbURLs:
+            try:
+                # url[1] contains the actual built URL
+                driver.get(url[1]) #Get the URL's data
+                get_url = driver.current_url #Retrieve what the driver used as the URL
+                wait.until(EC.url_to_be(url[1])) #Wait to let the page load
+                if get_url == url[1]:    #If the used URL matches the original, grab the page source
+                    page_source = driver.page_source
+            except Exception as e:
+                print(f"Error occurred while loading URL {url[1]}: {e}")
+                continue
+
+            # url[0] contains a string of the current brand being looked at
+            currBrand = url[0]
+            print(f"Retrieving posting data for brand: {currBrand.upper()}")
+
+            newEntries = self.retrieve_postings(page_source)
+            db.create_table(currBrand)
+            db.insert_entries(currBrand, newEntries)
+            db.show_brand_meta_data(currBrand)
+            db.wait()
+
+        # Close chrome driver
+        driver.quit()
 
     def build_URLs(self, brands):
         fbURLs = []
         for brand in brands: 
-            url = FB_MP_MAIN + FB_MP_STPAUL \
+            url = FB_MP_MAIN + self.location \
                     + PRICE_FILTERS["Min Price"] + self.minPrice \
                     + PRICE_FILTERS["Max Price"] + self.maxPrice \
                     + MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
@@ -49,6 +87,7 @@ class FB_Scrapper:
                     + self.sorting + MAKE_FILTERS[brand] \
                     + self.bodyStyles + self.vehicleTypes
             urlPlusBrand = [brand, url]
+            print(urlPlusBrand)
             fbURLs.append(urlPlusBrand)
         return fbURLs
     
@@ -59,7 +98,7 @@ class FB_Scrapper:
         postings = soup.body.find_all('div', class_ =  FB_HTML_TAGS["Whole Post"])
         count = 0
         for post in postings:
-            if count == 10: #Limit 10 posts at a time
+            if count == 15: #Limit 10 posts at a time
                 break
             try:
                 # www.facebook.com/[link]
@@ -100,11 +139,15 @@ class FB_Scrapper:
         return dbEntries
 
     def convert_to_int(self, newString):
+        if newString == "FREE" or newString == "Free":
+            return 0
+        if newString == None:
+            return 0
         try:
-            # print("Trying to convert:" + newString)
+            # Create new numeric string by removing non-digits
             numericString = ''.join(c for c in newString if c.isdigit())
+            # Type cast to Int
             price = int(numericString)
-            # print("Converted to:" + numericString)
             return price
         except ValueError as e:
             error_part = newString[e.args[0]:e.args[1]] if isinstance(e.args, tuple) and len(e.args) == 2 else None

@@ -5,19 +5,9 @@ import csv
 import time
 import psutil
 
-# Selenium imports
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-
 # Marketplace Imports
 from marketplaceFB.facebookMP_GUI import *
 from marketplaceFB.facebookMP_performance import *
-
-
 
 
 firstInput = input("Running Demo(1) or Dev-GUI(2)? --> ")
@@ -52,10 +42,12 @@ start_network_monitoring()
 
 
 # Build a list of URLS to access for each brand
-prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
-# prefBrands = ["Chevy", "Toyota"]
+#prefBrands = ["Chevy", "Toyota", "Ford", "Lexus", "Dodge"]
+# prefBrands = ["Lexus", "Toyota", "Ford"]
+prefBrands = ["Chevy", "Toyota"]
 fb = FB_Scrapper()
 db = FB_DatabaseManager()
+prefBrands = sorted(prefBrands)
 urls = fb.build_URLs(prefBrands)
 newDate = fb.get_current_date_and_time()
 print(f"Current date and time: {newDate}")
@@ -66,7 +58,7 @@ chrome_options = Options()
 chrome_options.add_argument('--log-level=3') # Suppress logs
 chrome_options.add_argument('--disable-logging')
 chrome_options.add_argument('--silent')
-chrome_options.add_argument('--no-sandbox')  
+# chrome_options.add_argument('--no-sandbox')  
 chrome_options.add_argument('--headless') 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 wait = WebDriverWait(driver, 5)
@@ -100,8 +92,8 @@ for url in urls:
 driver.quit()
 
 #****************************Generate Excel Report*********************************#
-rm = ReportsManager()
-rm.build_new_report(prefBrands, 10)
+rm = FB_ExcelReportManager()
+rm.build_new_report(prefBrands, 15)
 #****************************Generate Excel Report*********************************#
 
 

@@ -8,15 +8,22 @@ from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
 
-class ReportsManager:
-    def __init__(self, folderPath):
-        self.primaryDir = folderPath
-        self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
-    def __init__(self):
-        # self.primaryDir = "C:\\Users\\[USER_PROFILE]\\Desktop\\MPScrubberReports"
-        self.primaryDir = self.set_primary_directory()
-        self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
 
+# PrimaryKey TEXT,
+# DatePulled TEXT,
+# DatePosted TEXT,
+# Year INT,
+# Price INT,
+# Mileage INT,
+# Description TEXT,
+# Location TEXT,
+# Link TEXT
+
+
+class FB_ExcelReportManager:
+    def __init__(self, primaryDir=None):
+        self.primaryDir = primaryDir if primaryDir is not None else self.set_primary_directory()
+        self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
 
     def set_primary_directory(self):
         user_profile = os.environ.get('USERPROFILE')
@@ -61,8 +68,9 @@ class ReportsManager:
         return brands
     
     def write_brand_data(self, brand, worksheet, cursor, numPostings):
-         # Fetch data sorted by DatePulled in descending order for the specified brand
-        cursor.execute(f"SELECT * FROM {brand} ORDER BY DatePulled DESC")
+        sortingType = "DatePulled"
+        # Fetch data sorted by DatePulled in descending order for the specified brand
+        cursor.execute(f"SELECT * FROM {brand} ORDER BY {sortingType} DESC")
         # Fetch "numPostings" worth of most recent entries
         data = cursor.fetchmany(numPostings)
         if data:
@@ -72,7 +80,7 @@ class ReportsManager:
             brand_cell.font = Font(bold=True, underline='single')
 
             # Write column titles in the following row (bold)
-            column_titles = ["PrimaryKey", "DatePulled", "DatePosted", 
+            column_titles = ["PrimaryKey", "DateScraped", "DatePosted", 
                             "Year", "Price", "Mileage", 
                             "Description", "Location", "Link"]
             title_row = brand_cell_row + 1
@@ -103,7 +111,6 @@ class ReportsManager:
             adjusted_width = max_length + 2  # Adding extra space for better readability
             worksheet.column_dimensions[column_letter].width = adjusted_width
 
-
     def save_new_report(self, currDateTime, workbook):
         # Excel file type = .xlsx
         reportFileName = "MPReport(" + currDateTime + ").xlsx"
@@ -123,5 +130,134 @@ class ReportsManager:
             s.system(f'open "{file_path}"')
     
 
+import numpy as np
+import pandas as pd
+import plotly.express as px
+from marketplaceFB.facebookMP_database import *
 
+# INTERPRETING TRENDS
+# Points Above the Trend Line:
+#   Higher Price: A vehicle above the trend line shows that the price is higher than what is expected
+#       Potential Implications:
+#           Better Condition: The vehicle might be in better condition compared to others with similar mileage.
+#           Additional Features: The vehicle may have additional features/options
+#           Brand Reputation: The brand/model may have a better reputation/higher demand
+#           Market Conditions: Market conditions/seller strategies point to selling at a higher price
+# Points Below the Trend Line:
+#   Lower Price: A data point below the trend line indicates that the vehicle is priced lower than what is expected based on the trend. This could be due to several factors:
+#       Potential Implications:
+#           Poor Condition: The vehicle might be in worse condition compared to others with similar mileage.
+#           Missing Features: The vehicle may lack features found in similar models
+#           Urgent Sale: The seller may be looking for a quick sale/will accept a lower price
+#           Market Conditions: Market conditions suck or pricing is competitive for brand/model
+
+class FB_TrendsAnalyzer:
+    def __init__(self):
+        self.conn = sqlite3.connect('./marketplaceFB/facebookDB.db')
+        self.lowestSlope = 0
+        self.highestSlope = 0
+    def plot_compare_trends_with_data_points(self, db, brands):
+        fig = px.scatter(title='Mileage vs. Price Trends Comparison', labels={'Mileage': 'Mileage', 'Price': 'Price'})
+        color_cycle = px.colors.qualitative.Plotly
+        for i, brand in enumerate(brands):
+            data = db.fetch_mileage_and_prices_all(brand)
+            df = pd.DataFrame(data, columns=['Mileage', 'Price'])
+
+            # Filter out invalid data, i.e., anything below 0 isn't possible and should be considered 
+            #   non-applicable to the data set
+            df = df[(df['Mileage'] > 1000) & (df['Price'] > 1000)]
+
+            # Calculate the trend (linear regression)
+            slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
+            trendline = slope * df['Mileage'] + intercept
+
+            # Set color for the brand
+            color = color_cycle[i % len(color_cycle)]
+
+            fig.add_scatter(x=df['Mileage'], y=df['Price'], mode='markers', name=f'{brand} Data', marker=dict(color=color))
+            fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend', line=dict(color=color))
+        # Make graph only show above -1000 on both axis
+        # Set max to the highest one plus a little extra
+        fig.update_layout(
+            xaxis=dict(range=[-1000, df['Mileage'].max() * 1.01]),
+            yaxis=dict(range=[-1000, df['Price'].max() * 1.01])
+        )
+        fig.show()
+    def plot_compare_trends_without_data_points(self, db, brands):
+        fig = px.scatter(title='Mileage vs. Price (All Brands)', labels={'Mileage': 'Mileage', 'Price': 'Price'})
+        color_cycle = px.colors.qualitative.Plotly
+        for i, brand in enumerate(brands):
+            if db.fetch_total_number_of_entries(brand) < 50:
+                continue
+            data = db.fetch_mileage_and_prices_all(brand)
+            df = pd.DataFrame(data, columns=['Mileage', 'Price'])
+
+            # Filter out invalid data
+            df = df[(df['Mileage'] > 1000) & (df['Price'] > 1000)]
+
+            # Calculate the trend (linear regression)
+            slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
+            trendline = slope * df['Mileage'] + intercept
+
+            # Set color for the brand
+            color = color_cycle[i % len(color_cycle)]
+
+            # Add only the trendline to the plot
+            fig.add_scatter(x=df['Mileage'], y=trendline, mode='lines', name=f'{brand} Trend', line=dict(color=color))
+
+        # Make graph only show above 0 on both axis
+        # Set max to the highest one plus a little extra
+        fig.update_layout(
+            xaxis=dict(range=[-1000, df['Mileage'].max() * 1.01]),
+            yaxis=dict(range=[-1000, df['Price'].max() * 1.01])
+        )
+
+        fig.show()
+    def check_for_good_deal(self, db, brands):
+        fig = px.scatter(title='Mileage vs. Price Trends with Good Deals', labels={'Mileage': 'Mileage', 'Price': 'Price'})
+        goodDeals = {}
+        for brand in brands:
+            allData = db.fetch_mileage_and_prices_all(brand)
+            newData = db.fetch_mileage_and_prices_most_recent(brand)
+
+            # Create DataFrame and filter out invalid data
+            df = pd.DataFrame(allData, columns=['Mileage', 'Price'])
+            df = df[(df['Mileage'] > 100) & (df['Price'] > 100)]
+
+            # Calculate the trend (linear regression)
+            slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
+            trendLine = slope * df['Mileage'] + intercept
+
+            # Add only the trendline to the plot
+            fig.add_scatter(x=df['Mileage'], y=trendLine, mode='lines', name=f'{brand} Trend')
+
+            for entry in newData:
+                primaryKey = entry[0]
+                mileage = entry[1]
+                price = entry[2]
+                if mileage > 0 and price > 0:
+                    isGoodDeal = self.is_entry_good_deal(df, mileage, price)
+                    if isGoodDeal:
+                        fig.add_scatter(x=[mileage], y=[price], mode='markers', name=f'{brand} {primaryKey}', marker=dict(color='red'))
+                        goodDeals.update(db.fetch_details_by_primary_key(brand, primaryKey))
+        # Show the plot
+        fig.update_layout(
+            xaxis=dict(range=[0, df['Mileage'].max() * 1.01]),
+            yaxis=dict(range=[0, df['Price'].max() * 1.01])
+        )
+        fig.show()
+
+        return goodDeals
+
+    def is_entry_good_deal(self, df, mileage, price):
+        # Calculate the trend (linear regression)
+        slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
+        # Calculate the expected price at the given mileage
+        expectedPrice = slope * mileage + intercept
+        # Determine if the price is below the trend line but within 10% of the expected price on that trend
+        lowerBound = expectedPrice - (expectedPrice * 0.10)
+        # Is the posted price within 10%?
+        isGoodDeal = lowerBound <= price < expectedPrice
+        # Return the result
+        return isGoodDeal
    
