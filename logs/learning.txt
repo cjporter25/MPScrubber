@@ -35,6 +35,22 @@
 #       c. BOOL or BOOLEAN --> "Zero" or "0" is considered "FALSE". Any nonzero value
 #          is considered true.
 
+# PIP - INSTALLING FRESH VERSIONS, NOT FROM CACHE
+# # Deactivate the current virtual environment
+deactivate
+
+# Remove the existing virtual environment folder
+rm -rf .venv
+
+# Create a new virtual environment
+python -m venv .venv
+
+# Activate the new virtual environment
+source .venv/bin/activate  # macOS/Linux
+# .venv\Scripts\activate    # Windows
+
+# Install dependencies without using the cache
+pip install --no-cache-dir -r requirements.txt
 # from bs4 import BeautifulSoup
 # import requests 
 # import os

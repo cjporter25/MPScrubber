@@ -7,8 +7,6 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
-
-
 # PrimaryKey TEXT,
 # DatePulled TEXT,
 # DatePosted TEXT,
@@ -18,7 +16,6 @@ from openpyxl.utils import get_column_letter
 # Description TEXT,
 # Location TEXT,
 # Link TEXT
-
 
 class FB_ExcelReportManager:
     def __init__(self, primaryDir=None):
@@ -165,7 +162,8 @@ class FB_TrendsAnalyzer:
 
             # Filter out invalid data, i.e., anything below 0 isn't possible and should be considered 
             #   non-applicable to the data set
-            df = df[(df['Mileage'] > 1000) & (df['Price'] > 1000)]
+            # Mileage: 1000 - 300000        Price: 1000 - 50000
+            df = df[(df['Mileage'] > 1000) & (df['Mileage'] < 300000) & (df['Price'] > 1000) & (df['Price'] < 50000)]
 
             # Calculate the trend (linear regression)
             slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
@@ -193,7 +191,7 @@ class FB_TrendsAnalyzer:
             df = pd.DataFrame(data, columns=['Mileage', 'Price'])
 
             # Filter out invalid data
-            df = df[(df['Mileage'] > 1000) & (df['Price'] > 1000)]
+            df = df[(df['Mileage'] > 1000) & (df['Mileage'] < 300000) & (df['Price'] > 1000) & (df['Price'] < 50000)]
 
             # Calculate the trend (linear regression)
             slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)
@@ -222,7 +220,7 @@ class FB_TrendsAnalyzer:
 
             # Create DataFrame and filter out invalid data
             df = pd.DataFrame(allData, columns=['Mileage', 'Price'])
-            df = df[(df['Mileage'] > 100) & (df['Price'] > 100)]
+            df = df[(df['Mileage'] > 1000) & (df['Mileage'] < 300000) & (df['Price'] > 1000) & (df['Price'] < 50000)]
 
             # Calculate the trend (linear regression)
             slope, intercept = np.polyfit(df['Mileage'], df['Price'], 1)

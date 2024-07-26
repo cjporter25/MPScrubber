@@ -2,6 +2,7 @@
 import sqlite3
 import datetime
 import time
+import os
 
 from bs4 import BeautifulSoup
 from datetime import date
@@ -43,8 +44,15 @@ class FB_Scrapper:
         chrome_options.add_argument('--log-level=3') # Suppress logs except fatal ones
         chrome_options.add_argument('--disable-logging') # Suppress logs further
         chrome_options.add_argument('--silent') # Suppress logs further
-        chrome_options.add_argument('--headless') # No chrome window output
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        # chrome_options.add_argument('--headless') # No chrome window output
+        print("PRINTING CHROME DRIVER")
+        driver_path = os.path.join(
+            "C:\\Users\\cj_po\\.wdm\\drivers\\chromedriver\\win64\\114.0.5735.90",
+            "chromedriver.exe"
+        )
+        print(ChromeDriverManager().install())
+        service = Service(driver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
         wait = WebDriverWait(driver, 5)
 
         

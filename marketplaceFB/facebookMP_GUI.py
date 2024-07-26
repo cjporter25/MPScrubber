@@ -465,6 +465,9 @@ class ScrubberGUI(QWidget):
         maxMileage = self.convert_to_int_or_default(dbFilters["Mileage"]["Max"], "200000")
         brands = self.get_selected_brands(dbFilters)
         location = ""
+        rm = FB_ExcelReportManager()
+        rm.build_new_report(brands, 15)
+
 
     def button_scrape_and_generate_report(self):
         filters = self.collect_filter_choices()
