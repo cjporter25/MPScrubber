@@ -30,7 +30,7 @@ class FB_Scrapper:
         self.maxMiles = maxMiles
         self.brands = brands if brands is not None else DEF_BRAND_LIST
         self.location = location if location is not None else FB_MP_STPAUL
-        self.sorting = sorting if sorting is not None else SORTING_FILTERS["Date Listed: Newest First"]
+        self.sorting = sorting if sorting is not None else FB_SORTING_FILTERS["Date Listed: Newest First"]
         self.bodyStyles = bodyStyles if bodyStyles is not None else BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
         self.vehicleTypes = vehicleTypes if vehicleTypes is not None else VEHICLE_TYPE_FILTERS["Cars & Trucks"]
     def scrape(self):
@@ -44,13 +44,11 @@ class FB_Scrapper:
         chrome_options.add_argument('--log-level=3') # Suppress logs except fatal ones
         chrome_options.add_argument('--disable-logging') # Suppress logs further
         chrome_options.add_argument('--silent') # Suppress logs further
-        # chrome_options.add_argument('--headless') # No chrome window output
+        chrome_options.add_argument('--headless') # No chrome window output
         print("PRINTING CHROME DRIVER")
-        driver_path = os.path.join(
-            "C:\\Users\\cj_po\\.wdm\\drivers\\chromedriver\\win64\\114.0.5735.90",
-            "chromedriver.exe"
-        )
         print(ChromeDriverManager().install())
+        # TEMPORARY - SELENIUM ISN'T PULLING DRIVER AUTOMATICALLY
+        driver_path = os.getenv("DRI_PATH")
         service = Service(driver_path)
         driver = webdriver.Chrome(service=service, options=chrome_options)
         wait = WebDriverWait(driver, 5)
@@ -86,8 +84,8 @@ class FB_Scrapper:
         fbURLs = []
         for brand in brands: 
             url = FB_MP_MAIN + self.location \
-                    + PRICE_FILTERS["Min Price"] + self.minPrice \
-                    + PRICE_FILTERS["Max Price"] + self.maxPrice \
+                    + FB_PRICE_FILTERS["Min Price"] + self.minPrice \
+                    + FB_PRICE_FILTERS["Max Price"] + self.maxPrice \
                     + MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
                     + MILEAGE_FILTERS["Max Mileage"] + self.maxMiles \
                     + YEAR_FILTERS["Min Year"] + self.minYear \

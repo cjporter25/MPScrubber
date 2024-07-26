@@ -12,7 +12,7 @@
 
 USER = "Christopher Porter"
 
-DEF_USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'}
+FB_DEF_USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'}
 
 FB_HTML_TAGS = {"Whole Post": "x9f619 x78zum5 x1r8uery xdt5ytf x1iyjqo2 xs83m0k x1e558r4 x150jy0e x1iorvi4 xjkvuk6 xnpuxes x291uyu x1uepa24", #Div Class
                 "Link": "x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1sur9pj xkrqix3 x1lku1pv", #a
@@ -35,7 +35,7 @@ FB_MP_MINNEAPOLIS = "minneapolis/vehicles?"
 
 # The url can specify what the min and max price should be for search results. The URL
 #   schema seems to autofill these parameters as the first thing in the URL sequence.
-PRICE_FILTERS = {"Min Price": "minPrice=",
+FB_PRICE_FILTERS = {"Min Price": "minPrice=",
                  "Max Price": "&maxPrice="}
 
 MILEAGE_FILTERS = {"Min Mileage": "&minMileage=",
@@ -50,7 +50,7 @@ YEAR_FILTERS = {"Min Year": "&minYear=",
 # DEFAULT: The website's default filter seems to be the "suggested" option if no specific option
 #          is picked. Also, this option is the default sorting state if no sorting parameter is
 #          given
-SORTING_FILTERS = {"Suggested": "&sortBy=best_match",
+FB_SORTING_FILTERS = {"Suggested": "&sortBy=best_match",
                    "Price: Lowest First": "&sortBy=price_ascend",
                    "Price: Highest First": "&sortBy=price_descend",
                    "Date Listed: Newest First": "&sortBy=creation_time_descend",

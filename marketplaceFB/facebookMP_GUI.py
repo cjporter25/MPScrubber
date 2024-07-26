@@ -421,7 +421,7 @@ class ScrubberGUI(QWidget):
         minMileage = self.convert_to_int_or_default(fbFilters["Mileage"]["Min"], "0")
         maxMileage = self.convert_to_int_or_default(fbFilters["Mileage"]["Max"], "200000")
 
-        sorting = SORTING_FILTERS["Date Listed: Newest First"]
+        sorting = FB_SORTING_FILTERS["Date Listed: Newest First"]
         brands = self.get_selected_brands(fbFilters)
         location = FB_MP_STPAUL
         print(type(location))

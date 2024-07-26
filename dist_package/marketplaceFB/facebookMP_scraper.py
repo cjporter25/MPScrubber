@@ -29,7 +29,7 @@ class FB_Scrapper:
         self.maxMiles = maxMiles
         self.brands = brands if brands is not None else DEF_BRAND_LIST
         self.location = location if location is not None else FB_MP_STPAUL
-        self.sorting = sorting if sorting is not None else SORTING_FILTERS["Date Listed: Newest First"]
+        self.sorting = sorting if sorting is not None else FB_SORTING_FILTERS["Date Listed: Newest First"]
         self.bodyStyles = bodyStyles if bodyStyles is not None else BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
         self.vehicleTypes = vehicleTypes if vehicleTypes is not None else VEHICLE_TYPE_FILTERS["Cars & Trucks"]
     def scrape(self):
