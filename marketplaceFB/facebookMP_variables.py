@@ -36,13 +36,13 @@ FB_MP_MINNEAPOLIS = "minneapolis/vehicles?"
 # The url can specify what the min and max price should be for search results. The URL
 #   schema seems to autofill these parameters as the first thing in the URL sequence.
 FB_PRICE_FILTERS = {"Min Price": "minPrice=",
-                 "Max Price": "&maxPrice="}
+                    "Max Price": "&maxPrice="}
 
-MILEAGE_FILTERS = {"Min Mileage": "&minMileage=",
-                   "Max Mileage": "&maxMileage="}
+FB_MILEAGE_FILTERS = {"Min Mileage": "&minMileage=",
+                      "Max Mileage": "&maxMileage="}
 
-YEAR_FILTERS = {"Min Year": "&minYear=",
-                "Max Year": "&maxYear="}
+FB_YEAR_FILTERS = {"Min Year": "&minYear=",
+                   "Max Year": "&maxYear="}
 
 # Before any other filtering option, the user can sort the results to show specific things
 #   first. In the URL schema, this parameter goes after numeric filters such as price, year, etc.
@@ -63,7 +63,7 @@ FB_SORTING_FILTERS = {"Suggested": "&sortBy=best_match",
                    "Year: Oldest First": "&sortBy=vehicle_year_ascend"}
 
 # Each vehicle manufacturer seems to have a unique ID. 
-MAKE_FILTERS = {"Acura": "&make=280909549507187",
+FB_MAKE_FILTERS = {"Acura": "&make=280909549507187",
                 "Audi": "&make=1274042129420222",
                 "Buick": "&make=436791410393181",
                 "Chevy": "&make=1914016008726893",

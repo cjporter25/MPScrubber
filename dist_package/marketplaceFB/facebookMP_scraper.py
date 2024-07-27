@@ -78,13 +78,13 @@ class FB_Scrapper:
         fbURLs = []
         for brand in brands: 
             url = FB_MP_MAIN + self.location \
-                    + PRICE_FILTERS["Min Price"] + self.minPrice \
-                    + PRICE_FILTERS["Max Price"] + self.maxPrice \
-                    + MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
-                    + MILEAGE_FILTERS["Max Mileage"] + self.maxMiles \
-                    + YEAR_FILTERS["Min Year"] + self.minYear \
-                    + YEAR_FILTERS["Max Year"] + self.maxYear \
-                    + self.sorting + MAKE_FILTERS[brand] \
+                    + FB_PRICE_FILTERS["Min Price"] + self.minPrice \
+                    + FB_PRICE_FILTERS["Max Price"] + self.maxPrice \
+                    + FB_MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
+                    + FB_MILEAGE_FILTERS["Max Mileage"] + self.maxMiles \
+                    + FB_YEAR_FILTERS["Min Year"] + self.minYear \
+                    + FB_YEAR_FILTERS["Max Year"] + self.maxYear \
+                    + self.sorting + FB_MAKE_FILTERS[brand] \
                     + self.bodyStyles + self.vehicleTypes
             urlPlusBrand = [brand, url]
             print(urlPlusBrand)

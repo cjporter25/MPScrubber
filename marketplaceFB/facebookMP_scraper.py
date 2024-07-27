@@ -45,8 +45,8 @@ class FB_Scrapper:
         chrome_options.add_argument('--disable-logging') # Suppress logs further
         chrome_options.add_argument('--silent') # Suppress logs further
         chrome_options.add_argument('--headless') # No chrome window output
-        print("PRINTING CHROME DRIVER")
-        print(ChromeDriverManager().install())
+        # print("PRINTING CHROME DRIVER")
+        # print(ChromeDriverManager().install())
         # TEMPORARY - SELENIUM ISN'T PULLING DRIVER AUTOMATICALLY
         driver_path = os.getenv("DRI_PATH")
         service = Service(driver_path)
@@ -86,11 +86,11 @@ class FB_Scrapper:
             url = FB_MP_MAIN + self.location \
                     + FB_PRICE_FILTERS["Min Price"] + self.minPrice \
                     + FB_PRICE_FILTERS["Max Price"] + self.maxPrice \
-                    + MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
-                    + MILEAGE_FILTERS["Max Mileage"] + self.maxMiles \
-                    + YEAR_FILTERS["Min Year"] + self.minYear \
-                    + YEAR_FILTERS["Max Year"] + self.maxYear \
-                    + self.sorting + MAKE_FILTERS[brand] \
+                    + FB_MILEAGE_FILTERS["Min Mileage"] + self.minMiles \
+                    + FB_MILEAGE_FILTERS["Max Mileage"] + self.maxMiles \
+                    + FB_YEAR_FILTERS["Min Year"] + self.minYear \
+                    + FB_YEAR_FILTERS["Max Year"] + self.maxYear \
+                    + self.sorting + FB_MAKE_FILTERS[brand] \
                     + self.bodyStyles + self.vehicleTypes
             urlPlusBrand = [brand, url]
             print(urlPlusBrand)
