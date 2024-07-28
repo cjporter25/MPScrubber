@@ -1,11 +1,6 @@
-# import os
-import sqlite3
-import datetime
-import time
 import os
 
 from bs4 import BeautifulSoup
-from datetime import date
 
 # Selenium imports
 from selenium import webdriver
@@ -16,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 from marketplaceFB.facebookMP_database import *
+from mpsTools.util import *
 
 class FB_Scrapper:
     def __init__(self, minYear="2000", maxYear="2024", minPrice="0", 
@@ -34,9 +30,9 @@ class FB_Scrapper:
         self.bodyStyles = bodyStyles if bodyStyles is not None else BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
         self.vehicleTypes = vehicleTypes if vehicleTypes is not None else VEHICLE_TYPE_FILTERS["Cars & Trucks"]
     def scrape(self):
-        newDate = self.get_current_date_and_time()
+        newDate = get_formatted_date_and_time()
         print(f"Current date and time: {newDate}")
-        fbURLs = self.build_URLs(self.brands)
+        fbURLs = self.fb_build_URLs(self.brands)
         db = FB_DatabaseManager()
 
         # Launch Chrome driver
@@ -53,7 +49,6 @@ class FB_Scrapper:
         driver = webdriver.Chrome(service=service, options=chrome_options)
         wait = WebDriverWait(driver, 5)
 
-        
         # Open each URL 
         for url in fbURLs:
             try:
@@ -75,12 +70,12 @@ class FB_Scrapper:
             db.create_table(currBrand)
             db.insert_entries(currBrand, newEntries)
             db.show_brand_meta_data(currBrand)
-            db.wait()
+            pause()
 
         # Close chrome driver
         driver.quit()
 
-    def build_URLs(self, brands):
+    def fb_build_URLs(self, brands):
         fbURLs = []
         for brand in brands: 
             url = FB_MP_MAIN + self.location \
@@ -121,19 +116,19 @@ class FB_Scrapper:
             except ValueError:
                 year = 1900
             # Find the price HTML tag and convert to an integer
-            price = self.convert_to_int(post.find('span', class_ = FB_HTML_TAGS["Price"]).text)
+            price = convert_to_int(post.find('span', class_ = FB_HTML_TAGS["Price"]).text)
             # Location and mileage use the same HTML tag for some stupid reason
             locAndMile = post.find_all('span', class_ = FB_HTML_TAGS["Location&Mileage"])
             # The first one is mileage in the format of "55k" or "100k". Remove the letters,
             #   convert to int, and multiply by a 1000 to get the actual number.
-            mileage = (self.convert_to_int(locAndMile[1].text)) * 1000
+            mileage = (convert_to_int(locAndMile[1].text)) * 1000
             # The second one is location, simply convert to text
             location = locAndMile[0].text
             
             # Create a primary key for the entry
-            primaryKey = self.create_primary_key(year, price, mileage)
+            primaryKey = create_primary_key(year, price, mileage)
 
-            datePulled = self.get_current_date_and_time()
+            datePulled = get_formatted_date_and_time()
 
             # NOTE: Will eventually look work a way to pull the approx time a vehicle was posted
             datePosted = "n/a"
@@ -144,38 +139,9 @@ class FB_Scrapper:
             count+=1
         return dbEntries
 
-    def convert_to_int(self, newString):
-        if newString == "FREE" or newString == "Free":
-            return 0
-        if newString == None:
-            return 0
-        try:
-            # Create new numeric string by removing non-digits
-            numericString = ''.join(c for c in newString if c.isdigit())
-            # Type cast to Int
-            price = int(numericString)
-            return price
-        except ValueError as e:
-            error_part = newString[e.args[0]:e.args[1]] if isinstance(e.args, tuple) and len(e.args) == 2 else None
-            result = {'error': 'ValueError', 'message': str(e), 'entire_string': newString, 'error_part': error_part}
-            print("Error occurred during extraction:")
-            print("Type:", result['error'])
-            print("Message:", result['message'])
-            print("Entire string:", result['entire_string'])
-            print("Error part:", result['error_part'])
-            return 0
 
-    def create_primary_key(self, year, price, mileage):
-        unique_id = "{}-{}-{}".format(year, price, mileage)
-        return unique_id
 
-    def get_current_date_and_time(self):
-        today = date.today()
-        currDate = today.strftime("%Y-%m-%d")
-        time = datetime.datetime.now().time()
-        currTime = time.strftime("%H:%M:%S")
-        currDateTime = currDate + "." + currTime
-        return currDateTime
+
 
 
 

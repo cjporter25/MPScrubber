@@ -1,9 +1,8 @@
 # import os
 import sqlite3
-import time
 
 from marketplaceFB.facebookMP_variables import *
-
+from mpsTools.util import *
 
 class FB_DatabaseManager:
     def __init__(self):
@@ -14,7 +13,7 @@ class FB_DatabaseManager:
         
         
     def create_table(self, brand):
-        self.set_brand_name_upper_case(brand)
+        self.ucBrand = brand_name_upper_case(brand)
         print(f"Creating or initializing table for {self.ucBrand}")
         cursor = self.connection.cursor()
         newTableCommand = '''
@@ -158,10 +157,3 @@ class FB_DatabaseManager:
         self.numExistingEntries = existingEntries
     def set_num_total_entries(self, totalEntries):
         self.numTotalEntries = totalEntries
-    def set_brand_name_upper_case(self, brand):
-        self.ucBrand = brand.upper()
-    def wait(self):
-        print("Automated Detection System Prevention. Waiting 5 seconds before scrapping the next brand...")
-        for i in range(3, 0, -1):
-            print("...")
-            time.sleep(1)

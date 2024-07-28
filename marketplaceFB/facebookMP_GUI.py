@@ -75,6 +75,7 @@ class ScrubberGUI(QWidget):
             sys.exit(1)
         
         self.setLayout(main_layout)  
+
     def init_variables(self):
         # Initialize instance variables for Facebook filters
         self.fbYearMin = QLineEdit()
@@ -164,7 +165,6 @@ class ScrubberGUI(QWidget):
         # Initialize Worker Threads
         
         self.dbThread = QThread()
-
     def create_facebook_filter_layout(self):
         layoutFB = QVBoxLayout()
         title_label = QLabel("Facebook Scraping")
@@ -313,27 +313,114 @@ class ScrubberGUI(QWidget):
         # Add buttons
         # Padding increases distance from text to edge of button
         # Margin increases distance from edge of button to other items
-        buttonScrape = QPushButton("Scrape")
+        buttonScrape = QPushButton("FB - Scrape")
         buttonScrape.clicked.connect(self.button_scrape_facebook)
         buttonsLayout.addWidget(buttonScrape)
 
-        buttonReport = QPushButton("Report")
+        buttonReport = QPushButton("FB - Report")
         buttonReport.clicked.connect(self.button_generate_database_report)
         buttonsLayout.addWidget(buttonReport)
 
-        buttonBoth = QPushButton("Scrape and Report")
-        buttonBoth.clicked.connect(self.button_scrape_and_generate_report)
-        buttonsLayout.addWidget(buttonBoth)
+        #buttonBoth = QPushButton("Scrape and Report")
+        #buttonBoth.clicked.connect(self.button_scrape_and_generate_report)
+        #buttonsLayout.addWidget(buttonBoth)
 
-        buttonTrends = QPushButton("See Trends")
+        buttonTrends = QPushButton("FB - See Trends")
         buttonTrends.clicked.connect(self.button_see_trends)
         buttonsLayout.addWidget(buttonTrends)
 
-        buttonAutomate = QPushButton("Automate")
-        buttonAutomate.clicked.connect(self.button_scrape_and_generate_report)
-        buttonsLayout.addWidget(buttonAutomate)
+        #buttonAutomate = QPushButton("Automate")
+        #buttonAutomate.clicked.connect(self.button_scrape_and_generate_report)
+        #buttonsLayout.addWidget(buttonAutomate)
 
         return buttonsLayout
+
+
+    def button_scrape_facebook(self):
+        fbFilters = self.collect_filter_choices()["ScrappingFilters"]
+        # Call the function to scrape Facebook using the filters
+        print("Scraping Facebook with filters:")
+        minYear = self.convert_to_int_or_default(fbFilters["Year"]["Min"], "2000")
+        maxYear = self.convert_to_int_or_default(fbFilters["Year"]["Max"], "2024")
+        minPrice = self.convert_to_int_or_default(fbFilters["Price"]["Min"], "0")
+        maxPrice = self.convert_to_int_or_default(fbFilters["Price"]["Max"], "50000")
+        minMileage = self.convert_to_int_or_default(fbFilters["Mileage"]["Min"], "0")
+        maxMileage = self.convert_to_int_or_default(fbFilters["Mileage"]["Max"], "200000")
+
+        sorting = FB_SORTING_FILTERS["Date Listed: Newest First"]
+        brands = self.get_selected_brands(fbFilters)
+        location = FB_MP_STPAUL
+        print(type(location))
+        bodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
+        vehicleTypes = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
+        scrapper = FB_Scrapper(minYear, maxYear, minPrice, 
+                               maxPrice, minMileage, maxMileage,
+                               brands, location, sorting,
+                               bodyStyles, vehicleTypes)
+        
+        self.fbThread = QThread()
+        self.worker = FB_Worker_Scrapper(scrapper)
+        self.worker.moveToThread(self.fbThread)
+
+        # Set "what to do" when thread is started
+        self.fbThread.started.connect(self.worker.run)
+        # Tell the thread to "quit" was the worker is finished
+        self.worker.finished.connect(self.fbThread.quit)
+        # Tell the worker to schedule itslef for deletion later when it's safe
+        self.worker.finished.connect(self.worker.deleteLater)
+        # Tell the thread to do the same
+        self.fbThread.finished.connect(self.fbThread.deleteLater)
+
+        # Start the Thread
+        self.fbThread.start()
+
+        self.fbThread.finished.connect(self.on_scrape_finished)
+
+        return
+ 
+    def button_generate_database_report(self):
+        dbFilters = self.collect_filter_choices()["DatabaseFilters"]
+        # Call the function to generate a report using the filters
+        print("Generating report with filters:")
+        pprint.pprint(dbFilters)
+        minYear = self.convert_to_int_or_default(dbFilters["Year"]["Min"], "2000")
+        maxYear = self.convert_to_int_or_default(dbFilters["Year"]["Max"], "2024")
+        minPrice = self.convert_to_int_or_default(dbFilters["Price"]["Min"], "0")
+        maxPrice = self.convert_to_int_or_default(dbFilters["Price"]["Max"], "50000")
+        minMileage = self.convert_to_int_or_default(dbFilters["Mileage"]["Min"], "0")
+        maxMileage = self.convert_to_int_or_default(dbFilters["Mileage"]["Max"], "200000")
+        brands = self.get_selected_brands(dbFilters)
+        location = ""
+        rm = FB_ExcelReportManager()
+        rm.build_new_report(brands, 15)
+
+    #def button_scrape_and_generate_report(self):
+    #    filters = self.collect_filter_choices()
+        # Call the function to scrape Facebook and generate a report using the filters
+    #    print("Scraping Facebook and generating report with filters:")
+    #    pprint.pprint(filters)
+    
+    # def button_automated(self):
+        # filters = self.collect_filter_choices()["ScrappingFilters"]
+        #print("Automated Options")
+        #pprint.pprint(filters)
+    def button_see_trends(self):
+        dbFilters = self.collect_filter_choices()["DatabaseFilters"]
+        brands = self.get_selected_brands(dbFilters)
+        db = FB_DatabaseManager()
+        allBrands = db.fetch_brand_list()
+        tm = FB_TrendsAnalyzer()
+
+        #tm.plot_compare_trends_without_data_points(db, brands)
+        tm.plot_compare_trends_with_data_points(db, brands)
+        tm.plot_compare_trends_without_data_points(db, allBrands)
+        tm.plot_compare_trends_with_data_points(db, allBrands)
+        
+        goodDeals = tm.check_for_good_deal(db, brands)
+        notif = FB_NotificationsManager()
+        #notif.sendGoodDealsEmail(goodDeals)
+        return
+
 
     def collect_filter_choices(self):
         userChoicesGUI = {
@@ -410,91 +497,7 @@ class ScrubberGUI(QWidget):
         }
         return userChoicesGUI
 
-    def button_scrape_facebook(self):
-        fbFilters = self.collect_filter_choices()["ScrappingFilters"]
-        # Call the function to scrape Facebook using the filters
-        print("Scraping Facebook with filters:")
-        minYear = self.convert_to_int_or_default(fbFilters["Year"]["Min"], "2000")
-        maxYear = self.convert_to_int_or_default(fbFilters["Year"]["Max"], "2024")
-        minPrice = self.convert_to_int_or_default(fbFilters["Price"]["Min"], "0")
-        maxPrice = self.convert_to_int_or_default(fbFilters["Price"]["Max"], "50000")
-        minMileage = self.convert_to_int_or_default(fbFilters["Mileage"]["Min"], "0")
-        maxMileage = self.convert_to_int_or_default(fbFilters["Mileage"]["Max"], "200000")
 
-        sorting = FB_SORTING_FILTERS["Date Listed: Newest First"]
-        brands = self.get_selected_brands(fbFilters)
-        location = FB_MP_STPAUL
-        print(type(location))
-        bodyStyles = BODYSTYLE_FILTERS["Sedan-SUV-Truck"]
-        vehicleTypes = VEHICLE_TYPE_FILTERS["Cars & Trucks"]
-        scrapper = FB_Scrapper(minYear, maxYear, minPrice, 
-                               maxPrice, minMileage, maxMileage,
-                               brands, location, sorting,
-                               bodyStyles, vehicleTypes)
-        
-        self.fbThread = QThread()
-        self.worker = FB_Worker_Scrapper(scrapper)
-        self.worker.moveToThread(self.fbThread)
-
-        # Set "what to do" when thread is started
-        self.fbThread.started.connect(self.worker.run)
-        # Tell the thread to "quit" was the worker is finished
-        self.worker.finished.connect(self.fbThread.quit)
-        # Tell the worker to schedule itslef for deletion later when it's safe
-        self.worker.finished.connect(self.worker.deleteLater)
-        # Tell the thread to do the same
-        self.fbThread.finished.connect(self.fbThread.deleteLater)
-
-        # Start the Thread
-        self.fbThread.start()
-
-        self.fbThread.finished.connect(self.on_scrape_finished)
-
-        return
- 
-    def button_generate_database_report(self):
-        dbFilters = self.collect_filter_choices()["DatabaseFilters"]
-        # Call the function to generate a report using the filters
-        print("Generating report with filters:")
-        pprint.pprint(dbFilters)
-        minYear = self.convert_to_int_or_default(dbFilters["Year"]["Min"], "2000")
-        maxYear = self.convert_to_int_or_default(dbFilters["Year"]["Max"], "2024")
-        minPrice = self.convert_to_int_or_default(dbFilters["Price"]["Min"], "0")
-        maxPrice = self.convert_to_int_or_default(dbFilters["Price"]["Max"], "50000")
-        minMileage = self.convert_to_int_or_default(dbFilters["Mileage"]["Min"], "0")
-        maxMileage = self.convert_to_int_or_default(dbFilters["Mileage"]["Max"], "200000")
-        brands = self.get_selected_brands(dbFilters)
-        location = ""
-        rm = FB_ExcelReportManager()
-        rm.build_new_report(brands, 15)
-
-
-    def button_scrape_and_generate_report(self):
-        filters = self.collect_filter_choices()
-        # Call the function to scrape Facebook and generate a report using the filters
-        print("Scraping Facebook and generating report with filters:")
-        pprint.pprint(filters)
-    
-    def button_automated(self):
-        filters = self.collect_filter_choices()["ScrappingFilters"]
-        print("Automated Options")
-        pprint.pprint(filters)
-    def button_see_trends(self):
-        dbFilters = self.collect_filter_choices()["DatabaseFilters"]
-        brands = self.get_selected_brands(dbFilters)
-        db = FB_DatabaseManager()
-        allBrands = db.fetch_brand_list()
-        tm = FB_TrendsAnalyzer()
-
-        #tm.plot_compare_trends_without_data_points(db, brands)
-        tm.plot_compare_trends_with_data_points(db, brands)
-        tm.plot_compare_trends_without_data_points(db, allBrands)
-        tm.plot_compare_trends_with_data_points(db, allBrands)
-        
-        goodDeals = tm.check_for_good_deal(db, brands)
-        notif = FB_NotificationsManager()
-        #notif.sendGoodDealsEmail(goodDeals)
-        return
 
     def on_scrape_finished(self):
         print("Scrapping Complete!")
